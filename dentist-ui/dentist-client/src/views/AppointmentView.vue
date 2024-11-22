@@ -1,8 +1,16 @@
 <template>
-  <div class="about">
-    <h1>Appointments</h1>
-  </div>
+  <AvailableAppointments />
 </template>
+
+<script>
+import AvailableAppointments from '../components/AvailableAppointments.vue';
+
+export default {
+  components:{
+    AvailableAppointments
+  }
+}
+</script>
 
 <style>
 @media (min-width: 1024px) {
