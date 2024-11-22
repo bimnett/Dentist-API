@@ -1,47 +1,52 @@
 <template>
-  <div>
+  <div class="appointments-container">
     <h2>Available Slots</h2>
 
     <!-- Week navigation -->
-    <div>
-      <button @click="previousWeek"> < Previous Week</button>
-      <span>
+    <div class="week-navigation">
+      <button @click="previousWeek" class="nav-button"> < Previous Week</button>
+      <span class="week-display">
         {{ formatDateRange(weekStart, weekEnd) }}
       </span>
-      <button @click="nextWeek">Next Week ></button>
+      <button @click="nextWeek" class="nav-button">Next Week ></button>
     </div>
 
     <!-- Weekly calendar -->
-    <div>
+    <div class="weekly-calendar">
       <!-- Header with days -->
-      <div>
+      <div class="calendar-header">
+        <div class="time-column"></div>
         <div 
           v-for="day in weekDays" 
           :key="day.date"
+          class="day-column"
         >
-          <div>{{ day.dayName }}</div>
-          <div>{{ day.dateLabel }}</div>
+          <div class="day-label">{{ day.dayName }}</div>
+          <div class="date-label">{{ day.dateLabel }}</div>
         </div>
       </div>
 
       <!-- Time slots -->
-      <div>
-        <div>
+      <div class="calendar-body">
+        <div class="time-slots">
           <div 
             v-for="time in timeSlots" 
             :key="time"
+            class="time-row"
           >
-            <div>{{ time }}</div>
+            <div class="time-label">{{ time }}</div>
             <div 
               v-for="day in weekDays" 
               :key="`${day.date}-${time}`"
+              class="slot-cell"
             >
               <div 
                 v-if="hasSlot(day.date, time)"
+                class="available-slot"
                 @click="bookSlot(getSlot(day.date, time))"
               >
-                <span>{{ time }}</span>
-                <span>45 min</span>
+                <span class="slot-time">{{ time }}</span>
+                <span class="slot-duration">45 min</span>
               </div>
             </div>
           </div>
@@ -153,5 +158,129 @@ export default {
 </script>
   
 <style scoped>
+.appointments-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
 
+h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.week-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.nav-button {
+  padding: 8px 16px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.nav-button:hover {
+  background-color: #e0e0e0;
+}
+
+.week-display {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.weekly-calendar {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.calendar-header {
+  display: grid;
+  grid-template-columns: 80px repeat(7, 1fr);
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #ddd;
+}
+
+.day-column {
+  padding: 10px;
+  text-align: center;
+  border-left: 1px solid #ddd;
+}
+
+.day-label {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.date-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.calendar-body {
+  position: relative;
+}
+
+.time-slots {
+  display: grid;
+  grid-template-columns: 80px repeat(7, 1fr);
+}
+
+.time-row {
+  display: contents;
+}
+
+.time-label {
+  padding: 10px;
+  text-align: right;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  font-size: 14px;
+  color: #666;
+}
+
+.slot-cell {
+  border-left: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  padding: 4px;
+  height: 60px;
+  position: relative;
+}
+
+.available-slot {
+  background-color: #e3f2fd;
+  border-radius: 4px;
+  padding: 8px;
+  cursor: pointer;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  height: 45px; /* 75% of the 60px slot height to represent 45 minutes */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.available-slot:hover {
+  background-color: #bbdefb;
+}
+
+.slot-time {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.slot-duration {
+  font-size: 12px;
+  color: #666;
+}
 </style>
