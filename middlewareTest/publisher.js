@@ -41,3 +41,21 @@ client.on('error', (error) => {
 client.on('close', () => {
   console.log('Publisher connection closed');
 });
+
+function publishBookingRequest(referenceCode) {
+  const topic = `appointments/${referenceCode}`; // Topic name
+  const payload = JSON.stringify({ action: 'getDetails', referenceCode }); // Payload
+
+  // Publish the message to the topic
+  // qos: 2 = message delivered exactly once to subscriber
+  client.publish(topic, payload, { qos: 2 }, (err) => {
+    if (err) {
+      console.error('Error publishing message:', err);
+    } else {
+      console.log(`Message published successfully to topic: ${topic}`);
+    }
+  });
+}
+
+// const exampleRefCode = 'ABC123';
+// publishBookingRequest(exampleRefCode);

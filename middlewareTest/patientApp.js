@@ -1,3 +1,5 @@
+// backend API and middleware for user-ui
+
 var express = require('express');
 // var mongoose = require('mongoose');
 var morgan = require('morgan');
@@ -46,6 +48,13 @@ app.get('/api', function(req, res) {
 /*
  <<<<<<<<<<<<<<<<<<<<<<<<<<< Insert all of the routes - start >>>>>>>>>>>>>>>>>>>>>>>>>>>>
 */
+app.get('/api/bookings/:referenceCode', (req, res) => {
+    const referenceCode = req.params.referenceCode;
+    publishBookingRequest(referenceCode);
+  
+    // return confirmation to frontend (patientApp.vue)
+    res.json({ message: 'Request sent to MQTT broker', referenceCode });
+  });
 
 
 /*

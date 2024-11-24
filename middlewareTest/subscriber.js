@@ -44,3 +44,10 @@ client.on('error', (error) => {
 client.on('close', () => {
   console.log('Subscriber connection closed');
 });
+
+client.on('message', (topic, message) => {
+  const data = JSON.parse(message.toString());
+  if (topic === `appointments/${referenceCode}`) {
+    // process received booking details, tbd later
+  }
+});
