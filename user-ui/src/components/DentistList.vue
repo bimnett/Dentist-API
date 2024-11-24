@@ -10,7 +10,7 @@
   </template>
   
   <script>
-  import api from '../api.js';
+  import api from '../patientApi.js';
   
   export default {
     data() {
