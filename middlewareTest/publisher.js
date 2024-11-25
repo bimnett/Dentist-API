@@ -21,9 +21,9 @@ const client = mqtt.connect(process.env.BROKERURL, options);
 
 client.on('connect', () => {
   console.log('Publisher successfully connected to broker!');
-  
-  const topic = process.env.TOPIC_EXAMPLE;
-  const payload = '< Insert message here >';
+
+  const topic = process.env.TOPIC_DATABASE_INSERT;
+  const payload = 'Hello';
   
   client.publish(topic, payload, { qos: 2 }, (err) => {
     if (err) {
