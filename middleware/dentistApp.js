@@ -1,25 +1,10 @@
 var express = require('express');
-// var mongoose = require('mongoose');
 var morgan = require('morgan');
 var path = require('path');
 var cors = require('cors');
 var history = require('connect-history-api-fallback');
 
-
-// var mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/dentist_app'; 
 var port = process.env.PORT || 3000;
-
-/*
-To be implemented: 
-// Connect to MongoDB
-mongoose.connect(mongoURI, { autoIndex: false }).catch(function(err) {
-    console.error(`Failed to connect to MongoDB with URI: ${mongoURI}`);
-    console.error(err.stack);
-    process.exit(1);
-}).then(function() {
-    console.log(`Connected to MongoDB with URI: ${mongoURI}`); // mistake when forward porting
-});
-*/
 
 // Create Express app
 var app = express();
@@ -27,21 +12,19 @@ var app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 // HTTP request logger
-app.use(morgan('dev')); // maybe change to something like: [PATIENT APP] etc. etc. 
+app.use(morgan('dev'));  
 // Enable cross-origin resource sharing for frontend must be registered before api
 app.options('*', cors());
 app.use(cors());
 
-// Import controllers and mount routes
+
+
+
+
+// Defines a basic route for /api that responds with a JSON message
 app.get('/api', function(req, res) {
     res.json({'message': 'Hello! Hope that this works!'});
 });
-
-
-
-
-
-
 
 /*
  <<<<<<<<<<<<<<<<<<<<<<<<<<< Insert all of the routes - start >>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -49,9 +32,8 @@ app.get('/api', function(req, res) {
 
 
 /*
- <<<<<<<<<<<<<<<<<<<<<<<<<<< Insert all of the routes - end >>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ <<<<<<<<<<<<<<<<<<<<<<<<<<< Insert all of the routes - end >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 */
-
 
 
 
@@ -91,7 +73,6 @@ app.listen(port, function(err) {
     if (err) throw err;
     console.log(`Express server for dentists listening on port ${port}, in ${env} mode`);
     console.log(`Backend: http://localhost:${port}/api/`);
-    console.log(`Frontend (production): http://localhost:${port}/`);
 });
 
 module.exports = app;
