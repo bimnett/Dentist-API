@@ -22,15 +22,16 @@ export default {
     return {
       dentistId: null,
       slot: null,
-      referenceCode: null,
-      referenceCodeInput: ''
+      booking: null, // stores booking details fetched from API
+      referenceCode: null, // stores actual ref code from API call
+      referenceCodeInput: '' // input field for ref code
     };
   },
   methods: {
     async fetchBookingDetails() {
       try {
         const response = await api.getBooking(this.referenceCodeInput);
-        this.referenceCode = response.data; // assums API returns booking details
+        this.referenceCode = response.data.referenceCode;
       } catch (err) {
         console.error(err);
         alert('Failed to fetch booking details. Please check the reference code.');

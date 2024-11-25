@@ -10,6 +10,8 @@
 </template>
 
 <script>
+import api from '../patientApi.js';
+
 export default {
   props: ['referenceCode'],
   data() {
@@ -23,7 +25,8 @@ export default {
         const response = await api.getBooking(this.referenceCode);
         this.booking = response.data;
       } catch (err) {
-        console.error(err);
+        console.error('Error fetching booking details:', err.message);
+        this.booking = null;
       }
     }
   }
