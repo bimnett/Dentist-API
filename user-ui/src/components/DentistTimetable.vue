@@ -1,40 +1,28 @@
 <template>
-    <div>
-      <h2>Available Time Slots</h2>
-      <ul>
-        <li v-for="slot in slots" :key="slot.time" @click="bookSlot(slot)">
-          {{ slot.time }}
-        </li>
-      </ul>
-    </div>
-  </template>
-  
-  <script>
-  import api from '../patientApi.js';
-  
-  export default {
-    props: ['dentistId'],
-    data() {
-      return {
-        slots: []
-      };
+  <div>
+    <h2>Available Time Slots</h2>
+    <ul>
+      <li v-for="slot in slots" :key="slot" @click="bookSlot(slot)">
+        {{ slot }}
+      </li>
+    </ul>
+  </div>
+</template>
+
+<script>
+// for issue 5: Appointment selection and booking
+export default {
+  name: 'DentistTimetable',
+  props: {
+    slots: {
+      type: Array,
+      required: true,
     },
-    watch: {
-      dentistId: {
-        immediate: true,
-        handler(newId) {
-          if (newId) {
-            api.getTimetable(newId).then(response => {
-              this.slots = response.data;
-            });
-          }
-        }
-      }
+  },
+  methods: {
+    bookSlot(slot) {
+      this.$emit('select-slot', slot);
     },
-    methods: {
-      bookSlot(slot) {
-        this.$emit('select-slot', slot);
-      }
-    }
-  };
-  </script>  
+  },
+};
+</script>
