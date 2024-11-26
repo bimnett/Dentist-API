@@ -41,17 +41,19 @@ export default {
   },
   methods: {
     async fetchTimetable(dentistId) {
+      //
       try {
         const response = await api.getTimetable(dentistId);
         this.slots = response.data.timetable;
       } catch (err) {
         console.error('Error fetching timetable:', err.message);
         this.slots = [];
+        // tbd for issue 5
       }
     },
     handleSelectSlot(slot) {
       console.log('Selected slot:', slot);
-      // Additional logic for booking the slot can go here
+      // tbd for issue 5
     },
   },
 };
