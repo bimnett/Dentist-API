@@ -1,6 +1,3 @@
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
 # Package Files #
 *.jar
 *.war
@@ -22,10 +19,6 @@ hs_err_pid*
 # Mac
 .DS_Store
 
-# Maven
-log/
-target/
-
 # Inclusions
 !lib/**
 
@@ -34,4 +27,7 @@ target/
 bin/
 build/
 /bin1/
-java/build/**
+
+# Other
+.env
+node_modules
