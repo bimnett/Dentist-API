@@ -17,7 +17,7 @@ const options = {
 // get all the appointments for a dentist 
 router.get('/bookedAppointments', async function(req,res,next){
     try {
-        options.clientId ='sub_dentistApi';
+        options.clientId ='sub_dentistApi'+Math.random().toString(36).substring(2,10);
     
         // connect to broker 
         const client = mqtt.connect(config.brokerURL, options);
@@ -38,8 +38,6 @@ router.get('/bookedAppointments', async function(req,res,next){
         client.on('message', (topic, message) => {
             console.log(`Received message: + ${message} + on topic: + ${topic}`);
             console.log(" -------------- ");
-            // HOW DO I GET THIS ? 
-            console.log(message.time);
             return res.status(200).json(message);
         });
 

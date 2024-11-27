@@ -17,7 +17,8 @@ const options = {
 // create new slot
 router.post('/newSlots', async function(req,res,next){
     try {
-        options.clientId = 'pub_dentistServer'; 
+        
+        options.clientId = 'pub_dentistServer'+Math.random().toString(36).substring(2,10); 
 
         // connect to broker 
         const client = mqtt.connect(config.brokerURL, options);
@@ -73,7 +74,7 @@ router.post('/newSlots', async function(req,res,next){
 // see all avaliable slot for the dentist
 router.get('/avaliableSlots', async function(req,res,next){
     try {
-        options.clientId ='sub_dentistServer';
+        options.clientId ='sub_dentistServer'+Math.random().toString(36).substring(2,10);
     
         // connect to broker 
         const client = mqtt.connect(config.brokerURL, options);

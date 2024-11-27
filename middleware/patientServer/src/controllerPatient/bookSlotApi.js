@@ -1,8 +1,8 @@
 var express = require('express');
 var router= express.Router();
 const mqtt = require('mqtt');
+const config = require('../../../env');
 
-require('dotenv').config();
 
 const options = {
     clientId: "", // You can set a unique client ID here
@@ -18,7 +18,7 @@ const options = {
 router.get('/bookAppointments/clinics', async function(req,res,next){
     try {
        
-        options.clientId = "sub_patientServer";
+        options.clientId = "sub_patientServer"+Math.random().toString(36).substring(2,10);
            
 
          // subscribe to the topic that will give us all the clinics 
@@ -39,7 +39,7 @@ router.get('/bookAppointments/clinics', async function(req,res,next){
         });
           
         client.on('message', (topic, message) => {
-            console.log(`Received message in json format: + ${message.json} + on topic: + ${topic}`);
+            console.log(`Received message in json format: + ${message} + on topic: + ${topic}`);
             // response to end user
             return res.status(200).json(message);
         });
@@ -64,7 +64,7 @@ router.get('/bookAppointments/clinics', async function(req,res,next){
 router.get('/bookAppointments/clinics/:clinicId/dentists', async function(req, res, next){
     try {
         // subscribe to the topic that will give us all the dentists
-        options.clientId = "sub_patienService"; // random clientId
+        options.clientId = "sub_patienService"+Math.random().toString(36).substring(2,10); // random clientId
         
 
         const client = mqtt.connect(config.brokerURL, options);
@@ -83,7 +83,7 @@ router.get('/bookAppointments/clinics/:clinicId/dentists', async function(req, r
         });
 
         client.on('message', (topic, message) => {
-            console.log(`Received message: + ${message.json} + on topic: + ${topic}`);
+            console.log(`Received message: + ${message} + on topic: + ${topic}`);
             return res.status(200).json(message);
         });
 
@@ -107,7 +107,7 @@ router.get('/bookAppointments/clinics/:clinicId/dentists', async function(req, r
 router.get('/bookAppointments/clinics/:clinicId/:dentistId/timeschedual', async function(req,res,next){
     try {
         // subscribe to the topic that will give us all the dentists
-        options.clientId = "sub_patientService"; // random clientId
+        options.clientId = "sub_patientService"+Math.random().toString(36).substring(2,10); // random clientId
        
 
         const client = mqtt.connect(config.brokerURL, options);
@@ -126,7 +126,7 @@ router.get('/bookAppointments/clinics/:clinicId/:dentistId/timeschedual', async 
         });
 
         client.on('message', (topic, message) => {
-            console.log(`Received message: + ${message.json} + on topic: + ${topic}`);
+            console.log(`Received message: + ${message} + on topic: + ${topic}`);
             return res.status(200).json(message);
         });
 
@@ -152,7 +152,7 @@ router.get('/bookAppointments', async function(req,res,next){
 
     try {
 
-        options.clientId =  'sub_patientService';
+        options.clientId =  'sub_patientService'+Math.random().toString(36).substring(2,10);
         // connect to broker 
         const client = mqtt.connect(config.brokerURL, options);
     
@@ -170,7 +170,7 @@ router.get('/bookAppointments', async function(req,res,next){
         });
 
         client.on('message', (topic, message) => {
-            console.log(`Received message: + ${message.json} + on topic: + ${topic}`);
+            console.log(`Received message: + ${message} + on topic: + ${topic}`);
             return res.status(200).json(message);
         });
 
@@ -190,9 +190,9 @@ router.get('/bookAppointments', async function(req,res,next){
 });
 
 //  get appointment info by reference code 
-router.get('bookAppointments/:appointmentId', async function(req,res,next){
+router.get('/bookAppointments/:appointmentId', async function(req,res,next){
     try {
-        options.clientId ='sub_patientService';
+        options.clientId ='sub_patientService'+Math.random().toString(36).substring(2,10);
     
         // connect to broker 
         const client = mqtt.connect(config.brokerURL, options);
@@ -211,7 +211,7 @@ router.get('bookAppointments/:appointmentId', async function(req,res,next){
         });
 
         client.on('message', (topic, message) => {
-            console.log(`Received message: + ${message.json} + on topic: + ${topic}`);
+            console.log(`Received message: + ${message} + on topic: + ${topic}`);
             return res.status(200).json(message);
         });
 
@@ -224,6 +224,7 @@ router.get('bookAppointments/:appointmentId', async function(req,res,next){
             console.log('Subscriber connection closed');
             return res.status(200).json({message : "Closed connection"});
         });
+
 
     } catch(e) {
         return next(e);
