@@ -15,9 +15,9 @@ const options = {
 
 // WORKS PUBLISH
 // create new slot
-router.post('/slots/newSlots', async function(req,res,next){
+router.post('/newSlots', async function(req,res,next){
     try {
-        options.clientId = 'pub_'; 
+        options.clientId = 'pub_dentistServer'; 
 
         // connect to broker 
         const client = mqtt.connect(config.brokerURL, options);
@@ -25,7 +25,7 @@ router.post('/slots/newSlots', async function(req,res,next){
         client.on('connect', () => {
             console.log('Publisher connected to broker');
         
-            const topic = config.topic_test;
+            const topic = config.topic_slot_management_create;
             
             const payload = { 
                 // ?? null - set the value to null if the user does not provide any input 
@@ -69,18 +69,19 @@ router.post('/slots/newSlots', async function(req,res,next){
     
 });
 
+// check if it's work
 // see all avaliable slot for the dentist
-router.get('/slots/avaliableSlots', async function(req,res,next){
+router.get('/avaliableSlots', async function(req,res,next){
     try {
-        options.clientId ='sub_'+Math.random().toString(36).substring(2,10);
+        options.clientId ='sub_dentistServer';
     
         // connect to broker 
-        const client = mqtt.connect(process.env.BROKERURL, options);
+        const client = mqtt.connect(config.brokerURL, options);
     
         client.on('connect', () => {
             console.log('Subscriber connected to broker');
 
-            const topic = process.env.TOPIC_SCHEDUAL_SLOTS;
+            const topic = config.topic_slot_dentist_avaliable;
             client.subscribe(topic, { qos: 2 }, (err) => {
                 if (err) {
                     console.log('Subscription error:', err);
@@ -91,7 +92,7 @@ router.get('/slots/avaliableSlots', async function(req,res,next){
         });
 
         client.on('message', (topic, message) => {
-            console.log(`Received message: + ${message.json} + on topic: + ${topic}`);
+            console.log(`Received message: + ${message} + on topic: + ${topic}`);
             return res.status(200).json(message);
         });
 
@@ -102,6 +103,7 @@ router.get('/slots/avaliableSlots', async function(req,res,next){
 
         client.on('close', () => {
             console.log('Subscriber connection closed');
+            return res.status(200).json({ message: "Closed connection"});
         });
 
     } catch(e) {

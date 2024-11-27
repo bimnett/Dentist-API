@@ -34,7 +34,7 @@ const appointmentRoutes = require('./src/controllerDentist/appointmentManagement
 app.use('/api/appointments/',appointmentRoutes);
 
 const slotRoutes = require('./src/controllerDentist/slotManagementApi');
-app.use('/api', slotRoutes);
+app.use('/api/slots', slotRoutes);
 
 /*
  <<<<<<<<<<<<<<<<<<<<<<<<<<< Insert all of the routes - end >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

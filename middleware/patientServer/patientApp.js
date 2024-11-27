@@ -4,7 +4,9 @@ var path = require('path');
 var cors = require('cors');
 var history = require('connect-history-api-fallback');
 
-var port = process.env.PORT || 3000;
+
+var port = process.env.PORT || 3001;
+
 
 // Create Express app
 var app = express();
@@ -12,7 +14,7 @@ var app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 // HTTP request logger
-app.use(morgan('dev'));  
+app.use(morgan('dev'));
 // Enable cross-origin resource sharing for frontend must be registered before api
 app.options('*', cors());
 app.use(cors());
@@ -21,15 +23,18 @@ app.use(cors());
 
 
 
-// Defines a basic route for /api that responds with a JSON message
+
+// Define a basic route for /api that responds with a JSON message
 app.get('/api', function(req, res) {
-    res.json({'message': 'Hello! Hope that this works!'});
+    res.json({'message': 'Hello! Hope that this works again!'});
 });
 
 /*
  <<<<<<<<<<<<<<<<<<<<<<<<<<< Insert all of the routes - start >>>>>>>>>>>>>>>>>>>>>>>>>>>>
 */
 
+const slotRoutes = require('./src/controllerPatient/bookSlotApi');
+app.use('/api/slots', slotRoutes);
 
 /*
  <<<<<<<<<<<<<<<<<<<<<<<<<<< Insert all of the routes - end >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

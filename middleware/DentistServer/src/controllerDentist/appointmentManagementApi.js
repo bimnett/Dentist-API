@@ -1,10 +1,8 @@
 const mqtt = require('mqtt');
 const express = require('express');
 const router = express.Router();
-
 const config = require('../../../env');
 
-require('dotenv').config();
 
 const options = {
     clientId: "", // You can set a unique client ID here
@@ -15,11 +13,11 @@ const options = {
 }
 
 
-// WORKS FOR SUBSCRIBE
+// WORKS FOR SUBSCRIBE - topic test
 // get all the appointments for a dentist 
-router.get('/appointments', async function(req,res,next){
+router.get('/bookedAppointments', async function(req,res,next){
     try {
-        options.clientId ='sub_dentistApi_'+Math.random().toString(36).substring(2,10);
+        options.clientId ='sub_dentistApi';
     
         // connect to broker 
         const client = mqtt.connect(config.brokerURL, options);
@@ -27,7 +25,7 @@ router.get('/appointments', async function(req,res,next){
         client.on('connect', () => {
             console.log('Subscriber connected to broker');
 
-            const topic = config.topic_test;
+            const topic = config.topic_appointments_dentist;
             client.subscribe(topic, { qos: 2 }, (err) => {
                 if (err) {
                     console.log('Subscription error:', err);
@@ -40,7 +38,7 @@ router.get('/appointments', async function(req,res,next){
         client.on('message', (topic, message) => {
             console.log(`Received message: + ${message} + on topic: + ${topic}`);
             console.log(" -------------- ");
-            // HOW DO I GET THIS 
+            // HOW DO I GET THIS ? 
             console.log(message.time);
             return res.status(200).json(message);
         });
