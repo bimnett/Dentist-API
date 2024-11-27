@@ -1,4 +1,9 @@
 <template>
+
+    <!-----------------------------------------------------------------------------------------------------
+    - This component fetches the timetable for a specific dentist and displays the available appointments -
+    ------------------------------------------------------------------------------------------------------>
+
   <div class="appointments-container">
     <h2>Available Slots</h2>
 
