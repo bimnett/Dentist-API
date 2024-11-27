@@ -15,6 +15,16 @@
 </template>
 
 <script>
+
+/**
+ * BookingDetails component is responsible for displaying details of a specific appointment booking.
+ * It shows the following information: appointment time (string), date (string), clinic name (string),
+ * dentist name (string), and reference code (string).
+ * 
+ * If no booking details are available (e.g., an invalid or missing reference code), it displays
+ * a fallback message prompting the user to enter a valid reference code.
+ */
+
 export default {
   name: 'BookingDetails',
   props: {

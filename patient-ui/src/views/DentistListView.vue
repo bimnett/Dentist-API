@@ -14,41 +14,22 @@ export default {
   components: { DentistList },
   data() {
     return {
-      dentists: [
-        {
-          id: 1,
-          name: "Dr. John Johnson",
-          specialty: "Orthodontics",
-          location: "Central Gothenburg"
-        },
-        {
-          id: 2,
-          name: "Dr. Michael Mike",
-          specialty: "Pediatric Dentistry",
-          location: "North Gothenburg"
-        },
-        {
-          id: 3,
-          name: "Dr. Sarah Sarah",
-          specialty: "General Dentistry",
-          location: "South Gothenburg"
-        }
-      ],
+      dentists: [], // initialisation that will be loaded from API
     };
   },
   methods: {
     async fetchDentists() {
       try {
         const response = await api.getDentists();
-        this.dentists = response.data;
+        this.dentists = response.data; 
       } catch (err) {
         console.error('Error fetching dentists:', err.message);
-        alert('Failed to load dentist list.');
+        alert('Failed to load dentist list. Please try again later.');
       }
     },
     handleSelectDentist(dentistId) {
       console.log('Selected dentist ID:', dentistId);
-      // tbd
+      // logic tbd
     },
   },
   mounted() {
@@ -56,3 +37,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+</style>
