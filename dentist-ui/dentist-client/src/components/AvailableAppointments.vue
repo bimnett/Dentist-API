@@ -120,6 +120,7 @@ export default {
       }
     },
 
+    // Returns true if a given time slot is available to be booked.
     hasSlot(date, time) {
       const slotsForSelectedDate = this.bookedSlots[date];
       if (!slotsForSelectedDate) {
