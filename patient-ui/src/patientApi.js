@@ -8,36 +8,42 @@ export const api = axios.create({
   })
 
 export default {
-  getDentists() {
-    return Promise.resolve({
-      data: [
-        { id: 1, name: "Dr. John Johnson", specialty: "Orthodontics", location: "Central Gothenburg" },
-        { id: 2, name: "Dr. Michael Mike", specialty: "Pediatric Dentistry", location: "North Gothenburg" },
-        { id: 3, name: "Dr. Sarah Sarah", specialty: "General Dentistry", location: "South Gothenburg" },
-      ]
-    });
-    // return api.get('/dentists'); // UNCOMMENT AFTER DB SET UP
-  },
-  getTimetable(dentistId) {
-    return Promise.resolve({
-      data: {
-        id: dentistId,
-        timetable: ["10:00 AM", "11:00 AM", "2:00 PM"]
-      }
-    });
-    // return api.get(`/dentists/${dentistId}/timetable`); // UNCOMMENT AFTER DB SET UP
+  // flter dentists that have the selected time in their timetable
+  getAvailableDentists(selectedDate, selectedTime) {
+    const availableDentists = mockDentistsData.filter((dentist) =>
+      dentist.timetable[selectedDate]?.includes(selectedTime)
+    );
+    return Promise.resolve({ data: availableDentists });
+    // return api.get(`/dentists`, { params: { availableTime: selectedTime } }); // uncomment and remove above after db/backend set up + integration
   },
   postBooking(dentistId, bookingData) {
-    return Promise.resolve({
-      data: {
-        message: "Booking successful",
-        bookingId: "12345"
-      }
-    });
-    // return api.post(`/dentists/${dentistId}/bookings`, bookingData); // UNCOMMENT AFTER DB SET UP
+    const dentist = mockDentistsData.find((d) => d.id === dentistId);
+    if (dentist) {
+      const newBooking = {
+        referenceCode: `BOOKING-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+        dentist: dentist.name,
+        clinicName: dentist.location,
+        time: bookingData.time,
+        patientName: bookingData.name,
+        email: bookingData.email,
+        phone: bookingData.phone,
+        date: new Date().toISOString().split("T")[0],
+      };
+      mockBookingData.push(newBooking);
+
+      return Promise.resolve({
+        data: {
+          message: "Booking successful",
+          referenceCode: newBooking.referenceCode,
+        },
+      });
+    } else {
+      return Promise.reject(new Error("Dentist not found"));
+    }
+    // return api.post(`/dentists/${dentistId}/bookings`, bookingData); // uncomment and remove above after db/backend set up + integration
   },
   getBooking(referenceCode) {
-    const booking = mockBookings.find(b => b.referenceCode === referenceCode);
+    const booking = mockBookingData.find(b => b.referenceCode === referenceCode);
     console.log('Searching for:', referenceCode);
     console.log('Found booking:', booking);
     if (booking) {
@@ -45,24 +51,188 @@ export default {
     } else {
       return Promise.reject(new Error('Booking not found'));
     }
-    // return api.get(`/bookings/${referenceCode}`); // UNCOMMENT AND REMOVE ABOVE AFTER DB SET UP
+    // return api.get(`/bookings/${referenceCode}`); // uncomment and remove above after db/backend set up + integration
   }
 };
 
-// REMOVE AFTER DB SET UP
-const mockBookings = [
+// Remove after db/backend set up + integration
+const mockBookingData = [
   {
-    referenceCode: 'ABC123',
-    time: '10:00 AM',
-    date: '2024-11-27',
-    clinicName: 'Downtown Dental Clinic',
-    dentist: 'Dr. Sarah Johnson',
+    referenceCode: "ABC123",
+    time: "10:00 AM",
+    date: "2024-12-01",
+    clinicName: "Central Gothenburg",
+    dentist: "Dr. John Johnson",
+    patientName: "Alice Johnson",
+    email: "alice.johnson@example.com",
+    phone: "123-456-7890",
   },
   {
-    referenceCode: 'XYZ789',
-    time: '2:30 PM',
-    date: '2024-11-28',
-    clinicName: 'Uptown Dental Care',
-    dentist: 'Dr. Michael Lee',
+    referenceCode: "XYZ789",
+    time: "2:30 PM",
+    date: "2024-12-02",
+    clinicName: "North Gothenburg",
+    dentist: "Dr. Michael Mike",
+    patientName: "Bob Smith",
+    email: "bob.smith@example.com",
+    phone: "987-654-3210",
+  },
+  {
+    referenceCode: "JKL456",
+    time: "11:30 AM",
+    date: "2024-12-01",
+    clinicName: "South Gothenburg",
+    dentist: "Dr. Sarah Sarah",
+    patientName: "Charlie Brown",
+    email: "charlie.brown@example.com",
+    phone: "555-123-4567",
+  },
+  {
+    referenceCode: "MNO789",
+    time: "9:30 AM",
+    date: "2024-12-03",
+    clinicName: "Central Gothenburg",
+    dentist: "Dr. John Johnson",
+    patientName: "Daisy Ridley",
+    email: "daisy.ridley@example.com",
+    phone: "222-333-4444",
+  },
+  {
+    referenceCode: "PQR234",
+    time: "3:00 PM",
+    date: "2024-12-04",
+    clinicName: "North Gothenburg",
+    dentist: "Dr. Michael Mike",
+    patientName: "Evan Peters",
+    email: "evan.peters@example.com",
+    phone: "999-888-7777",
+  },
+  {
+    referenceCode: "STU567",
+    time: "1:00 PM",
+    date: "2024-12-05",
+    clinicName: "South Gothenburg",
+    dentist: "Dr. Sarah Sarah",
+    patientName: "Frank Ocean",
+    email: "frank.ocean@example.com",
+    phone: "123-321-4567",
+  },
+];
+
+// Remove after db/backend set up + integration
+const mockDentistsData = [
+  {
+    id: 1,
+    name: "Dr. John Johnson",
+    specialty: "Orthodontics",
+    location: "Central Gothenburg",
+    timetable: {
+      "2024-12-01": ["9:30 AM", "10:30 AM", "1:00 PM", "3:00 PM"],
+      "2024-12-02": ["10:00 AM", "11:30 AM", "2:00 PM"],
+      "2024-12-03": ["10:30 AM", "12:00 PM", "3:30 PM"],
+      "2024-12-04": ["9:00 AM", "10:30 AM", "2:00 PM"],
+      "2024-12-05": ["8:30 AM", "11:00 AM", "3:00 PM"],
+      "2024-12-06": ["9:30 AM", "1:00 PM", "3:30 PM"],
+      "2024-12-07": ["10:30 AM", "12:30 PM", "4:00 PM"],
+      "2024-12-08": ["9:00 AM", "11:30 AM", "2:30 PM"],
+      "2024-12-09": ["10:00 AM", "12:00 PM", "4:30 PM"],
+      "2024-12-10": ["8:30 AM", "10:30 AM", "1:30 PM"],
+      "2024-12-11": ["9:30 AM", "11:00 AM", "2:00 PM"],
+      "2024-12-12": ["10:00 AM", "12:30 PM", "3:00 PM"],
+      "2024-12-13": ["9:00 AM", "10:30 AM", "4:00 PM"],
+      "2024-12-14": ["8:30 AM", "11:00 AM", "1:30 PM"],
+      "2024-12-15": ["9:30 AM", "12:00 PM", "3:30 PM"],
+      "2024-12-16": ["10:00 AM", "11:30 AM", "2:00 PM"],
+      "2024-12-17": ["8:30 AM", "10:30 AM", "4:30 PM"],
+      "2024-12-18": ["9:00 AM", "12:00 PM", "3:00 PM"],
+      "2024-12-19": ["10:30 AM", "1:00 PM", "4:00 PM"],
+      "2024-12-20": ["8:30 AM", "11:30 AM", "2:30 PM"],
+      "2024-12-21": ["9:30 AM", "12:00 PM", "3:30 PM"],
+      "2024-12-22": ["10:00 AM", "2:00 PM", "4:30 PM"],
+      "2024-12-23": ["9:00 AM", "11:30 AM", "3:30 PM"],
+      "2024-12-24": ["8:30 AM", "10:30 AM", "12:30 PM"],
+      "2024-12-25": ["10:00 AM", "1:30 PM", "4:30 PM"],
+      "2024-12-26": ["9:30 AM", "12:30 PM", "2:30 PM"],
+      "2024-12-27": ["8:30 AM", "10:00 AM", "3:00 PM"],
+      "2024-12-28": ["9:00 AM", "11:00 AM", "4:00 PM"],
+      "2024-12-29": ["10:30 AM", "1:00 PM", "3:30 PM"],
+      "2024-12-30": ["9:00 AM", "12:00 PM", "2:30 PM"],
+    },
+  },
+  {
+    id: 2,
+    name: "Dr. Michael Mike",
+    specialty: "Pediatric Dentistry",
+    location: "North Gothenburg",
+    timetable: {
+      "2024-12-01": ["9:30 AM", "10:30 AM", "1:00 PM", "3:00 PM"],
+      "2024-12-02": ["10:00 AM", "11:30 AM", "2:00 PM"],
+      "2024-12-03": ["10:30 AM", "12:00 PM", "3:30 PM"],
+      "2024-12-04": ["9:00 AM", "10:30 AM", "2:00 PM"],
+      "2024-12-05": ["8:30 AM", "11:00 AM", "3:00 PM"],
+      "2024-12-06": ["9:30 AM", "1:00 PM", "3:30 PM"],
+      "2024-12-07": ["10:30 AM", "12:30 PM", "4:00 PM"],
+      "2024-12-08": ["9:00 AM", "11:30 AM", "2:30 PM"],
+      "2024-12-09": ["10:00 AM", "12:00 PM", "4:30 PM"],
+      "2024-12-10": ["8:30 AM", "10:30 AM", "1:30 PM"],
+      "2024-12-11": ["9:30 AM", "11:00 AM", "2:00 PM"],
+      "2024-12-12": ["10:00 AM", "12:30 PM", "3:00 PM"],
+      "2024-12-13": ["9:00 AM", "10:30 AM", "4:00 PM"],
+      "2024-12-14": ["8:30 AM", "11:00 AM", "1:30 PM"],
+      "2024-12-15": ["9:30 AM", "12:00 PM", "3:30 PM"],
+      "2024-12-16": ["10:00 AM", "11:30 AM", "2:00 PM"],
+      "2024-12-17": ["8:30 AM", "10:30 AM", "4:30 PM"],
+      "2024-12-18": ["9:00 AM", "12:00 PM", "3:00 PM"],
+      "2024-12-19": ["10:30 AM", "1:00 PM", "4:00 PM"],
+      "2024-12-20": ["8:30 AM", "11:30 AM", "2:30 PM"],
+      "2024-12-21": ["9:30 AM", "12:00 PM", "3:30 PM"],
+      "2024-12-22": ["10:00 AM", "2:00 PM", "4:30 PM"],
+      "2024-12-23": ["9:00 AM", "11:30 AM", "3:30 PM"],
+      "2024-12-24": ["8:30 AM", "10:30 AM", "12:30 PM"],
+      "2024-12-25": ["10:00 AM", "1:30 PM", "4:30 PM"],
+      "2024-12-26": ["9:30 AM", "12:30 PM", "2:30 PM"],
+      "2024-12-27": ["8:30 AM", "10:00 AM", "3:00 PM"],
+      "2024-12-28": ["9:00 AM", "11:00 AM", "4:00 PM"],
+      "2024-12-29": ["10:30 AM", "1:00 PM", "3:30 PM"],
+      "2024-12-30": ["9:00 AM", "12:00 PM", "2:30 PM"],
+    },
+  },
+  {
+    id: 3,
+    name: "Dr. Sarah Sarah",
+    specialty: "General Dentistry",
+    location: "South Gothenburg",
+    timetable: {
+      "2024-12-01": ["9:30 AM", "10:30 AM", "1:00 PM", "3:00 PM"],
+      "2024-12-02": ["10:00 AM", "11:30 AM", "2:00 PM"],
+      "2024-12-03": ["10:30 AM", "12:00 PM", "3:30 PM"],
+      "2024-12-04": ["9:00 AM", "10:30 AM", "2:00 PM"],
+      "2024-12-05": ["8:30 AM", "11:00 AM", "3:00 PM"],
+      "2024-12-06": ["9:30 AM", "1:00 PM", "3:30 PM"],
+      "2024-12-07": ["10:30 AM", "12:30 PM", "4:00 PM"],
+      "2024-12-08": ["9:00 AM", "11:30 AM", "2:30 PM"],
+      "2024-12-09": ["10:00 AM", "12:00 PM", "4:30 PM"],
+      "2024-12-10": ["8:30 AM", "10:30 AM", "1:30 PM"],
+      "2024-12-11": ["9:30 AM", "11:00 AM", "2:00 PM"],
+      "2024-12-12": ["10:00 AM", "12:30 PM", "3:00 PM"],
+      "2024-12-13": ["9:00 AM", "10:30 AM", "4:00 PM"],
+      "2024-12-14": ["8:30 AM", "11:00 AM", "1:30 PM"],
+      "2024-12-15": ["9:30 AM", "12:00 PM", "3:30 PM"],
+      "2024-12-16": ["10:00 AM", "11:30 AM", "2:00 PM"],
+      "2024-12-17": ["8:30 AM", "10:30 AM", "4:30 PM"],
+      "2024-12-18": ["9:00 AM", "12:00 PM", "3:00 PM"],
+      "2024-12-19": ["10:30 AM", "1:00 PM", "4:00 PM"],
+      "2024-12-20": ["8:30 AM", "11:30 AM", "2:30 PM"],
+      "2024-12-21": ["9:30 AM", "12:00 PM", "3:30 PM"],
+      "2024-12-22": ["10:00 AM", "2:00 PM", "4:30 PM"],
+      "2024-12-23": ["9:00 AM", "11:30 AM", "3:30 PM"],
+      "2024-12-24": ["8:30 AM", "10:30 AM", "12:30 PM"],
+      "2024-12-25": ["10:00 AM", "1:30 PM", "4:30 PM"],
+      "2024-12-26": ["9:30 AM", "12:30 PM", "2:30 PM"],
+      "2024-12-27": ["8:30 AM", "10:00 AM", "3:00 PM"],
+      "2024-12-28": ["9:00 AM", "11:00 AM", "4:00 PM"],
+      "2024-12-29": ["10:30 AM", "1:00 PM", "3:30 PM"],
+      "2024-12-30": ["9:00 AM", "12:00 PM", "2:30 PM"],
+    },
   },
 ];
