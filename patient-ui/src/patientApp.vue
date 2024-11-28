@@ -20,13 +20,10 @@
               <router-link to="/" class="nav-link" active-class="active">Home</router-link>
             </li>
             <li class="nav-item">
-              <router-link to="/dentistlist" class="nav-link" active-class="active">Dentists</router-link>
+              <router-link to="/bookslot" class="nav-link" active-class="active">Book Slot</router-link>
             </li>
             <li class="nav-item">
-              <router-link to="/dentisttimetable" class="nav-link" active-class="active">Timetable</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link to="/bookingDetails" class="nav-link" active-class="active">Booking Details</router-link>
+              <router-link to="/bookingDetails" class="nav-link" active-class="active">Check Booking Details</router-link>
             </li>
           </ul>
         </div>
