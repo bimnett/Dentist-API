@@ -74,6 +74,7 @@ export default {
     monday.setDate(monday.getDate() - monday.getDay() + 1);
 
     return {
+      weekLength: 7, 
       weekStart: monday,
       timeSlots: [
         '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00',
@@ -86,12 +87,12 @@ export default {
   computed: {
     weekEnd() {
       const end = new Date(this.weekStart);
-      end.setDate(end.getDate() + 6);
+      end.setDate(end.getDate() + this.weekLength - 1);
       return end;
     },
     weekDays() {
       const days = [];
-      for (let i = 0; i < 7; i++) {
+      for (let i = 0; i < this.weekLength; i++) {
         const date = new Date(this.weekStart);
         date.setDate(this.weekStart.getDate() + i);
         days.push({
