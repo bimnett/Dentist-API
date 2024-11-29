@@ -28,19 +28,29 @@ export default {
     return Promise.resolve({ data: availableDentists });
     // return api.get(`/dentists`, { params: { availableTime: selectedTime } }); // uncomment and remove above after db/backend set up + integration
   },
-  postBooking(dentistId, bookingData) {
-    const dentist = mockDentistsData.find((d) => d.id === dentistId);
-    if (dentist) {
+  async postBooking(dentistId, bookingData) {
+    try {
+      // Fetch available dentists for validation
+      const response = await this.getAvailableDentists(bookingData.date, bookingData.time);
+      const dentist = response.data.find((d) => d.id === parseInt(dentistId, 10));
+
+      if (!dentist) {
+        return Promise.reject(new Error("Dentist not found"));
+      }
+
+      // create new booking obj with input data
       const newBooking = {
-        referenceCode: `BOOKING-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+        referenceCode: `${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
         dentist: dentist.name,
         clinicName: dentist.location,
         time: bookingData.time,
         patientName: bookingData.name,
         email: bookingData.email,
         phone: bookingData.phone,
-        date: new Date().toISOString().split("T")[0],
+        date: bookingData.date,
       };
+
+      // push to mockBookingData for now
       mockBookingData.push(newBooking);
 
       return Promise.resolve({
@@ -49,12 +59,16 @@ export default {
           referenceCode: newBooking.referenceCode,
         },
       });
-    } else {
-      return Promise.reject(new Error("Dentist not found"));
+      // Uncomment below when backend is set up
+      // return api.post(`/dentists/${dentistId}/bookings`, bookingData);
+    } catch (error) {
+      console.error("Error creating booking:", error.message);
+      return Promise.reject(new Error("Error creating booking. Please try again."));
     }
-    // return api.post(`/dentists/${dentistId}/bookings`, bookingData); // uncomment and remove above after db/backend set up + integration
   },
   getBooking(referenceCode) {
+    console.log("Searching for booking with reference code:", referenceCode);
+    console.log("Available bookings in mockBookingData:", mockBookingData.map(b => b.referenceCode));
     const booking = mockBookingData.find(b => b.referenceCode === referenceCode);
     console.log('Searching for:', referenceCode);
     console.log('Found booking:', booking);
