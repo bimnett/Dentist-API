@@ -17,7 +17,7 @@
 <script>
 
 /**
- * BookingDetails component is responsible for displaying details of a specific appointment booking.
+ * BookingDetails component shows details of a specific appointment booking.
  * It shows the following information: appointment time (string), date (string), clinic name (string),
  * dentist name (string), and reference code (string).
  * 
@@ -25,8 +25,8 @@
  * a fallback message prompting the user to enter a valid reference code.
  */
 
-export default {
-  name: 'BookingDetails',
+ export default {
+  name: "BookingDetails",
   props: {
     booking: {
       type: Object,
@@ -35,3 +35,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+p {
+  font-size: 1rem;
+  margin: 0.5em 0;
+}
+</style>
