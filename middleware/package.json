@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serveDentist": "node dentistApp.js",
-    "servePatient": "node patientApp.js"
+    "servePatient": "node patientApi.js"
   },
   "keywords": [],
   "author": "",
