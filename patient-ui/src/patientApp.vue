@@ -23,7 +23,7 @@
               <router-link to="/bookslot" class="nav-link" active-class="active">Book Slot</router-link>
             </li>
             <li class="nav-item">
-              <router-link to="/bookingDetails" class="nav-link" active-class="active">Check Booking Details</router-link>
+              <router-link to="/booking-details" class="nav-link" active-class="active">Check Booking Details</router-link>
             </li>
           </ul>
         </div>
