@@ -5,7 +5,7 @@
       <button
         v-for="time in timeSlots"
         :key="time"
-        @click="selectTime(time)"
+        @click="showSelectedTime(time)"
         class="time-slot"
       >
         {{ time }}
@@ -23,10 +23,9 @@
  * Available dentists will then be shown for the user to select in their selected time slot.
  * Upon selection, the user will be directed to a booking form to fill in their details to make the appointment.
  */
-
- import api from "../patientAPI";
-
+ import api from "../patientApi";
  export default {
+  name: "SlotSelection",
   props: {
     selectedDate: {
       type: String,
@@ -51,12 +50,8 @@
       const options = { weekday: "long", month: "long", day: "numeric" };
       return new Date(date).toLocaleDateString("en-US", options);
     },
-    // Navigate to available dentists view for the selected date and time
-    selectTime(time) {
-      this.$router.push({
-        name: "AvailableDentists",
-        params: { selectedDate: this.selectedDate, selectedTime: time },
-      });
+    showSelectedTime(time) {
+      this.$emit("time-selected", time);
     },
   },
 };
