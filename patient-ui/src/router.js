@@ -1,18 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from './views/HomeView.vue';
-import AvailableDates from './components/AvailableDates.vue';
-import SlotSelection from "./components/SlotSelection.vue";
-import AvailableDentists from "./components/AvailableDentists.vue";
-import AppointmentBookingForm from './components/AppointmentBookingForm.vue';
-import BookingDetails from './views/BookingDetailsView.vue';
+import AvailableDatesView from './views/AvailableDatesView.vue';
+import SlotSelectionView from "./views/SlotSelectionView.vue";
+import AvailableDentistsView from "./views/AvailableDentistsView.vue";
+import AppointmentBookingFormView from './views/AppointmentBookingFormView.vue';
+import BookingDetailsView from './views/BookingDetailsView.vue';
 
 const routes = [
   { path: '/', name: 'Home', component: Home },
-  { path: '/bookslot', name: 'AvailableDates', component: AvailableDates },
-  { path: "/slots/:selectedDate", name: "SlotSelection", component: SlotSelection, props: (route) => ({ selectedDate: route.params.selectedDate }) },
-  { path: '/available-dentists/:selectedDate/:selectedTime', name: 'AvailableDentists', component: AvailableDentists, props: true },
-  { path: '/booking-form/:dentistId/:selectedDate/:selectedTime', name: 'BookingForm', component: AppointmentBookingForm, props: true },
-  { path: '/bookingDetails', name: 'bookingDetails', component: BookingDetails },
+  { path: '/bookslot', name: 'AvailableDates', component: AvailableDatesView },
+  { path: "/slots/:selectedDate", name: "SlotSelection", component: SlotSelectionView, props: (route) => ({ selectedDate: route.params.selectedDate }) },
+  { path: '/available-dentists/:selectedDate/:selectedTime', name: 'AvailableDentists', component: AvailableDentistsView, props: true },
+  { path: '/booking-form/:dentistId/:selectedDate/:selectedTime', name: 'BookingForm', component: AppointmentBookingFormView, props: true },
+  { path: '/booking-details/:referenceCode?', name: 'bookingDetails', component: BookingDetailsView },
 ]
 
 const router = createRouter({
