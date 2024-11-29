@@ -15,7 +15,6 @@
 /**
  * AvailableDentists component displays available dentists in the time slot that the user has selected.
  */
-import api from "../patientApi";
 export default {
   name: "AvailableDentists",
   props: {

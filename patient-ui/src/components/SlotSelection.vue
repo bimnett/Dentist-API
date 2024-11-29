@@ -23,7 +23,7 @@
  * Available dentists will then be shown for the user to select in their selected time slot.
  * Upon selection, the user will be directed to a booking form to fill in their details to make the appointment.
  */
- import api from "../patientApi";
+ import api from "@/api";
  export default {
   name: "SlotSelection",
   props: {
@@ -39,8 +39,11 @@
   },
   async created() {
     try {
-      const response = await api.getAvailableSlots(this.selectedDate);
-      this.timeSlots = response.data;
+      // GET request to the middleware endpoint for available slots
+      const response = await api.get('/available-slots', {
+        params: { date: this.selectedDate }, // selected date = query parameter
+      });
+      this.timeSlots = response.data.slots; // slots = response key
     } catch (error) {
       console.error("Error fetching available slots:", error.message);
     }

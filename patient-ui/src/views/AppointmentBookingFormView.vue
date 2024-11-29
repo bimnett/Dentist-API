@@ -13,7 +13,7 @@
   
   <script>
   import AppointmentBookingForm from "../components/AppointmentBookingForm.vue";
-  import api from "../patientAPI";
+  import api from "@/api";
   
   export default {
     name: "AppointmentBookingFormView",
@@ -36,34 +36,41 @@
       };
     },
     async created() {
+    try {
+      // get available dentists for selected date and time
+      const response = await api.get("/dentists", {
+        params: { date: this.selectedDate, time: this.selectedTime },
+      });
+
+      // find the dentist by ID
+      const dentist = response.data.dentists.find((d) => d.id === Number(this.dentistId));
+      if (dentist) {
+        this.dentist = dentist;
+      } else {
+        alert("Dentist not found for the selected date and time.");
+      }
+    } catch (error) {
+      console.error("Error fetching dentist details:", error.message);
+      alert("Failed to load dentist details. Please try again.");
+    }
+  },
+  methods: {
+    async handleBookingSubmission() {
       try {
-        const response = await api.getAvailableDentists(this.selectedDate, this.selectedTime);
-        const dentist = response.data.find((d) => d.id === Number(this.dentistId));
-        if (dentist) {
-          this.dentist = dentist;
-        } else {
-          alert("Dentist not found for the selected date and time.");
-        }
+        // submit booking data to backend (middleware)
+        const response = await api.post(`/dentists/${this.dentistId}/bookings`, this.bookingData);
+        alert(response.data.message || "Booking successful");
+
+        // redirect to booking details page
+        this.$router.push({
+          name: "BookingDetails",
+          params: { referenceCode: response.data.referenceCode },
+        });
       } catch (error) {
-        console.error("Error fetching dentist details:", error.message);
-        alert("Failed to load dentist details. Please try again.");
+        console.error("Error booking appointment:", error.message);
+        alert("Error booking appointment: " + error.message);
       }
     },
-    methods: {
-      async handleBookingSubmission() {
-        try {
-          const response = await api.postBooking(this.dentistId, this.bookingData);
-          alert(response.data.message || "Booking successful");
-  
-          // Redirect to booking details page
-          this.$router.push({
-            name: "BookingDetails",
-            params: { referenceCode: response.data.referenceCode },
-          });
-        } catch (error) {
-          alert("Error booking appointment: " + error.message);
-        }
-      },
-    },
-  };
+  },
+};
   </script>

@@ -14,7 +14,7 @@
   
   <script>
   import AvailableDentists from "../components/AvailableDentists.vue";
-  import api from "../patientApi";
+  import api from "@/api";
   
   export default {
     name: "AvailableDentistsView",
@@ -29,12 +29,15 @@
       };
     },
     async created() {
-      try {
-        const response = await api.getAvailableDentists(this.selectedDate, this.selectedTime);
-        this.dentists = response.data;
-      } catch (error) {
-        console.error("Error fetching available dentists:", error.message);
-      }
+    try {
+      // get available dentists for selected date and time
+      const response = await api.get("/dentists", {
+        params: { date: this.selectedDate, time: this.selectedTime },
+      });
+      this.dentists = response.data.dentists; // backend's response returns array of dentists
+    } catch (error) {
+      console.error("Error fetching available dentists:", error.message);
+    }
     },
     methods: {
       navigateToBookingForm(dentist) {

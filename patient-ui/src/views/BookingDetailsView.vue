@@ -23,7 +23,7 @@
 
 <script>
 import BookingDetails from "../components/BookingDetails.vue";
-import api from "../patientApi.js";
+import api from "@/api";
 
 export default {
   name: "BookingDetailsView",
@@ -43,15 +43,16 @@ export default {
   },
   methods: {
     async fetchBookingDetails(referenceCode = this.referenceCodeInput) {
-      console.log("Fetching booking with reference code:", referenceCode)
+      console.log("Fetching booking with reference code:", referenceCode);
       try {
-        const response = await api.getBooking(referenceCode);
-        this.booking = response.data; // store booking details
-        this.referenceCode = referenceCode; // set current reference code
-      } catch (err) {
-        console.error("Error fetching booking details:", err.message);
+        // getch booking details from backend (middleware) API
+        const response = await api.get(`/bookings/${referenceCode}`);
+        this.booking = response.data.booking;
+        this.referenceCode = referenceCode; 
+      } catch (error) {
+        console.error("Error fetching booking details:", error.message);
         alert("Failed to fetch booking details. Please check the reference code.");
-        this.booking = null;
+        this.booking = null; // reset booking if error
       }
     },
     resetView() {
