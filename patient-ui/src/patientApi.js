@@ -8,6 +8,18 @@ export const api = axios.create({
   })
 
 export default {
+  // Get available slots from all dentists' timetables for a specific date
+  getAvailableSlots(selectedDate) {
+    const slots = new Set();
+    // Loop through each dentist's timetable for the given date
+    mockDentistsData.forEach((dentist) => {
+      if (dentist.timetable[selectedDate]) {
+        dentist.timetable[selectedDate].forEach((time) => slots.add(time));
+      }
+    });
+    return Promise.resolve({ data: Array.from(slots).sort() });
+    // return api.get(`/available-slots`, { params: { date: selectedDate } }); // uncomment and remove above after db/backend set up + integration
+  },
   // flter dentists that have the selected time in their timetable
   getAvailableDentists(selectedDate, selectedTime) {
     const availableDentists = mockDentistsData.filter((dentist) =>
@@ -127,7 +139,7 @@ const mockDentistsData = [
     specialty: "Orthodontics",
     location: "Central Gothenburg",
     timetable: {
-      "2024-12-01": ["9:30 AM", "10:30 AM", "1:00 PM", "3:00 PM"],
+      "2024-12-01": ["9:00 AM", "11:30 AM", "2:00 PM", "4:00 PM"],
       "2024-12-02": ["10:00 AM", "11:30 AM", "2:00 PM"],
       "2024-12-03": ["10:30 AM", "12:00 PM", "3:30 PM"],
       "2024-12-04": ["9:00 AM", "10:30 AM", "2:00 PM"],

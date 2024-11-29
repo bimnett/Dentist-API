@@ -1,17 +1,20 @@
 <template>
-    <div class="slot-selection">
-      <h2>Available Time Slots for {{ formatDate(selectedDate) }}</h2>
-      <div class="time-slots">
-        <button
-          v-for="time in timeSlots"
-          :key="time"
-          @click="selectTime(time)"
-          class="time-slot"
-        >
-          {{ time }}
-        </button>
-      </div>
+  <div class="slot-selection">
+    <h2>Available Time Slots for {{ formatDate(selectedDate) }}</h2>
+    <div v-if="timeSlots.length > 0" class="time-slots">
+      <button
+        v-for="time in timeSlots"
+        :key="time"
+        @click="selectTime(time)"
+        class="time-slot"
+      >
+        {{ time }}
+      </button>
     </div>
+    <div v-else>
+      <p>No available slots for the selected date.</p>
+    </div>
+  </div>
 </template>
   
 <script>
@@ -20,6 +23,8 @@
  * Available dentists will then be shown for the user to select in their selected time slot.
  * Upon selection, the user will be directed to a booking form to fill in their details to make the appointment.
  */
+
+ import api from "../patientAPI";
 
  export default {
   props: {
@@ -30,30 +35,26 @@
   },
   data() {
     return {
-      timeSlots: [
-        "8:30 AM",
-        "9:00 AM",
-        "9:30 AM",
-        "10:00 AM",
-        "10:30 AM",
-        "11:00 AM",
-        "11:30 AM",
-        "12:00 PM",
-        "12:30 PM",
-        "1:00 PM",
-      ], // Fixed time slots
+      timeSlots: [], // Available time slots fetched from API
     };
   },
+  async created() {
+    try {
+      const response = await api.getAvailableSlots(this.selectedDate);
+      this.timeSlots = response.data;
+    } catch (error) {
+      console.error("Error fetching available slots:", error.message);
+    }
+  },
   methods: {
-    // Format the date for display
     formatDate(date) {
-      const options = { weekday: 'long', month: 'long', day: 'numeric' };
-      return new Date(date).toLocaleDateString('en-US', options);
+      const options = { weekday: "long", month: "long", day: "numeric" };
+      return new Date(date).toLocaleDateString("en-US", options);
     },
-    // Navigate to available dentists for the selected date and time
+    // Navigate to available dentists view for the selected date and time
     selectTime(time) {
       this.$router.push({
-        name: 'AvailableDentists',
+        name: "AvailableDentists",
         params: { selectedDate: this.selectedDate, selectedTime: time },
       });
     },
