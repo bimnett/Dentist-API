@@ -1,52 +1,73 @@
 <template>
-    <div class="available-dentists">
-      <h2>Dentists Available on {{ selectedDate }} at {{ selectedTime }}</h2>
-      <ul>
-        <li v-for="dentist in dentists" :key="dentist.id">
-          <button @click="selectDentist(dentist)">
-            {{ dentist.name }} - {{ dentist.specialty }}
-          </button>
-        </li>
-      </ul>
-    </div>
-</template>  
+  <div class="available-dentists">
+    <h2>Dentists Available on {{ selectedDate }} at {{ selectedTime }}</h2>
+    <ul>
+      <li v-for="dentist in dentists" :key="dentist.id">
+        <button @click="selectDentist(dentist)">
+          {{ dentist.name }} - {{ dentist.specialty }}
+        </button>
+      </li>
+    </ul>
+  </div>
+</template>
   
 <script>
 /**
  * AvailableDentists component displays available dentists in the time slot that the user has selected.
  */
 import api from "../patientApi";
-
 export default {
+  name: "AvailableDentists",
   props: {
-    selectedDate: String,
-    selectedTime: String,
-  },
-  data() {
-    return {
-      dentists: [],
-    };
-  },
-  async created() {
-    try {
-      const response = await api.getAvailableDentists(this.selectedDate, this.selectedTime);
-      this.dentists = response.data;
-    } catch (error) {
-      console.error("Error fetching available dentists:", error.message);
-    }
+    dentists: {
+      type: Array,
+      required: true,
+    },
+    selectedDate: {
+      type: String,
+      required: true,
+    },
+    selectedTime: {
+      type: String,
+      required: true,
+    },
   },
   methods: {
     selectDentist(dentist) {
-        console.log('Redirecting to BookingForm with dentistId:', dentist.id);
-        this.$router.push({
-        name: 'BookingForm',
-        params: {
-            dentistId: dentist.id.toString(),
-            selectedDate: this.selectedDate,
-            selectedTime: this.selectedTime,
-        },
-      });
+      this.$emit("dentist-selected", dentist);
     },
   },
 };
 </script>
+
+<style>
+.available-dentists {
+  padding: 20px;
+}
+
+.available-dentists h2 {
+  margin-bottom: 20px;
+}
+
+.available-dentists ul {
+  list-style: none;
+  padding: 0;
+}
+
+.available-dentists li {
+  margin-bottom: 10px;
+}
+
+.available-dentists button {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.available-dentists button:hover {
+  background-color: #0056b3;
+}
+</style>
