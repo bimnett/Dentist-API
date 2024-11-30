@@ -1,3 +1,6 @@
+
+This component creates a map that is zoomed in on Gothenburg, and places a marker for each dentist clinic.
+
 <template>
   <div id="map"></div>
 </template>
@@ -9,6 +12,7 @@
     name: "DentistMap",
     data() {
         return {
+            // Mock data, will be removed when the API endpoint is defined.
             dentistClinics: [
               { lat: 57.69956, long: 11.94658, name: "Public Dental Service", address: "Första Långgatan 26, 413 28 Göteborg" },
               { lat: 57.70891, long: 11.92699, name: "Folktandvården Sannegården", address: "Vintergatan 1A, 417 58 Göteborg" },
