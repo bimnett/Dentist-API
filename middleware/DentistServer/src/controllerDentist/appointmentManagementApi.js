@@ -6,14 +6,13 @@ const config = require('../../../env');
 
 const options = {
     clientId: "", // You can set a unique client ID here
-    username: config.username, // Use the username defined in index.js
-    password: config.password, // Use the password defined in index.js
+    username: config.username, // Use the username defined in env.js
+    password: config.password, // Use the password defined in env.js
     connectTimeout: 30000, // Set the connection timeout to 30 seconds
     reconnectPeriod: 1000,  // Reconnect every 1 second if disconnected
 }
 
 
-// WORKS FOR SUBSCRIBE - topic test
 // get all the appointments for a dentist 
 router.get('/bookedAppointments', async function(req,res,next){
     try {
@@ -43,7 +42,7 @@ router.get('/bookedAppointments', async function(req,res,next){
 
         client.on('error', (error) => {
             console.log('Subscriber connection error:', error);
-            return res.status(503).json({message: "Could not connect to server"})
+            return res.status(500).json({message: "Could not connect to server"})
         });
 
         client.on('close', () => {

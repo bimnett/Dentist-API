@@ -3,18 +3,16 @@ const express = require('express');
 const router = express.Router();
 const config = require('../../../env');
 
-require('dotenv').config();
-
 const options = {
     clientId: "", // You can set a unique client ID here
-    username: config.username, // Use the username defined in index.js
-    password: config.password, // Use the password defined in index.js
+    username: config.username, // Use the username defined in env.js
+    password: config.password, // Use the password defined in env.js
     connectTimeout: 30000, // Set the connection timeout to 30 seconds
     reconnectPeriod: 1000,  // Reconnect every 1 second if disconnected
 }
 
-// WORKS PUBLISH
-// create new slot
+
+// create new avaliable time slot
 router.post('/newSlots', async function(req,res,next){
     try {
         
@@ -30,12 +28,12 @@ router.post('/newSlots', async function(req,res,next){
             
             const payload = { 
                 // ?? null - set the value to null if the user does not provide any input 
-                // malfomed input + error handeling will be in the slot managment service
+                // malformed input + error handling will be in the slot managment service
                 // or in the UI itself 
-                time : req.body.time ,
-                date : req.body.date,
-                dentist : req.body.dentist ,
-                clinic : req.body.clinic, 
+                time : req.body.time ?? null,
+                date : req.body.date ?? null,
+                dentist : req.body.dentist ?? null,
+                clinic : req.body.clinic ?? null, 
             }
 
             const json_payload = JSON.stringify(payload);
@@ -43,19 +41,17 @@ router.post('/newSlots', async function(req,res,next){
             client.publish(topic, json_payload, { qos: 2 }, (err) => {
                 if (err) {
                     console.log('Publish error:', err);
-                    // do not know if it's the appropriate status code
-                    return res.status(503).json({message: "Unable to connect to the server"});
+                    return res.status(500).json({message: "Unable to connect to the server"});
                 } else {
                     console.log('Message published successfully!');
-                    // 307 - rederecting to another server 
-                    return res.status(200).json({message : " Did send the message"});
+                    return res.status(201).json({message : " Did send the message"});
                 }
             });
         });
         
         client.on('error', (error) => {
             console.log('Publisher connection error:', error);
-            return res.status(503).json({message : "Could not connect to server"})
+            return res.status(500).json({message : "Could not connect to server"})
         });
 
         client.on('close', () => {
@@ -70,7 +66,6 @@ router.post('/newSlots', async function(req,res,next){
     
 });
 
-// check if it's work
 // see all avaliable slot for the dentist
 router.get('/avaliableSlots', async function(req,res,next){
     try {
@@ -99,7 +94,7 @@ router.get('/avaliableSlots', async function(req,res,next){
 
         client.on('error', (error) => {
             console.log('Subscriber connection error:', error);
-            return res.status(503).json({message: "Could not connect to server"})
+            return res.status(500).json({message: "Could not connect to server"})
         });
 
         client.on('close', () => {
