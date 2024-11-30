@@ -63,6 +63,7 @@ client.on('message', async (topic, message) => {
         try{
             await newTimeslot.save();
             payload = "New timeslot inserted successfully: " + newTimeslot;
+            pubTopic = INSERT_TOPIC_RESPONSE;
             console.log(payload);
         } catch (err) {
             console.error(err);
