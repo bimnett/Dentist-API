@@ -13,6 +13,8 @@ mongoose.connect(mongoURI, { autoIndex: false }).catch(function(err) {
     console.log(`Connected to MongoDB with URI: ${mongoURI}`); // mistake when forward porting
 });
 
+// Import data model
+let Timeslot = require('./models/timeslot');
 
 const options = {
     clientId: 'clientclient', // Set unique client ID
@@ -24,53 +26,82 @@ const options = {
 
 const client = mqtt.connect(process.env.BROKERURL, options);
 
+
 const INSERT_TOPIC = process.env.TOPIC_DATABASE_INSERT;
 const RETRIEVE_TOPIC = process.env.TOPIC_DATABASE_RETRIEVE;
 const UPDATE_TOPIC = process.env.TOPIC_DATABASE_UPDATE;
+const INSERT_TOPIC_RESPONSE = process.env.TOPIC_DATABASE_INSERT_RESPONSE;
+const RETRIEVE_TOPIC_RESPONSE = process.env.TOPIC_DATABASE_RETRIEVE_RESPONSE;
+const UPDATE_TOPIC_RESPONSE = process.env.TOPIC_DATABASE_UPDATE_RESPONSE;
+
+const topics = [INSERT_TOPIC, RETRIEVE_TOPIC, UPDATE_TOPIC];
 
 client.on('connect', () => {
     console.log('databaseHandler connected to broker');
 
-    client.subscribe(INSERT_TOPIC, { qos: 2 }, (err) => {
-        if (err) {
-            console.error('Subscription error:', err);
-        } else {
-            console.log(`Subscribed to topic: ${topic}`);
-        }
-    });
-    client.subscribe(RETRIEVE_TOPIC, { qos: 2 }, (err) => {
-        if (err) {
-            console.error('Subscription error:', err);
-        } else {
-            console.log(`Subscribed to topic: ${topic}`);
-        }
-    });
-    client.subscribe(UPDATE_TOPIC, { qos: 2 }, (err) => {
-        if (err) {
-            console.error('Subscription error:', err);
-        } else {
-            console.log(`Subscribed to topic: ${topic}`);
-        }
-    });
+    //subscribe to database topics
+    for(let topic of topics){
+        client.subscribe(topic, { qos: 2 }, (err) => {
+            if (err) {
+                console.error('Subscription error:', err);
+            } else {
+                console.log(`Subscribed to topic: ${topic}`);
+            }
+        });
+    }
 });
 
-client.on('message', (topic, message) => {
+client.on('message', async (topic, message) => {
     console.log(`Received message: ${message.toString()} on topic: ${topic}`);
+    let data = JSON.parse(message.toString());
+
+    let pubTopic = null;
+    let payload = null;
+
     if(topic == INSERT_TOPIC){
-
+        let newTimeslot = new Timeslot(data);
+        try{
+            await newTimeslot.save();
+            payload = "New timeslot inserted successfully: " + newTimeslot;
+            console.log(payload);
+        } catch (err) {
+            console.error(err);
+        }
     }
-    if(topic == RETRIEVE_TOPIC){
-
+    else if(topic == RETRIEVE_TOPIC){
+        try{
+            let timeslots = await Timeslot.find();
+            payload = timeslots;
+            pubTopic = RETRIEVE_TOPIC_RESPONSE;
+        } catch (err){
+            console.error(err);
+        }
     }
-    if(topic == UPDATE_TOPIC){
-
+    else if(topic == UPDATE_TOPIC){
+        //todo
     }
+    else {
+        console.error("Error: unknown topic");
+    }
+
+    if(!pubTopic || !payload){
+        console.error("An error occurred");//todo implement proper error handling;
+    } else {
+        client.publish(pubTopic, payload, { qos: 2 }, (err) => {
+            if (err) {
+                console.error('Publishing error:', err);
+            } else {
+                console.log('Message published successfully!');
+            }
+        });
+    }
+
 });
 
 client.on('error', (error) => {
-    console.error('Subscriber connection error:', error);
+    console.error('DatabaseHandler mqtt connection error:', error);
 });
 
 client.on('close', () => {
-    console.log('Subscriber connection closed');
+    console.log('DatabaseHandler connection closed');
 });

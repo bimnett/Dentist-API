@@ -23,7 +23,7 @@ client.on('connect', () => {
   console.log('Publisher successfully connected to broker!');
 
   const topic = process.env.TOPIC_DATABASE_INSERT;
-  const payload = 'Hello';
+  const payload = '{"referenceCode": "123"}';
   
   client.publish(topic, payload, { qos: 2 }, (err) => {
     if (err) {
