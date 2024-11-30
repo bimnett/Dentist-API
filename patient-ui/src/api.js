@@ -12,4 +12,26 @@ const api = axios.create({
   },
 });
 
+// // get all clinics via MQTT
+// export const getClinics = async () => {
+//     try {
+//       const response = await api.get('/slots/bookAppointments/clinics');
+//       return response.data;
+//     } catch (error) {
+//       console.error('Error fetching clinics:', error);
+//       throw error;
+//     }
+//   };
+  
+//   // get dentists in a clinic via MQTT
+//   export const getDentistsByClinic = async (clinicId) => {
+//     try {
+//       const response = await api.get(`/slots/bookAppointments/clinics/${clinicId}/dentists`);
+//       return response.data;
+//     } catch (error) {
+//       console.error('Error fetching dentists:', error);
+//       throw error;
+//     }
+//   };
+
 export default api;
