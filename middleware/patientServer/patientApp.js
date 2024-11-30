@@ -33,6 +33,8 @@ app.get('/api', function(req, res) {
  <<<<<<<<<<<<<<<<<<<<<<<<<<< Insert all of the routes - start >>>>>>>>>>>>>>>>>>>>>>>>>>>>
 */
 
+const slotRoutes = require('./src/controllerPatient/bookSlotApi');
+app.use('/api/slots', slotRoutes);
 
 /*
  <<<<<<<<<<<<<<<<<<<<<<<<<<< Insert all of the routes - end >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -74,7 +76,7 @@ app.use(function(err, req, res, next) {
 
 app.listen(port, function(err) {
     if (err) throw err;
-    console.log(`Express server for dentists listening on port ${port}, in ${env} mode`);
+    console.log(`Express server for patients listening on port ${port}, in ${env} mode`);
     console.log(`Backend: http://localhost:${port}/api/`);
 });
 
