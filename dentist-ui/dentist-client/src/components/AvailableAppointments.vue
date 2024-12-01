@@ -97,7 +97,15 @@ export default {
         '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00',
         '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'
       ],
-      bookedSlots: {} // Fetch and store unavailable appointments here
+      // bookedSlots: {} // --> Fetch and store unavailable appointments here, for now it's mock data
+      bookedSlots: {
+        // Mock data
+        "2024-12-04": [
+          { time: '09:00', patientName: 'John Doe', slotId: 1 },
+          { time: '14:00', patientName: 'Jane Smith', slotId: 2 },
+        ],
+      },
+      selectedBooking: null, // To store booking details for the modal box
     };
   },
 
@@ -317,5 +325,45 @@ h2 {
 .slot-duration {
   font-size: 12px;
   color: #666;
+}
+
+.booked-slot {
+  background-color: #ffcccc;
+  border-radius: 4px;
+  padding: 8px;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.booked-slot:hover {
+  background-color: #ff9999;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 400px;
+  text-align: center;
 }
 </style>
