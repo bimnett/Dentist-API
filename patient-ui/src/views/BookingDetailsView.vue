@@ -13,8 +13,10 @@
         View Booking Details
       </button>
     </div>
+    
     <div v-else>
       <BookingDetails :booking="booking" />
+      <button @appointment-canceled="handleAppointmentCanceled">Cancel Appointment</button>
       <button @click="resetView" class="back-button">Back</button>
     </div>
   </div>
@@ -54,6 +56,10 @@ export default {
         alert("Failed to fetch booking details. Please check the reference code.");
         this.booking = null; // reset booking if error
       }
+    },
+    handleAppointmentCanceled() {
+      this.booking = null; // Reset booking after cancellation
+      alert("Your appointment has been canceled.");
     },
     resetView() {
       this.booking = null;
