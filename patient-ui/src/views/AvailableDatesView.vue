@@ -18,7 +18,11 @@
   },
     methods: {
       navigateToSlotSelection(selectedDate) {
-        this.$router.push({ name: 'SlotSelection', params: { selectedDate } });
+        this.$router.push({
+        name: 'SlotSelection',
+        params: { selectedDate },
+        query: { clinic: this.selectedClinic },
+      });
       },
     },
   };

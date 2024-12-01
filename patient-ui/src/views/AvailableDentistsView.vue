@@ -1,6 +1,6 @@
 <template>
     <div>
-      <h1>Available Dentists</h1>
+      <h1>Available Dentists for {{ clinic }}</h1>
       <AvailableDentists
         v-if="dentists.length > 0"
         :dentists="dentists"
@@ -8,7 +8,7 @@
         :selectedTime="selectedTime"
         @dentist-selected="navigateToBookingForm"
       />
-      <p v-else>No dentists are available at this time.</p>
+      <p v-else>No dentists are available at this time and clinic.</p>
     </div>
   </template>
   
@@ -22,6 +22,7 @@
     props: {
       selectedDate: String,
       selectedTime: String,
+      clinic: String,
     },
     data() {
       return {
@@ -30,9 +31,13 @@
     },
     async created() {
     try {
-      // get available dentists for selected date and time
+      // get available dentists for selected date, time, and clinic
       const response = await api.get("/dentists", {
-        params: { date: this.selectedDate, time: this.selectedTime },
+        params: {
+          date: this.selectedDate,
+          time: this.selectedTime,
+          clinic: this.clinic,
+        },
       });
       this.dentists = response.data.dentists; // backend's response returns array of dentists
     } catch (error) {
@@ -49,6 +54,7 @@
             selectedDate: this.selectedDate,
             selectedTime: this.selectedTime,
           },
+          query: { clinic: this.clinic },
         });
       },
     },

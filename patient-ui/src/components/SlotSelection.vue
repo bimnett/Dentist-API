@@ -1,6 +1,6 @@
 <template>
   <div class="slot-selection">
-    <h2>Available Time Slots for {{ formatDate(selectedDate) }}</h2>
+    <h2>Available Time Slots for {{ formatDate(selectedDate) }} at {{ clinic }}</h2>
     <div v-if="timeSlots.length > 0" class="time-slots">
       <button
         v-for="time in timeSlots"
@@ -12,7 +12,7 @@
       </button>
     </div>
     <div v-else>
-      <p>No available slots for the selected date.</p>
+      <p>No available slots for the selected date at this clinic.</p>
     </div>
   </div>
 </template>
@@ -31,6 +31,10 @@
       type: String,
       required: true,
     },
+    clinic: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
@@ -39,9 +43,12 @@
   },
   async created() {
     try {
-      // GET request to the middleware endpoint for available slots
+      // GET request to the middleware endpoint to fetch available slots for specified clinic and date
       const response = await api.get('/available-slots', {
-        params: { date: this.selectedDate }, // selected date = query parameter
+        params: {
+          date: this.selectedDate,
+          clinic: this.clinic,
+        },
       });
       this.timeSlots = response.data.slots; // slots = response key
     } catch (error) {

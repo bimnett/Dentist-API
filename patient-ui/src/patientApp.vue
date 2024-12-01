@@ -2,7 +2,7 @@
   <div id="app">
     <nav class="navbar navbar-expand-lg custom-navbar">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">The Dentist For You</a>
+        <a class="navbar-brand" href="/">The Dentist For You</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -18,9 +18,6 @@
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
               <router-link to="/" class="nav-link" active-class="active">Home</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link to="/available-dates" class="nav-link" active-class="active">Book Slot</router-link>
             </li>
             <li class="nav-item">
               <router-link to="/booking-details" class="nav-link" active-class="active">Check Booking Details</router-link>

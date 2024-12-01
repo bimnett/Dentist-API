@@ -22,6 +22,7 @@
       dentistId: String,
       selectedDate: String,
       selectedTime: String,
+      clinic: String,
     },
     data() {
       return {
@@ -32,14 +33,21 @@
           phone: "",
           date: this.selectedDate,
           time: this.selectedTime,
+          clinic: this.clinic,
         },
       };
     },
     async created() {
+      console.log("API call parameters:", {
+    date: this.selectedDate,
+    time: this.selectedTime,
+    clinic: this.clinic,
+  });
+
     try {
-      // get available dentists for selected date and time
+      // get available dentists for selected date, time and clinic
       const response = await api.get("/dentists", {
-        params: { date: this.selectedDate, time: this.selectedTime },
+        params: { date: this.selectedDate, time: this.selectedTime, clinic: this.clinic },
       });
 
       // find the dentist by ID

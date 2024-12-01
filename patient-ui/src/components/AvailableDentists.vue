@@ -1,6 +1,6 @@
 <template>
   <div class="available-dentists">
-    <h2>Dentists Available on {{ selectedDate }} at {{ selectedTime }}</h2>
+    <h2>Dentists Available at {{ clinic }} on {{ selectedDate }} at {{ selectedTime }}</h2>
     <ul>
       <li v-for="dentist in dentists" :key="dentist.id">
         <button @click="selectDentist(dentist)">
@@ -27,6 +27,10 @@ export default {
       required: true,
     },
     selectedTime: {
+      type: String,
+      required: true,
+    },
+    clinic: {
       type: String,
       required: true,
     },
