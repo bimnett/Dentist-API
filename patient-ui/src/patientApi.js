@@ -46,7 +46,21 @@ export default {
       return Promise.reject(new Error('Booking not found'));
     }
     // return api.get(`/bookings/${referenceCode}`); // UNCOMMENT AND REMOVE ABOVE AFTER DB SET UP
-  }
+  },
+  deleteBooking(referenceCode) {
+    const index = mockBookings.findIndex(b => b.referenceCode === referenceCode);
+    if (index !== -1) {
+      mockBookings.splice(index, 1); // Simulate deletion for demo
+      return Promise.resolve({
+        data: {
+          message: "Booking successfully canceled",
+        },
+      });
+    } else {
+      return Promise.reject(new Error("Booking not found"));
+    }
+    // return api.delete(`/bookings/${referenceCode}`); // UNCOMMENT AND REMOVE ABOVE AFTER DB SET UP
+  },
 };
 
 // REMOVE AFTER DB SET UP

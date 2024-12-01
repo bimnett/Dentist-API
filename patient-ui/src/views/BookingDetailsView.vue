@@ -11,7 +11,9 @@
         />
         <button @click="fetchBookingDetails">View Booking Details</button>
       </div>
-      <BookingDetails :booking="booking" />
+      <BookingDetails :booking="booking" 
+      @appointment-canceled="handleAppointmentCanceled"
+      />
     </div>
   </template>
   
@@ -39,6 +41,10 @@
           this.booking = null; 
         }
       },
+      handleAppointmentCanceled() {
+      this.booking = null; // Reset booking after cancellation
+      alert("Your appointment has been canceled.");
+    },
     },
   };
   </script>
