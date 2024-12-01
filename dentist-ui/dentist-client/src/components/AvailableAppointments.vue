@@ -53,9 +53,26 @@
                 <span class="slot-time">{{ time }}</span>
                 <span class="slot-duration">45 min</span>
               </div>
+              <div
+                v-else 
+                class="booked-slot"
+                @click="viewBookingDetails(day.date, time)"
+              >
+                <span class="slot-time">{{ time }}</span>
+              </div>
             </div>
           </div>
         </div>
+      </div>
+    </div>
+    <!-- Booking details in a modal box-->
+    <div v-if="selectedBooking" class="modal">
+      <div class="modal-content">
+        <h3>Booking Details</h3>
+        <p><strong>Patient Name:</strong> {{ selectedBooking.patientName }}</p>
+        <p><strong>Time:</strong> {{ selectedBooking.time }}</p>
+        <p><strong>Date:</strong> {{ selectedBooking.date }}</p>
+        <button @click="closeModal" class="btn btn-secondary">Close</button>
       </div>
     </div>
   </div>
@@ -155,6 +172,17 @@ export default {
 
     bookSlot(slot) {
         // Send API request to make a slot available for patients.
+    },
+
+    viewBookingDetails(date, time) {
+      const slot = this.getSlot(date, time);
+      if (slot) {
+        this.selectedBooking = { ...slot, date };
+      }
+    },
+
+    closeModal() {
+      this.selectedBooking = null;
     },
   },
 
