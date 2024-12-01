@@ -16,7 +16,6 @@
     
     <div v-else>
       <BookingDetails :booking="booking" />
-      <button @appointment-canceled="handleAppointmentCanceled">Cancel Appointment</button>
       <button @click="resetView" class="back-button">Back</button>
     </div>
   </div>
@@ -47,7 +46,7 @@ export default {
     async fetchBookingDetails(referenceCode = this.referenceCodeInput) {
       console.log("Fetching booking with reference code:", referenceCode);
       try {
-        // getch booking details from backend (middleware) API
+        // fetch booking details from backend (middleware) API
         const response = await api.get(`/bookings/${referenceCode}`);
         this.booking = response.data.booking;
         this.referenceCode = referenceCode; 

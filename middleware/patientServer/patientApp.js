@@ -33,9 +33,11 @@ app.get('/api', function(req, res) {
  <<<<<<<<<<<<<<<<<<<<<<<<<<< Insert all of the routes - start >>>>>>>>>>>>>>>>>>>>>>>>>>>>
 */
 
+// MQTT
 const slotRoutes = require('./src/controllerPatient/bookSlotApi');
 app.use('/api/slots', slotRoutes);
 
+// client-server
 // Get available dentist slots for a specific date
 app.get('/api/available-slots', (req, res) => {
     const { date } = req.query;
@@ -46,60 +48,72 @@ app.get('/api/available-slots', (req, res) => {
       if (dentist.timetable[date]) {
         dentist.timetable[date].forEach((time) => slots.add(time));
       }
-    });
+    });  // use mock data for now
   
     res.json({ slots: Array.from(slots).sort() });
   });
 
-  // Get available dentists with specific time and date
-  app.get('/api/dentists', (req, res) => {
+// Get available dentists with specific time and date
+app.get('/api/dentists', (req, res) => {
     const { date, time } = req.query;
     if (!date || !time) return res.status(400).json({ message: "Date and time are required" });
-  
+
     const availableDentists = mockDentistsData.filter((dentist) =>
-      dentist.timetable[date]?.includes(time)
-    );
-  
+        dentist.timetable[date]?.includes(time)
+    );  // use mock data for now
+
     res.json({ dentists: availableDentists });
-  });
-  
-  // Add booking for dentist with given dentistId
-  app.post('/api/dentists/:dentistId/bookings', (req, res) => {
+});
+
+// Add booking for dentist with given dentistId
+app.post('/api/dentists/:dentistId/bookings', (req, res) => {
     const { dentistId } = req.params;
     const { name, email, phone, date, time } = req.body;
-  
-    const dentist = mockDentistsData.find((d) => d.id === parseInt(dentistId, 10));
+
+    const dentist = mockDentistsData.find((d) => d.id === parseInt(dentistId, 10));  // use mock data for now
     if (!dentist) return res.status(404).json({ message: "Dentist not found" });
-  
+
     const newBooking = {
-      referenceCode: `${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
-      dentist: dentist.name,
-      clinicName: dentist.location,
-      time,
-      patientName: name,
-      email,
-      phone,
-      date,
+        referenceCode: `${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+        dentist: dentist.name,
+        clinicName: dentist.location,
+        time,
+        patientName: name,
+        email,
+        phone,
+        date,
     };
-  
-    mockBookingData.push(newBooking);
-  
+
+    mockBookingData.push(newBooking);  // use mock data for now
+
     res.status(201).json({
-      message: "Booking successful",
-      referenceCode: newBooking.referenceCode,
+        message: "Booking successful",
+        referenceCode: newBooking.referenceCode,
     });
-  });
-  
-  // Get booking with reference code
-  app.get('/api/bookings/:referenceCode', (req, res) => {
+});
+
+// Get booking by reference code
+app.get('/api/bookings/:referenceCode', (req, res) => {
+    const { referenceCode } = req.params;
+
+    const booking = mockBookingData.find((b) => b.referenceCode === referenceCode);  // use mock data for now
+    if (!booking) return res.status(404).json({ message: "Booking not found" });
+
+    res.json({ booking });
+});
+
+// Cancel booking by reference code
+app.delete('/api/bookings/:referenceCode', (req, res) => {
     const { referenceCode } = req.params;
   
-    const booking = mockBookingData.find((b) => b.referenceCode === referenceCode);
-    if (!booking) return res.status(404).json({ message: "Booking not found" });
-  
-    res.json({ booking });
-  });
-
+    const index = mockBookingData.findIndex((b) => b.referenceCode === referenceCode);
+    if (index !== -1) {
+      mockBookingData.splice(index, 1); // use mock data for now
+      return res.json({ message: "Booking successfully canceled" });
+    } else {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+});
 /*
  <<<<<<<<<<<<<<<<<<<<<<<<<<< Insert all of the routes - end >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 */
