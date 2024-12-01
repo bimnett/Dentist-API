@@ -37,33 +37,70 @@ app.get('/api', function(req, res) {
 const slotRoutes = require('./src/controllerPatient/bookSlotApi');
 app.use('/api/slots', slotRoutes);
 
-// client-server
-// Get available dentist slots for a specific date
+// CLIENT-SERVER
+// Get available slots with given date and clinic
 app.get('/api/available-slots', (req, res) => {
-    const { date } = req.query;
+    const { date, clinic } = req.query;
+  
     if (!date) return res.status(400).json({ message: "Date is required" });
+    if (!clinic) return res.status(400).json({ message: "Clinic is required" });
   
-    const slots = new Set();
-    mockDentistsData.forEach((dentist) => {
-      if (dentist.timetable[date]) {
-        dentist.timetable[date].forEach((time) => slots.add(time));
-      }
-    });  // use mock data for now
+    const clinicData = mockDentistsData.find((dentist) => dentist.clinic === clinic); // use mock data for now
+    if (!clinicData) {
+      return res.status(404).json({ message: "Clinic not found" });
+    }
   
-    res.json({ slots: Array.from(slots).sort() });
+    const slots = clinicData.timetable[date] || []; // fetch slots for given date
+    res.json({ slots: slots.sort() });
   });
 
-// Get available dentists with specific time and date
+// app.get('/api/available-slots', (req, res) => {
+//     const { date } = req.query;
+//     if (!date) return res.status(400).json({ message: "Date is required" });
+  
+//     const slots = new Set();
+//     mockDentistsData.forEach((dentist) => {
+//       if (dentist.timetable[date]) {
+//         dentist.timetable[date].forEach((time) => slots.add(time));
+//       }
+//     });  // use mock data for now
+  
+//     res.json({ slots: Array.from(slots).sort() });
+//   });
+
+// Get available dentists with given time, date, and clinic
 app.get('/api/dentists', (req, res) => {
-    const { date, time } = req.query;
-    if (!date || !time) return res.status(400).json({ message: "Date and time are required" });
-
-    const availableDentists = mockDentistsData.filter((dentist) =>
-        dentist.timetable[date]?.includes(time)
-    );  // use mock data for now
-
+    const { date, time, clinic } = req.query;
+  
+    if (!date || !time) {
+      return res.status(400).json({ message: "Date and time are required" });
+    }
+    if (!clinic) {
+      return res.status(400).json({ message: "Clinic is required" });
+    }
+  
+    const availableDentists = mockDentistsData.filter(
+      (dentist) =>
+        dentist.clinic === clinic && dentist.timetable[date]?.includes(time)
+    ); // use mock data for now
+  
+    if (availableDentists.length === 0) {
+      return res.status(404).json({ message: "No dentists available" });
+    }
+  
     res.json({ dentists: availableDentists });
 });
+
+// app.get('/api/dentists', (req, res) => {
+//     const { date, time } = req.query;
+//     if (!date || !time) return res.status(400).json({ message: "Date and time are required" });
+
+//     const availableDentists = mockDentistsData.filter((dentist) =>
+//         dentist.timetable[date]?.includes(time)
+//     );  // use mock data for now
+
+//     res.json({ dentists: availableDentists });
+// });
 
 // Add booking for dentist with given dentistId
 app.post('/api/dentists/:dentistId/bookings', (req, res) => {
@@ -76,7 +113,7 @@ app.post('/api/dentists/:dentistId/bookings', (req, res) => {
     const newBooking = {
         referenceCode: `${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
         dentist: dentist.name,
-        clinicName: dentist.location,
+        clinic: dentist.clinic,
         time,
         patientName: name,
         email,
@@ -127,7 +164,7 @@ const mockBookingData = [
       referenceCode: "ABC123",
       time: "10:00 AM",
       date: "2024-12-01",
-      clinicName: "Central Gothenburg",
+      clinic: "Public Dental Service",
       dentist: "Dr. John Johnson",
       patientName: "Alice Johnson",
       email: "alice.johnson@example.com",
@@ -137,7 +174,7 @@ const mockBookingData = [
       referenceCode: "XYZ789",
       time: "2:30 PM",
       date: "2024-12-02",
-      clinicName: "North Gothenburg",
+      clinic: "Folktandvården Sannegården",
       dentist: "Dr. Michael Mike",
       patientName: "Bob Smith",
       email: "bob.smith@example.com",
@@ -147,7 +184,7 @@ const mockBookingData = [
       referenceCode: "JKL456",
       time: "11:30 AM",
       date: "2024-12-01",
-      clinicName: "South Gothenburg",
+      clinic: "Folktandvården Lundby",
       dentist: "Dr. Sarah Sarah",
       patientName: "Charlie Brown",
       email: "charlie.brown@example.com",
@@ -157,7 +194,7 @@ const mockBookingData = [
       referenceCode: "MNO789",
       time: "9:30 AM",
       date: "2024-12-03",
-      clinicName: "Central Gothenburg",
+      clinic: "City Tandvård",
       dentist: "Dr. John Johnson",
       patientName: "Daisy Ridley",
       email: "daisy.ridley@example.com",
@@ -167,7 +204,7 @@ const mockBookingData = [
       referenceCode: "PQR234",
       time: "3:00 PM",
       date: "2024-12-04",
-      clinicName: "North Gothenburg",
+      clinic: "City Tandvård",
       dentist: "Dr. Michael Mike",
       patientName: "Evan Peters",
       email: "evan.peters@example.com",
@@ -177,7 +214,7 @@ const mockBookingData = [
       referenceCode: "STU567",
       time: "1:00 PM",
       date: "2024-12-05",
-      clinicName: "South Gothenburg",
+      clinic: "Public Dental Service",
       dentist: "Dr. Sarah Sarah",
       patientName: "Frank Ocean",
       email: "frank.ocean@example.com",
@@ -190,7 +227,7 @@ const mockBookingData = [
       id: 1,
       name: "Dr. John Johnson",
       specialty: "Orthodontics",
-      location: "Central Gothenburg",
+      clinic: "Folktandvården Lundby",
       timetable: {
         "2024-12-01": ["9:00 AM", "11:30 AM", "2:00 PM", "4:00 PM"],
         "2024-12-02": ["10:00 AM", "11:30 AM", "2:00 PM"],
@@ -228,7 +265,7 @@ const mockBookingData = [
       id: 2,
       name: "Dr. Michael Mike",
       specialty: "Pediatric Dentistry",
-      location: "North Gothenburg",
+      clinic: "Folktandvården Sannegården",
       timetable: {
         "2024-12-01": ["9:30 AM", "10:30 AM", "1:00 PM", "3:00 PM"],
         "2024-12-02": ["10:00 AM", "11:30 AM", "2:00 PM"],
@@ -266,9 +303,9 @@ const mockBookingData = [
       id: 3,
       name: "Dr. Sarah Sarah",
       specialty: "General Dentistry",
-      location: "South Gothenburg",
+      clinic: "Public Dental Service",
       timetable: {
-        "2024-12-01": ["9:30 AM", "10:30 AM", "1:00 PM", "3:00 PM"],
+        "2024-12-01": ["8:00 AM", "11:30 AM", "5:30 PM", "6:00 PM"],
         "2024-12-02": ["10:00 AM", "11:30 AM", "2:00 PM"],
         "2024-12-03": ["10:30 AM", "12:00 PM", "3:30 PM"],
         "2024-12-04": ["9:00 AM", "10:30 AM", "2:00 PM"],
