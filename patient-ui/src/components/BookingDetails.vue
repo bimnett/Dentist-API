@@ -7,6 +7,7 @@
       <p><strong>Clinic Name:</strong> {{ booking.clinicName }}</p>
       <p><strong>Dentist:</strong> {{ booking.dentist }}</p>
       <p><strong>Reference Code:</strong> {{ booking.referenceCode }}</p>
+      <button class="btn btn-danger mt-3" @click="confirmCancel">Cancel Appointment</button>
     </div>
     <div v-else>
       <p>No booking details available. Please enter a valid reference code.</p>
@@ -15,22 +16,31 @@
 </template>
 
 <script>
-
-/**
- * BookingDetails component is responsible for displaying details of a specific appointment booking.
- * It shows the following information: appointment time (string), date (string), clinic name (string),
- * dentist name (string), and reference code (string).
- * 
- * If no booking details are available (e.g., an invalid or missing reference code), it displays
- * a fallback message prompting the user to enter a valid reference code.
- */
-
 export default {
   name: 'BookingDetails',
   props: {
     booking: {
       type: Object,
       required: false,
+    },
+  },
+  methods: {
+    async cancelAppointment() {
+      try {
+        // Simulating API response for testing until DB connection
+        const response = 'XYZ789'; // Replace with `await api.deleteBooking(this.booking.referenceCode);`
+        if (response === 'XYZ789' || response === 'ABC123') {
+          this.$emit("appointment-canceled"); // Notify parent to reset booking
+        }
+      } catch (err) {
+        console.error("Error canceling appointment:", err.message);
+        alert("Failed to cancel the appointment. Please try again.");
+      }
+    },
+    confirmCancel() {
+      if (confirm("Are you sure you want to cancel your appointment?")) {
+        this.cancelAppointment();
+      }
     },
   },
 };
