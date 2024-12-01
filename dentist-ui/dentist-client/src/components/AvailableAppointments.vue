@@ -72,6 +72,7 @@
         <p><strong>Patient Name:</strong> {{ selectedBooking.patientName }}</p>
         <p><strong>Time:</strong> {{ selectedBooking.time }}</p>
         <p><strong>Date:</strong> {{ selectedBooking.date }}</p>
+        <p><strong>Notes:</strong> {{ selectedBooking.notes || 'No additional notes provided.' }}</p>
         <button @click="closeModal" class="btn btn-secondary">Close</button>
       </div>
     </div>
@@ -103,6 +104,30 @@ export default {
         "2024-12-04": [
           { time: '09:00', patientName: 'John Doe', slotId: 1 },
           { time: '14:00', patientName: 'Jane Smith', slotId: 2 },
+        ],
+        "2024-12-05": [
+          { time: "08:00", patientName: "Alex Alexander", slotId: 3, notes: "Check-up" },
+          { time: "11:00", patientName: "Bruce Lee", slotId: 4, notes: "Wisdom tooth consultation" },
+        ],
+        "2024-12-06": [
+          { time: "10:00", patientName: "Chris Evans", slotId: 5, notes: "Orthodontic adjustment" },
+          { time: "15:00", patientName: "Morgan Blake", slotId: 6, notes: "Teeth whitening" },
+        ],
+        "2024-12-07": [
+          { time: "13:00", patientName: "Taylor Swift", slotId: 7, notes: "Routine cleaning" },
+          { time: "16:00", patientName: "Bill Gates", slotId: 8, notes: "Cavity filling" },
+        ],
+        "2024-12-08": [
+          { time: "09:00", patientName: "Serena Williams", slotId: 9, notes: "Dental implant follow-up" },
+          { time: "14:00", patientName: "Roger Federer", slotId: 10, notes: "Routine cleaning" },
+        ],
+        "2024-12-09": [
+          { time: "08:00", patientName: "Elon Musk", slotId: 11, notes: "Emergency tooth extraction" },
+          { time: "12:00", patientName: "Jeff Bezos", slotId: 12, notes: "Routine cleaning" },
+        ],
+        "2024-12-10": [
+          { time: "10:00", patientName: "Scarlett Johansson", slotId: 13, notes: "Orthodontic consultation" },
+          { time: "15:00", patientName: "Chris Hemsworth", slotId: 14, notes: "Teeth whitening" },
         ],
       },
       selectedBooking: null, // To store booking details for the modal box
