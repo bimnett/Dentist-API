@@ -53,9 +53,27 @@
                 <span class="slot-time">{{ time }}</span>
                 <span class="slot-duration">45 min</span>
               </div>
+              <div
+                v-else 
+                class="booked-slot"
+                @click="viewBookingDetails(day.date, time)"
+              >
+                <span class="slot-time">{{ time }}</span>
+              </div>
             </div>
           </div>
         </div>
+      </div>
+    </div>
+    <!-- Booking details in a modal box-->
+    <div v-if="selectedBooking" class="modal">
+      <div class="modal-content">
+        <h3>Booking Details</h3>
+        <p><strong>Patient Name:</strong> {{ selectedBooking.patientName }}</p>
+        <p><strong>Time:</strong> {{ selectedBooking.time }}</p>
+        <p><strong>Date:</strong> {{ selectedBooking.date }}</p>
+        <p><strong>Notes:</strong> {{ selectedBooking.notes || 'No additional notes provided.' }}</p>
+        <button @click="closeModal" class="btn btn-secondary">Close</button>
       </div>
     </div>
   </div>
@@ -80,7 +98,39 @@ export default {
         '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00',
         '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'
       ],
-      bookedSlots: {} // Fetch and store unavailable appointments here
+      // bookedSlots: {} // --> Fetch and store unavailable appointments here, for now it's mock data
+      bookedSlots: {
+        // Mock data
+        "2024-12-04": [
+          { time: '09:00', patientName: 'John Doe', slotId: 1 },
+          { time: '14:00', patientName: 'Jane Smith', slotId: 2 },
+        ],
+        "2024-12-05": [
+          { time: "08:00", patientName: "Alex Alexander", slotId: 3, notes: "Check-up" },
+          { time: "11:00", patientName: "Bruce Lee", slotId: 4, notes: "Wisdom tooth consultation" },
+        ],
+        "2024-12-06": [
+          { time: "10:00", patientName: "Chris Evans", slotId: 5, notes: "Orthodontic adjustment" },
+          { time: "15:00", patientName: "Morgan Blake", slotId: 6, notes: "Teeth whitening" },
+        ],
+        "2024-12-07": [
+          { time: "13:00", patientName: "Taylor Swift", slotId: 7, notes: "Routine cleaning" },
+          { time: "16:00", patientName: "Bill Gates", slotId: 8, notes: "Cavity filling" },
+        ],
+        "2024-12-08": [
+          { time: "09:00", patientName: "Serena Williams", slotId: 9, notes: "Dental implant follow-up" },
+          { time: "14:00", patientName: "Roger Federer", slotId: 10, notes: "Routine cleaning" },
+        ],
+        "2024-12-09": [
+          { time: "08:00", patientName: "Elon Musk", slotId: 11, notes: "Emergency tooth extraction" },
+          { time: "12:00", patientName: "Jeff Bezos", slotId: 12, notes: "Routine cleaning" },
+        ],
+        "2024-12-10": [
+          { time: "10:00", patientName: "Scarlett Johansson", slotId: 13, notes: "Orthodontic consultation" },
+          { time: "15:00", patientName: "Chris Hemsworth", slotId: 14, notes: "Teeth whitening" },
+        ],
+      },
+      selectedBooking: null, // To store booking details for the modal box
     };
   },
 
@@ -155,6 +205,17 @@ export default {
 
     bookSlot(slot) {
         // Send API request to make a slot available for patients.
+    },
+
+    viewBookingDetails(date, time) {
+      const slot = this.getSlot(date, time);
+      if (slot) {
+        this.selectedBooking = { ...slot, date };
+      }
+    },
+
+    closeModal() {
+      this.selectedBooking = null;
     },
   },
 
@@ -289,5 +350,45 @@ h2 {
 .slot-duration {
   font-size: 12px;
   color: #666;
+}
+
+.booked-slot {
+  background-color: #ffcccc;
+  border-radius: 4px;
+  padding: 8px;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.booked-slot:hover {
+  background-color: #ff9999;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 400px;
+  text-align: center;
 }
 </style>
