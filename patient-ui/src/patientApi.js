@@ -18,6 +18,14 @@ export default {
     });
     // return api.get('/dentists'); // UNCOMMENT AFTER DB SET UP
   },
+  async getDentistClinics() {
+    try{
+      const response = await api.get('');
+      return response.data;
+    } catch(err){
+      throw err;
+    }
+  },
   getTimetable(dentistId) {
     return Promise.resolve({
       data: {
