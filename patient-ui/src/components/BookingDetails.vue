@@ -16,6 +16,18 @@
 </template>
 
 <script>
+
+/**
+ * BookingDetails component is responsible for displaying details of a specific appointment booking as well as
+ * a feature to cancel it.
+ * It shows the following information: appointment time (string), date (string), clinic name (string),
+ * dentist name (string), and reference code (string).
+ * 
+ * If no booking details are available (e.g., an invalid or missing reference code), it displays
+ * a fallback message prompting the user to enter a valid reference code.
+ */
+import api from "@/api";
+
 export default {
   name: 'BookingDetails',
   props: {
@@ -27,11 +39,10 @@ export default {
   methods: {
     async cancelAppointment() {
       try {
-        // Simulating API response for testing until DB connection
-        const response = 'XYZ789'; // Replace with `await api.deleteBooking(this.booking.referenceCode);`
-        if (response === 'XYZ789' || response === 'ABC123') {
-          this.$emit("appointment-canceled"); // Notify parent to reset booking
-        }
+        const referenceCode = this.booking.referenceCode;
+        const response = await api.delete(`/bookings/${referenceCode}`); // direct api endpoint call
+        alert(response.data.message);
+       this.$emit("appointment-canceled"); // Notify and reset booking
       } catch (err) {
         console.error("Error canceling appointment:", err.message);
         alert("Failed to cancel the appointment. Please try again.");
@@ -45,3 +56,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+p {
+  font-size: 1rem;
+  margin: 0.5em 0;
+}
+</style>
