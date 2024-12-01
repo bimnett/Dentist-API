@@ -8,7 +8,7 @@ import BookingDetailsView from './views/BookingDetailsView.vue';
 
 const routes = [
   { path: '/', name: 'Home', component: Home },
-  { path: '/bookslot', name: 'AvailableDates', component: AvailableDatesView },
+  { path: '/available-dates', name: 'AvailableDates', component: AvailableDatesView },
   { path: "/slots/:selectedDate", name: "SlotSelection", component: SlotSelectionView, props: (route) => ({ selectedDate: route.params.selectedDate }) },
   { path: '/available-dentists/:selectedDate/:selectedTime', name: 'AvailableDentists', component: AvailableDentistsView, props: true },
   { path: '/booking-form/:dentistId/:selectedDate/:selectedTime', name: 'BookingForm', component: AppointmentBookingFormView, props: true },

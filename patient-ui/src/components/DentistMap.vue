@@ -6,7 +6,7 @@ This component creates a map that is zoomed in on Gothenburg, and places a marke
 </template>
 
 <script>
-  import patientApi from '../patientApi'
+   import api from "@/api";
 
   export default {
     name: "DentistMap",
@@ -39,7 +39,19 @@ This component creates a map that is zoomed in on Gothenburg, and places a marke
       this.dentistClinics.forEach(clinic => {
         L.marker([clinic.lat, clinic.long])
           .addTo(map)
-          .bindPopup(`${clinic.name}<br>${clinic.address}`);
+          .bindPopup(
+          `
+            <div>
+              <strong>${clinic.name}</strong><br>
+              ${clinic.address}<br>
+              <button class="appointment-button" onclick="window.location.href='/available-dates?clinic=${encodeURIComponent(
+                clinic.name
+              )}'">
+                Make Appointment
+              </button>
+            </div>
+          `
+        );
       });
     },
   };

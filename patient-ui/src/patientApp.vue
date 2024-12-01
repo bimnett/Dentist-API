@@ -20,7 +20,7 @@
               <router-link to="/" class="nav-link" active-class="active">Home</router-link>
             </li>
             <li class="nav-item">
-              <router-link to="/bookslot" class="nav-link" active-class="active">Book Slot</router-link>
+              <router-link to="/available-dates" class="nav-link" active-class="active">Book Slot</router-link>
             </li>
             <li class="nav-item">
               <router-link to="/booking-details" class="nav-link" active-class="active">Check Booking Details</router-link>
@@ -37,7 +37,7 @@
 
     <!-- Footer -->
     <footer class="bg-light text-center py-3 mt-auto">
-      <p class="mb-0">&copy; 2024 The Dentist For You. Team XX (forgot our team number)</p>
+      <p class="mb-0">&copy; 2024 The Dentist For You by Team 15</p>
     </footer>
   </div>
 </template>
