@@ -31,3 +31,5 @@ build/
 # Other
 .env
 node_modules
+
+env.js
