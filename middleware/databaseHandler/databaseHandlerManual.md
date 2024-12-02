@@ -10,7 +10,7 @@ TOPIC_DATABASE_RETRIEVE_RESPONSE = database/response/retrieve
 TOPIC_DATABASE_UPDATE_RESPONSE = database/response/update
 ```
 2. To start the service, run following command in a separate terminal window:
-``npm run serveDBHandler``
+``npm run serveDbHandler``
 
 ## Using the service
 DB Handler currently handles messages received from the following topics:

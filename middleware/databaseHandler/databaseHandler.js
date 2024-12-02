@@ -1,8 +1,9 @@
 var mongoose = require('mongoose');
 const mqtt = require('mqtt');
 require('dotenv').config(); // Load .env variables
+const config = require('../env');
 
-var mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/dentist_app';
+var mongoURI = config.MONGODB_URI || 'mongodb://localhost:27017/dentist_app';
 
 // Connect to MongoDB
 mongoose.connect(mongoURI, { autoIndex: false }).catch(function(err) {
@@ -16,15 +17,16 @@ mongoose.connect(mongoURI, { autoIndex: false }).catch(function(err) {
 // Import data model
 let Timeslot = require('./models/timeslot');
 
+// MQTT connection
 const options = {
-    clientId: 'clientclient', // Set unique client ID
-    username: process.env.USERNAME, // Load username from .env
-    password: process.env.PASSWORD, // Load password from .env
-    connectTimeout: 30000,
-    reconnectPeriod: 1000,
+    clientId: "", // You can set a unique client ID here
+    username: config.username, // Use the username defined in env.js
+    password: config.password, // Use the password defined in env.js
+    connectTimeout: 30000, // Set the connection timeout to 30 seconds
+    reconnectPeriod: 1000,  // Reconnect every 1 second if disconnected
 };
 
-const client = mqtt.connect(process.env.BROKERURL, options);
+const client = mqtt.connect(config.BROKERURL, options);
 
 
 const INSERT_TOPIC = process.env.TOPIC_DATABASE_INSERT;
