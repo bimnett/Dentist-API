@@ -5,7 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serveDentist": "node dentistApp.js",
-    "servePatient": "node patientApp.js"
+    "servePatient": "node temp-patientApp.js",
+    "serveDbHandler": "node ./databaseHandler/databaseHandler.js"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +17,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "mongoose": "^8.8.2",
     "morgan": "^1.10.0",
     "mqtt": "^5.10.2"
   }

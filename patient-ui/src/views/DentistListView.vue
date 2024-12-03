@@ -7,7 +7,7 @@
 
 <script>
 import DentistList from '../components/DentistList.vue';
-import api from '../patientApi.js';
+import api from "@/api";
 
 export default {
   name: 'DentistListView',
@@ -20,16 +20,17 @@ export default {
   methods: {
     async fetchDentists() {
       try {
-        const response = await api.getDentists();
-        this.dentists = response.data; 
+        // fetch dentists from backend (middleware) API
+        const response = await api.get("/dentists");
+        this.dentists = response.data.dentists;
       } catch (err) {
-        console.error('Error fetching dentists:', err.message);
-        alert('Failed to load dentist list. Please try again later.');
+        console.error("Error fetching dentists:", err.message);
+        alert("Failed to load dentist list. Please try again later.");
       }
     },
     handleSelectDentist(dentistId) {
-      console.log('Selected dentist ID:', dentistId);
-      // logic tbd
+      console.log("Selected dentist ID:", dentistId);
+      // logic tbd (e.g., redirect to dentist details or booking form)
     },
   },
   mounted() {

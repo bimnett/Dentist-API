@@ -2,7 +2,7 @@
   <div id="app">
     <nav class="navbar navbar-expand-lg custom-navbar">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">The Dentist For You</a>
+        <a class="navbar-brand" href="/">The Dentist For You</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -20,13 +20,7 @@
               <router-link to="/" class="nav-link" active-class="active">Home</router-link>
             </li>
             <li class="nav-item">
-              <router-link to="/dentistlist" class="nav-link" active-class="active">Dentists</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link to="/dentisttimetable" class="nav-link" active-class="active">Timetable</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link to="/bookingDetails" class="nav-link" active-class="active">Booking Details</router-link>
+              <router-link to="/booking-details" class="nav-link" active-class="active">Check Booking Details</router-link>
             </li>
           </ul>
         </div>
@@ -40,7 +34,7 @@
 
     <!-- Footer -->
     <footer class="bg-light text-center py-3 mt-auto">
-      <p class="mb-0">&copy; 2024 The Dentist For You. Team XX (forgot our team number)</p>
+      <p class="mb-0">&copy; 2024 The Dentist For You by Team 15</p>
     </footer>
   </div>
 </template>
