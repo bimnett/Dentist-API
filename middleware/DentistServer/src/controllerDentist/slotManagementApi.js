@@ -19,7 +19,7 @@ router.post('/newSlots', async function(req,res,next){
         options.clientId = 'pub_dentistServer'+Math.random().toString(36).substring(2,10); 
 
         // connect to broker 
-        const client = mqtt.connect(config.brokerURL, options);
+        const client = mqtt.connect(config.BROKERURL, options);
         
         client.on('connect', () => {
             console.log('Publisher connected to broker');
@@ -72,7 +72,7 @@ router.get('/avaliableSlots', async function(req,res,next){
         options.clientId ='sub_dentistServer'+Math.random().toString(36).substring(2,10);
     
         // connect to broker 
-        const client = mqtt.connect(config.brokerURL, options);
+        const client = mqtt.connect(config.BROKERURL, options);
     
         client.on('connect', () => {
             console.log('Subscriber connected to broker');

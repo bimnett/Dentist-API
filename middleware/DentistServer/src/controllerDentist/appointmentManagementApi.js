@@ -19,7 +19,7 @@ router.get('/bookedAppointments', async function(req,res,next){
         options.clientId ='sub_dentistApi'+Math.random().toString(36).substring(2,10);
     
         // connect to broker 
-        const client = mqtt.connect(config.brokerURL, options);
+        const client = mqtt.connect(config.BROKERURL, options);
     
         client.on('connect', () => {
             console.log('Subscriber connected to broker');

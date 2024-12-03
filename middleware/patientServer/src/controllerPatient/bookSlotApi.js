@@ -37,7 +37,7 @@ router.get('/bookAppointments/clinics', async function(req,res,next){
        
         options.clientId = "sub_patientServer"+Math.random().toString(36).substring(2,10);
          // subscribe to the topic that will give us all the clinics 
-        const client = mqtt.connect(config.brokerURL, options);
+        const client = mqtt.connect(config.BROKERURL, options);
           
         client.on('connect', () => {
             console.log('Subscriber connected to broker');
@@ -77,7 +77,7 @@ router.get('/bookAppointments/clinics', async function(req,res,next){
 router.get('/bookAppointments/clinics/:clinicId/dentists', async function(req, res, next){
     try {
         options.clientId = "sub_patienService"+Math.random().toString(36).substring(2,10); // random clientId
-        const client = mqtt.connect(config.brokerURL, options);
+        const client = mqtt.connect(config.BROKERURL, options);
 
         client.on('connect', () => {
             console.log('Subscriber connected to broker');
@@ -116,7 +116,7 @@ router.get('/bookAppointments/clinics/:clinicId/dentists', async function(req, r
 router.get('/bookAppointments/clinics/:clinicId/:dentistId/timeschedual', async function(req,res,next){
     try {
         options.clientId = "sub_patientService"+Math.random().toString(36).substring(2,10); // random clientId
-        const client = mqtt.connect(config.brokerURL, options);
+        const client = mqtt.connect(config.BROKERURL, options);
 
         client.on('connect', () => {
             console.log('Subscriber connected to broker');
@@ -158,7 +158,7 @@ router.get('/bookAppointments', async function(req,res,next){
 
         options.clientId =  'sub_patientService'+Math.random().toString(36).substring(2,10);
         // connect to broker 
-        const client = mqtt.connect(config.brokerURL, options);
+        const client = mqtt.connect(config.BROKERURL, options);
     
         client.on('connect', () => {
             console.log('Subscriber connected to broker');
@@ -197,7 +197,7 @@ router.get('/bookAppointments', async function(req,res,next){
 router.get('/bookAppointments/:appointmentId', async function(req,res,next){
     try {
         options.clientId ='sub_patientService'+Math.random().toString(36).substring(2,10);
-        const client = mqtt.connect(config.brokerURL, options);
+        const client = mqtt.connect(config.BROKERURL, options);
     
         client.on('connect', () => {
             console.log('Subscriber connected to broker');
