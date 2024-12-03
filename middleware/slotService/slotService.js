@@ -44,31 +44,7 @@ client.on('message', (topic, message) => {
 
         // create new avaliable time slot 
         case config.topic_slot_management_create:
-    
-        
-        // LOOK UP ASYNCRONUS PROGRAMMING 
-            var time = slotManagement.validate_time(message);
-            var date = slotManagement.validate_date(message);
-            var clinic = slotManagement.validate_clinic(message);
-            var dentist = slotManagement.validate_dentist(message);
-        
-            var referenceCode = slotManagement.create_referance_code();
-
-            console.log(time,date,clinic,dentist);
-
-            // info given is ok --> cretae new slot 
-            // LOOK UP!! --> ASYNCRONUS PROGRAMMING
-            if(time && date && clinic && dentist){
-                slotManagement.create_new_slot(topic, message);
-            } else {
-                console.log(time);
-                console.log(date);
-                console.log(clinic);
-                console.log(dentist);
-            }
-
-            console.log("create new slot");
-           
+            slotManagement.create_new_slot(topic,message);
             break;
         
 
