@@ -11,10 +11,6 @@ const options = {
 }
 
 const slotManagement = require('./src/slotManagement');
-/*
-console.log(slotManagement);  // Check what is being imported
-var payload = slotManagement.create_new_slot(options, mqtt, config); 
-console.log(payload);*/
 
 options.clientId ='slotService_'+Math.random().toString(36).substring(2,10);
 // connect to broker 
@@ -38,7 +34,6 @@ client.on('message', (topic, message) => {
             - acces the db directly here or througth the db-handler?
             - ok to update the db-hnadler? so it maches to what happens here?
             - ok to update the topics?
-            - help the the ascyn programming
             - referance code - shall I create it or shall we use mongoDb:s one
         */
 
@@ -50,34 +45,13 @@ client.on('message', (topic, message) => {
 
         //update info of an avaliable slot 
         case config.topic_slot_management_update:
-
-            // validate info 
-            var time = slotManagement.validate_time(message);
-            var date = slotManagement.validate_date(message);
-            var clinic = slotManagement.validate_clinic(message);
-            var dentist = slotManagement.validate_dentist(message);
-            var referenaceCode = slotManagement.validate_referance_code(message);
-
-            // info ok --> update slot
-            if(time && date && clinic && dentist){
-                slotManagement.update_slot(topic, message);
-            } else {
-                console.log(time);
-                console.log(date);
-                console.log(clinic);
-                console.log(dentist);
-            }
-        
-            console.log("Update the slot");
+            slotManagement.update_slot(topic, message);
             break;
         
 
         //delte an avaliable slot 
         case config.topic_slot_management_delete:
-
-            var referance_code = slotManagement.validate_referance_code(message);
-
-            console.log("delteSlot");
+            slotManagement.delete_slot(topic, message);
             break;
 
             
