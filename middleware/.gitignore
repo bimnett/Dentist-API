@@ -32,4 +32,4 @@ build/
 .env
 node_modules
 
-env.js
+credentials.js

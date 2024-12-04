@@ -1,11 +1,12 @@
 const mqtt = require('mqtt');
-const config = require('../env');
+const CREDENTIAL = require('../credentials');
+const TOPIC = require('../topics');
 
 // creat a new time slot 
 const options = {
     clientId: "", // You can set a unique client ID here
-    username: config.username, // Use the username defined in env.js
-    password: config.password, // Use the password defined in env.js
+    username: CREDENTIAL.username, // Use the username defined in env.js
+    password: CREDENTIAL.password, // Use the password defined in env.js
     connectTimeout: 30000, // Set the connection timeout to 30 seconds
     reconnectPeriod: 1000,  // Reconnect every 1 second if disconnected
 }
@@ -14,11 +15,12 @@ const slotManagement = require('./src/slotManagement');
 
 options.clientId ='slotService_'+Math.random().toString(36).substring(2,10);
 // connect to broker 
-const client = mqtt.connect(config.BROKERURL, options);
+const client = mqtt.connect(CREDENTIAL.broker_url, options);
+
 client.on('connect', () => {
     console.log('Subscriber connected to broker');
     // subscribe to recive data about new slot
-    const topic = '#';
+    const topic = TOPIC.everything;
     client.subscribe(topic, { qos: 2 }, (err) => {
         if (err) {
             console.log('Subscription error:', err);
@@ -29,37 +31,44 @@ client.on('connect', () => {
 });
 
 client.on('message', (topic, message) => {
+    console.log("In message");
+    // message = from broker buffer obj.
+
+    // topic the slot service subscribe to 
+
+    if(topic===TOPIC.create_new_slot){
+        slotManagement.create_new_slot(TOPIC,message,client);
+    }
+
+
     switch(topic){
-        /*QUESTIONS 
-            - acces the db directly here or througth the db-handler?
-            - ok to update the db-hnadler? so it maches to what happens here?
-            - ok to update the topics?
-            - referance code - shall I create it or shall we use mongoDb:s one
-        */
 
         // create new avaliable time slot 
-        case config.topic_slot_management_create:
-            slotManagement.create_new_slot(topic,message);
+        case TOPIC.create_new_slot:
+            slotManagement.create_new_slot(TOPIC,message,client);
             break;
         
 
         //update info of an avaliable slot 
-        case config.topic_slot_management_update:
+        case TOPIC.update_slot:
             slotManagement.update_slot(topic, message);
             break;
         
 
         //delte an avaliable slot 
-        case config.topic_slot_management_delete:
+        case TOPIC.delete_slot:
             slotManagement.delete_slot(topic, message);
             break;
 
             
         default:
+            console.log("default case: ");
             console.log("topic: "+topic);
             console.log("message:\n "+message);
             break;
     }
+
+    
      
 });
 

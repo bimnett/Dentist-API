@@ -7,10 +7,13 @@ const Schema = mongoose.Schema;
 
 //todo implement validators
 const TimeslotSchema = new Schema({
-    start: {
-        type: Date,
+    date: {
+        type: String,
         required: true,
-        default: Date.now()
+    },
+    time: {
+        type: String,
+        required: false,
     },
     status: {
         type: String,
@@ -18,14 +21,14 @@ const TimeslotSchema = new Schema({
         required: true,
         default: 'free'
     },
-    referenceCode: {
-        type: String,
-        unique: true
-    },
     dentist: {
-        type: Schema.Types.ObjectId,
-        ref: 'Dentist'
-    }
+        type: String
+    },
+    clinic:{
+        type: String,
+        required: true,
+        default: 'Dentist For You'
+    },
 })
 
 module.exports = mongoose.model('Timeslot', TimeslotSchema);

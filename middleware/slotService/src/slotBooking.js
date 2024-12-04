@@ -1,3 +1,7 @@
+// update this - shall the logic be this way? 
+
+
+/*
 const config = require('../../env');
 
 const options = {
@@ -53,3 +57,4 @@ function try_to_publish_to_db_handeler(){
     });
     
 };
+*/

@@ -1,104 +1,86 @@
-var mongoose = require('mongoose');
 const mqtt = require('mqtt');
-require('dotenv').config(); // Load .env variables
-const config = require('../env');
+const CREDENTIAL = require('../credentials');
+const TOPIC = require('../topics');
+const mongoose = require("mongoose");
 
-var mongoURI = config.MONGODB_URI || 'mongodb://localhost:27017/dentist_app';
-
-// Connect to MongoDB
-mongoose.connect(mongoURI, { autoIndex: false }).catch(function(err) {
-    console.error(`Failed to connect to MongoDB with URI: ${mongoURI}`);
-    console.error(err.stack);
-    process.exit(1);
-}).then(function() {
-    console.log(`Connected to MongoDB with URI: ${mongoURI}`); // mistake when forward porting
-});
-
-// Import data model
-let Timeslot = require('./models/timeslot');
-
-// MQTT connection
+// MQTT connection options
 const options = {
-    clientId: "", // You can set a unique client ID here
-    username: config.username, // Use the username defined in env.js
-    password: config.password, // Use the password defined in env.js
-    connectTimeout: 30000, // Set the connection timeout to 30 seconds
-    reconnectPeriod: 1000,  // Reconnect every 1 second if disconnected
+    clientId: 'database_' + Math.random().toString(36).substring(2, 10),
+    username: CREDENTIAL.username,
+    password: CREDENTIAL.password,
+    connectTimeout: 30000,
+    reconnectPeriod: 1000
 };
 
-const client = mqtt.connect(config.BROKERURL, options);
 
+const dbURI = CREDENTIAL.mongodb_url;
 
-const INSERT_TOPIC = config.TOPIC_DATABASE_INSERT;
-const RETRIEVE_TOPIC = config.TOPIC_DATABASE_RETRIEVE;
-const UPDATE_TOPIC = config.TOPIC_DATABASE_UPDATE;
-const INSERT_TOPIC_RESPONSE = config.TOPIC_DATABASE_INSERT_RESPONSE;
-const RETRIEVE_TOPIC_RESPONSE = config.TOPIC_DATABASE_RETRIEVE_RESPONSE;
-const UPDATE_TOPIC_RESPONSE = config.TOPIC_DATABASE_UPDATE_RESPONSE;
+// Connect to MongoDB using Mongoose
+mongoose.connect(dbURI, { 
+    useNewUrlParser: true, 
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 5000,  // Set timeout for DB connection attempts
+})
+    .then(() => console.log('Connected to MongoDB'))
+    .catch((err) => console.error('Error connecting to MongoDB:', err));
 
-const topics = [INSERT_TOPIC, RETRIEVE_TOPIC, UPDATE_TOPIC];
+// Import the Timeslot model after the connection is established
+const Timeslot = require('./models/timeslot');
 
+// Create MQTT client and connect
+const client = mqtt.connect(CREDENTIAL.broker_url, options);
+
+// Avoid multiple listeners by ensuring they are added once
 client.on('connect', () => {
     console.log('databaseHandler connected to broker');
-
-    //subscribe to database topics
-    for(let topic of topics){
-        client.subscribe(topic, { qos: 2 }, (err) => {
-            if (err) {
-                console.error('Subscription error:', err);
-            } else {
-                console.log(`Subscribed to topic: ${topic}`);
-            }
-        });
-    }
+    const topic = TOPIC.everything;
+    client.subscribe(topic, { qos: 2 }, (err) => {
+        if (err) {
+            console.error('Subscription error:', err);
+        } else {
+            console.log(`Subscribed to topic: ${topic}`);
+        }
+    });
 });
 
+// Ensure that message event listener is only registered once
 client.on('message', async (topic, message) => {
-    console.log(`Received message: ${message.toString()} on topic: ${topic}`);
-    let data = JSON.parse(message.toString());
+    console.log(`Received message on topic: ${topic}`);
 
-    let pubTopic = null;
-    let payload = null;
+    try {
+        const messageString = message.toString();  // Convert Buffer to string
+        const jsonMessage = JSON.parse(messageString);  // Parse JSON
 
-    if(topic == INSERT_TOPIC){
-        let newTimeslot = new Timeslot(data);
-        try{
-            await newTimeslot.save();
-            payload = "New timeslot inserted successfully: " + newTimeslot;
-            pubTopic = INSERT_TOPIC_RESPONSE;
-            console.log(payload);
-        } catch (err) {
-            console.error(err);
+        // Ensure Mongoose connection is ready before saving data
+        if (mongoose.connection.readyState !== 1) {
+            console.error('Mongoose is not connected to the database.');
+            return;
         }
-    }
-    else if(topic == RETRIEVE_TOPIC){
-        try{
-            let timeslots = await Timeslot.find();
-            payload = timeslots;
-            pubTopic = RETRIEVE_TOPIC_RESPONSE;
-        } catch (err){
-            console.error(err);
+
+        if(topic === "dentist/slot/create/new/slot"){
+            const newSlot = new Timeslot(jsonMessage);
+            await newSlot.save();
+            console.log("New slot saved successfully.");
         }
+/*
+        switch (topic) {
+            case TOPIC.specific_clinic:
+                const newSlot = new Timeslot(jsonMessage);
+                await newSlot.save();
+                break;
+            case TOPIC.specific_dentist:
+                slotManagement.retrieve_specific_dentist(TOPIC, message, client, Clinic);
+                break;
+            case TOPIC.new_slot_data:
+                slotManagement.insert_new_slot(message, Timeslot);
+                break;
+            default:
+                console.log('Unknown topic:', topic);
+                break;
+        }*/
+    } catch (err) {
+        console.error('Error processing message:', err);
     }
-    else if(topic == UPDATE_TOPIC){
-        //todo
-    }
-    else {
-        console.error("Error: unknown topic");
-    }
-
-    if(!pubTopic || !payload){
-        console.error("An error occurred");//todo implement proper error handling;
-    } else {
-        client.publish(pubTopic, payload, { qos: 2 }, (err) => {
-            if (err) {
-                console.error('Publishing error:', err);
-            } else {
-                console.log('Message published successfully!');
-            }
-        });
-    }
-
 });
 
 client.on('error', (error) => {
@@ -108,3 +90,57 @@ client.on('error', (error) => {
 client.on('close', () => {
     console.log('DatabaseHandler connection closed');
 });
+
+// Validate clinic function now returns a Promise to ensure asynchronous flow
+async function validate_clinic(TOPIC, message, client) {
+    return new Promise((resolve, reject) => {
+        try {
+            const string_message = message.toString();
+            const json_message = JSON.parse(string_message);
+            const clinic_name = json_message.clinic;
+
+            const topic = TOPIC.specific_clinic;
+            const payload = { clinic: clinic_name };
+            const json_payload = JSON.stringify(payload);
+
+            client.publish(topic, json_payload, { qos: 2 }, (err) => {
+                if (err) {
+                    console.log('Publish error:', err);
+                    reject(err);  // Reject if there was a publish error
+                } else {
+                    console.log('Message published successfully:', clinic_name);
+                }
+            });
+
+            const subscriptionTopic = TOPIC.retrived_specific_clinic;
+            client.subscribe(subscriptionTopic, { qos: 2 }, (err) => {
+                if (err) {
+                    console.log('Subscription error', err);
+                    reject(err);  // Reject if there was a subscription error
+                } else {
+                    console.log(`Subscribed to topic: ${subscriptionTopic}`);
+                }
+            });
+
+            // Listen for the specific clinic response
+            client.on('message', (topic, responseMessage) => {
+                if (topic === subscriptionTopic) {
+                    const response = responseMessage.toString();
+                    try {
+                        const responseJson = JSON.parse(response);
+                        if (responseJson.clinic === clinic_name) {
+                            resolve(true);  // Resolve with true if clinic matches
+                        } else {
+                            resolve(false);  // Resolve with false if clinic doesn't match
+                        }
+                    } catch (err) {
+                        reject(err);  // Reject if there's an error parsing the response
+                    }
+                }
+            });
+        } catch (err) {
+            console.log('Error in validate_clinic:', err);
+            reject(err);  // Reject the Promise if there is an error
+        }
+    });
+}
