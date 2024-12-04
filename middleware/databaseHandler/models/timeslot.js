@@ -1,5 +1,5 @@
 /*
-    MongoDB model for timeslot entity
+    MongoDB model for timeslot/booking entity
 */
 const mongoose = require("mongoose");
 
@@ -17,17 +17,39 @@ const TimeslotSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ['free', 'booked'],
+        enum: ['Available', 'Booked'],
         required: true,
-        default: 'free'
+        default: 'Available'
+    },
+    patient: {
+        name: {
+            type: String,
+            required: false,
+        },
+        email: {
+            type: String,
+            required: false,
+        },
+        phone: {
+            type: String,
+            required: false,
+        },
     },
     dentist: {
-        type: String
-    },
-    clinic:{
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Dentist',
         required: true,
-        default: 'Dentist For You'
+        },
+    clinic:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Clinic',
+        required: true,
+    },
+    treatment: {
+        type: String,
+        enum: ['General', 'Teeth Whitening', 'Tooth Extraction', 'Implant Insertion', 'Laminated Tooth Veneer', 'Tooth Filling', 'Teeth Cleaning', 'Root Canal Treatment'],
+        required: true,
+        default: 'General'
     },
 })
 
