@@ -1,16 +1,25 @@
 # DB Handler Dev Manual
 ## Running the service
-1. Before running the service, add following topic to your `.env` file, if any are missing: 
+1. Before running the service, add following topic to your `credentials.js` file and locate it inside middlware but outside databaseHandler directory: 
 ```
-TOPIC_DATABASE_INSERT = database/insert
-TOPIC_DATABASE_RETRIEVE = database/retrieve
-TOPIC_DATABASE_UPDATE = database/update
-TOPIC_DATABASE_INSERT_RESPONSE = database/response/insert
-TOPIC_DATABASE_RETRIEVE_RESPONSE = database/response/retrieve
-TOPIC_DATABASE_UPDATE_RESPONSE = database/response/update
+module.exports = {
+    // MQTT broker credentials 
+    broker_url: 'mqtts://bcb827a92c7e47148d41110e325bc569.s1.eu.hivemq.cloud:8883',
+    username: 'Yokotoko',
+    password: 'YokoshakamokoToto1',
+
+    // MongoDB URI
+    mongodb_url: 'mongodb://localhost:27017/dentist_app',
+};
 ```
 2. To start the service, run following command in a separate terminal window:
 ``npm run serveDbHandler``
+
+## Add the seed files
+1. Populate MongoDB with dentist, clinic, and timeslot data by running the following scripts:
+``node seeds/seedClinics.js``
+``node seeds/seedDentists.js``
+``node seeds/seedTimeslots.js``
 
 ## Using the service
 DB Handler currently handles messages received from the following topics:
