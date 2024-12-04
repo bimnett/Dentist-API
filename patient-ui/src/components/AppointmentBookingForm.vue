@@ -4,15 +4,23 @@
     <form @submit.prevent="submitBooking">
       <div>
         <label for="name">Name:</label>
-        <input v-model="bookingData.name" type="text" id="name" required />
+        <input v-model="bookingData.patient.name" type="text" id="name" required />
       </div>
       <div>
         <label for="email">Email:</label>
-        <input v-model="bookingData.email" type="email" id="email" required />
+        <input v-model="bookingData.patient.email" type="email" id="email" required />
       </div>
       <div>
         <label for="phone">Phone:</label>
-        <input v-model="bookingData.phone" type="tel" id="phone" required />
+        <input v-model="bookingData.patient.phone" type="tel" id="phone" required />
+      </div>
+      <div>
+        <label for="treatment">Select Treatment:</label>
+        <select v-model="bookingData.treatment" id="treatment" required>
+          <option v-for="option in treatmentOptions" :key="option" :value="option">
+            {{ option }}
+          </option>
+        </select>
       </div>
       <div>
         <label for="date">Selected Date:</label>
@@ -37,6 +45,20 @@
   props: {
     dentist: Object,
     bookingData: Object,
+  },
+  data() {
+    return {
+      treatmentOptions: [
+        "General",
+        "Teeth Whitening",
+        "Tooth Extraction",
+        "Implant Insertion",
+        "Laminated Tooth Veneer",
+        "Tooth Filling",
+        "Teeth Cleaning",
+        "Root Canal Treatment",
+      ],
+    };
   },
   methods: {
     submitBooking() {

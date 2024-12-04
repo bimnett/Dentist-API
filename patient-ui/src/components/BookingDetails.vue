@@ -6,6 +6,7 @@
       <p><strong>Date:</strong> {{ booking.date }}</p>
       <p><strong>Clinic Name:</strong> {{ booking.clinicName }}</p>
       <p><strong>Dentist:</strong> {{ booking.dentist }}</p>
+      <p><strong>Treatment:</strong> {{ booking.treatment }}</p>
       <p><strong>Reference Code:</strong> {{ booking.referenceCode }}</p>
       <button class="btn btn-danger mt-3" @click="confirmCancel">Cancel Appointment</button>
     </div>
