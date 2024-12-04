@@ -8,7 +8,16 @@ const Schema = mongoose.Schema;
 const DentistSchema = new Schema({
     name: {
         type: String,
-        required: true,
+        required: true
+    },
+    specialty: {
+        type: String,
+        default: 'General Dentistry'
+    },
+    clinic: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Clinic',
+        required: true
     }
 });
 
