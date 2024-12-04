@@ -5,7 +5,6 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-//todo implement validators
 const TimeslotSchema = new Schema({
     date: {
         type: String,
@@ -48,7 +47,7 @@ const TimeslotSchema = new Schema({
     treatment: {
         type: String,
         enum: ['General', 'Teeth Whitening', 'Tooth Extraction', 'Implant Insertion', 'Laminated Tooth Veneer', 'Tooth Filling', 'Teeth Cleaning', 'Root Canal Treatment'],
-        required: true,
+        required: false,
         default: 'General'
     },
 })
