@@ -12,18 +12,19 @@ const ClinicSchema = new Schema({
         require: true
     }, 
     openingTime: {
-        type: Date,
+        type: String,
         required: true,
-        default: Date.now()
+        default: "09:00" // can change later
     },
-    closeingTime: {
-        type: Date,
+    closingTime: {
+        type: String,
         required: true,
-        default: Date.now()
+        default: "18:00" // can change later
     }, 
-    dentists: {
-        type : String
-    }
+    dentists: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Dentist'
+    }]
 })
 
 module.exports = mongoose.model('Clinic', ClinicSchema);
