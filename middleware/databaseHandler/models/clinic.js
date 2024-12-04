@@ -7,10 +7,20 @@ const ClinicSchema = new Schema({
         type:String,
         require: true
     }, 
-    location: {
+    coordinates: {
+        lat: {
+            type: Number,
+            required: true,
+        },
+        long: {
+            type: Number,
+            required: true,
+        },
+    },
+    address: {
         type: String,
-        require: true
-    }, 
+        required: true,
+    },
     openingTime: {
         type: String,
         required: true,

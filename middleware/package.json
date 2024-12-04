@@ -6,7 +6,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "serveDentist": "node dentistApp.js",
     "servePatient": "node temp-patientApp.js",
-    "serveDbHandler": "node ./databaseHandler/databaseHandler.js"
+    "serveDbHandler": "node ./databaseHandler/databaseHandler.js",
+    "seedClinics" : "node ./databaseHandler/seeds/seedClinics.js",
+    "seedDentists" : "node ./databaseHandler/seeds/seedDentists.js",
+    "seedTimeslots" : "node ./databaseHandler/seeds/seedTimeslots.js"
   },
   "keywords": [],
   "author": "",
