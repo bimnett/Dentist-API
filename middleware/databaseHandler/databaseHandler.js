@@ -62,22 +62,6 @@ client.on('message', async (topic, message) => {
             await newSlot.save();
             console.log("New slot saved successfully.");
         }
-/*
-        switch (topic) {
-            case TOPIC.specific_clinic:
-                const newSlot = new Timeslot(jsonMessage);
-                await newSlot.save();
-                break;
-            case TOPIC.specific_dentist:
-                slotManagement.retrieve_specific_dentist(TOPIC, message, client, Clinic);
-                break;
-            case TOPIC.new_slot_data:
-                slotManagement.insert_new_slot(message, Timeslot);
-                break;
-            default:
-                console.log('Unknown topic:', topic);
-                break;
-        }*/
     } catch (err) {
         console.error('Error processing message:', err);
     }

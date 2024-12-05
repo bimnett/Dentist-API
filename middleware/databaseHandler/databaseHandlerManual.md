@@ -1,15 +1,15 @@
 # DB Handler Dev Manual
 ## Running the service
-1. Before running the service, add following topic to your `credentials.js` file and locate it inside middlware but outside databaseHandler directory: 
+1. Before running the service, add the following topic to your `credentials.js` file and locate it inside middlware but outside databaseHandler directory. Insert related data for broker_url, username, password, and mongodb_url.
 ```
 module.exports = {
     // MQTT broker credentials 
-    broker_url: 'mqtts://bcb827a92c7e47148d41110e325bc569.s1.eu.hivemq.cloud:8883',
-    username: 'Yokotoko',
-    password: 'YokoshakamokoToto1',
+    broker_url: 'BROKER_URL',
+    username: 'YOUR_USERNAME',
+    password: 'YOUR_PASSWORD',
 
     // MongoDB URI
-    mongodb_url: 'mongodb://localhost:27017/dentist_app',
+    mongodb_url: 'MONGODB_URL',
 };
 ```
 2. To start the service, run following command in a separate terminal window:

@@ -12,26 +12,7 @@ const options = {
     connectTimeout: 30000, // Set the connection timeout to 30 seconds
     reconnectPeriod: 1000,  // Reconnect every 1 second if disconnected
   }
-
-// // MQTT Client (For persistent Connection)
-// const mqttClient = mqtt.connect(config.BROKERURL, {
-//     clientId: "patientServer_" + Math.random().toString(16).substr(2, 8),
-//     username: config.username,
-//     password: config.password,
-//     connectTimeout: 30000,
-//     reconnectPeriod: 1000,
-// });
-
-// mqttClient.on('connect', () => {
-//     console.log('Connected to MQTT broker');
-// });
-// mqttClient.on('error', (error) => {
-//     console.error('MQTT connection error:', error);
-// });
-// mqttClient.on('close', () => {
-//     console.log('MQTT connection closed');
-// });
-
+  
 // get all clinics 
 router.get('/bookAppointments/clinics', async function(req,res,next){
     try {
