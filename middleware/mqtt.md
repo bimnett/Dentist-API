@@ -169,7 +169,7 @@ client.on('connect', () => {
 
 // What should happen when receiving a message
 client.on('message', (topic, message) => {
-  console.log(`Received message: ${message.toString()} on topic: ${topic}`);
+  console.log(`Received message: ${message} on topic: ${topic}`);
 });
 // Error handling in case the subscriber loses connection
 client.on('error', (error) => {

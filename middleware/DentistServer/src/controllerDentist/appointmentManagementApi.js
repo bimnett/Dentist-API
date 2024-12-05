@@ -1,13 +1,14 @@
 const mqtt = require('mqtt');
 const express = require('express');
 const router = express.Router();
-const config = require('../../../env');
+const CREDENTIAL = require('../../../credentials');
+const TOPIC = require('../../../topics');
 
 
 const options = {
     clientId: "", // You can set a unique client ID here
-    username: config.username, // Use the username defined in env.js
-    password: config.password, // Use the password defined in env.js
+    username: CREDENTIAL.username, // Use the username defined in env.js
+    password: CREDENTIAL.password, // Use the password defined in env.js
     connectTimeout: 30000, // Set the connection timeout to 30 seconds
     reconnectPeriod: 1000,  // Reconnect every 1 second if disconnected
 }
@@ -19,12 +20,12 @@ router.get('/bookedAppointments', async function(req,res,next){
         options.clientId ='sub_dentistApi'+Math.random().toString(36).substring(2,10);
     
         // connect to broker 
-        const client = mqtt.connect(config.brokerURL, options);
+        const client = mqtt.connect(CREDENTIAL.broker_url, options);
     
         client.on('connect', () => {
             console.log('Subscriber connected to broker');
 
-            const topic = config.topic_appointments_dentist;
+            const topic = TOPIC.appointments_dentist;
             client.subscribe(topic, { qos: 2 }, (err) => {
                 if (err) {
                     console.log('Subscription error:', err);
@@ -36,7 +37,6 @@ router.get('/bookedAppointments', async function(req,res,next){
 
         client.on('message', (topic, message) => {
             console.log(`Received message: + ${message} + on topic: + ${topic}`);
-            console.log(" -------------- ");
             return res.status(200).json(message);
         });
 

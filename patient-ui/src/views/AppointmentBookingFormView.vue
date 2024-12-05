@@ -31,6 +31,7 @@
           name: "",
           email: "",
           phone: "",
+          treatment: "General",
           date: this.selectedDate,
           time: this.selectedTime,
           clinic: this.clinic,
@@ -39,9 +40,9 @@
     },
     async created() {
       console.log("API call parameters:", {
-    date: this.selectedDate,
-    time: this.selectedTime,
-    clinic: this.clinic,
+      date: this.selectedDate,
+      time: this.selectedTime,
+      clinic: this.clinic,
   });
 
     try {

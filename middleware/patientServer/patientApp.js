@@ -54,20 +54,6 @@ app.get('/api/available-slots', (req, res) => {
     res.json({ slots: slots.sort() });
   });
 
-// app.get('/api/available-slots', (req, res) => {
-//     const { date } = req.query;
-//     if (!date) return res.status(400).json({ message: "Date is required" });
-  
-//     const slots = new Set();
-//     mockDentistsData.forEach((dentist) => {
-//       if (dentist.timetable[date]) {
-//         dentist.timetable[date].forEach((time) => slots.add(time));
-//       }
-//     });  // use mock data for now
-  
-//     res.json({ slots: Array.from(slots).sort() });
-//   });
-
 // Get available dentists with given time, date, and clinic
 app.get('/api/dentists', (req, res) => {
     const { date, time, clinic } = req.query;
@@ -91,17 +77,6 @@ app.get('/api/dentists', (req, res) => {
     res.json({ dentists: availableDentists });
 });
 
-// app.get('/api/dentists', (req, res) => {
-//     const { date, time } = req.query;
-//     if (!date || !time) return res.status(400).json({ message: "Date and time are required" });
-
-//     const availableDentists = mockDentistsData.filter((dentist) =>
-//         dentist.timetable[date]?.includes(time)
-//     );  // use mock data for now
-
-//     res.json({ dentists: availableDentists });
-// });
-
 // Add booking for dentist with given dentistId
 app.post('/api/dentists/:dentistId/bookings', (req, res) => {
     const { dentistId } = req.params;
@@ -112,7 +87,7 @@ app.post('/api/dentists/:dentistId/bookings', (req, res) => {
 
     const newBooking = {
         referenceCode: `${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
-        dentist: dentist.name,
+        dentistName: dentist.name,
         clinic: dentist.clinic,
         time,
         patientName: name,
@@ -165,60 +140,78 @@ const mockBookingData = [
       time: "10:00 AM",
       date: "2024-12-01",
       clinic: "Public Dental Service",
-      dentist: "Dr. John Johnson",
-      patientName: "Alice Johnson",
-      email: "alice.johnson@example.com",
-      phone: "123-456-7890",
+      dentistName: "Dr. John Johnson",
+      treatment: 'General',
+      patient: {
+        name: "Alice Johnson",
+        email: "alice.johnson@example.com",
+        phone: "123-456-7890",
+      },
     },
     {
       referenceCode: "XYZ789",
       time: "2:30 PM",
       date: "2024-12-02",
       clinic: "Folktandvården Sannegården",
-      dentist: "Dr. Michael Mike",
-      patientName: "Bob Smith",
-      email: "bob.smith@example.com",
-      phone: "987-654-3210",
+      dentistName: "Dr. Michael Mike",
+      treatment: 'General',
+      patient: {
+        name: "Bob Smith",
+        email: "bob.smith@example.com",
+        phone: "987-654-3210",
+      },
     },
     {
       referenceCode: "JKL456",
       time: "11:30 AM",
       date: "2024-12-01",
       clinic: "Folktandvården Lundby",
-      dentist: "Dr. Sarah Sarah",
-      patientName: "Charlie Brown",
-      email: "charlie.brown@example.com",
-      phone: "555-123-4567",
+      dentistName: "Dr. Sarah Sarah",
+      treatment: 'General',
+      patient: {
+        name: "Charlie Brown",
+        email: "charlie.brown@example.com",
+        phone: "555-123-4567",
+      },
     },
     {
       referenceCode: "MNO789",
       time: "9:30 AM",
       date: "2024-12-03",
       clinic: "City Tandvård",
-      dentist: "Dr. John Johnson",
-      patientName: "Daisy Ridley",
-      email: "daisy.ridley@example.com",
-      phone: "222-333-4444",
+      dentistName: "Dr. John Johnson",
+      treatment: 'General',
+      patient: {
+        name: "Daisy Ridley",
+        email: "daisy.ridley@example.com",
+        phone: "222-333-4444",
+      },
     },
     {
       referenceCode: "PQR234",
       time: "3:00 PM",
       date: "2024-12-04",
       clinic: "City Tandvård",
-      dentist: "Dr. Michael Mike",
-      patientName: "Evan Peters",
-      email: "evan.peters@example.com",
-      phone: "999-888-7777",
+      dentistName: "Dr. Michael Mike",
+      treatment: 'General',
+      patient: {
+        name: "Evan Peters",
+        email: "evan.peters@example.com",
+        phone: "999-888-7777",
+      },
     },
     {
       referenceCode: "STU567",
       time: "1:00 PM",
       date: "2024-12-05",
       clinic: "Public Dental Service",
-      dentist: "Dr. Sarah Sarah",
-      patientName: "Frank Ocean",
-      email: "frank.ocean@example.com",
-      phone: "123-321-4567",
+      dentistName: "Dr. Sarah Sarah",
+      treatment: 'General',
+      patient: {
+        name: "Frank Ocean",
+        email: "frank.ocean@example.com",
+        phone: "123-321-4567",
+      },
     },
   ];
   

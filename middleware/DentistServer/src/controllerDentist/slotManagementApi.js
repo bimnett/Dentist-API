@@ -1,12 +1,13 @@
 const mqtt = require('mqtt');
 const express = require('express');
 const router = express.Router();
-const config = require('../../../env');
+const CREDENTIAL = require('../../../credentials');
+const TOPIC = require('../../../topics');
 
 const options = {
     clientId: "", // You can set a unique client ID here
-    username: config.username, // Use the username defined in env.js
-    password: config.password, // Use the password defined in env.js
+    username: CREDENTIAL.username, // Use the username defined in env.js
+    password: CREDENTIAL.password, // Use the password defined in env.js
     connectTimeout: 30000, // Set the connection timeout to 30 seconds
     reconnectPeriod: 1000,  // Reconnect every 1 second if disconnected
 }
@@ -19,12 +20,12 @@ router.post('/newSlots', async function(req,res,next){
         options.clientId = 'pub_dentistServer'+Math.random().toString(36).substring(2,10); 
 
         // connect to broker 
-        const client = mqtt.connect(config.brokerURL, options);
+        const client = mqtt.connect(CREDENTIAL.broker_url, options);
         
         client.on('connect', () => {
             console.log('Publisher connected to broker');
         
-            const topic = config.topic_slot_management_create;
+            const topic = TOPIC.create_new_slot;
             
             const payload = { 
                 // ?? null - set the value to null if the user does not provide any input 
@@ -41,10 +42,8 @@ router.post('/newSlots', async function(req,res,next){
             client.publish(topic, json_payload, { qos: 2 }, (err) => {
                 if (err) {
                     console.log('Publish error:', err);
-                    return res.status(500).json({message: "Unable to connect to the server"});
                 } else {
                     console.log('Message published successfully!');
-                    return res.status(201).json({message : " Did send the message"});
                 }
             });
         });
@@ -72,12 +71,12 @@ router.get('/avaliableSlots', async function(req,res,next){
         options.clientId ='sub_dentistServer'+Math.random().toString(36).substring(2,10);
     
         // connect to broker 
-        const client = mqtt.connect(config.brokerURL, options);
+        const client = mqtt.connect(CREDENTIAL.broker_url, options);
     
         client.on('connect', () => {
             console.log('Subscriber connected to broker');
 
-            const topic = config.topic_slot_dentist_avaliable;
+            const topic = TOPIC.slot_dentist_avaliable;
             client.subscribe(topic, { qos: 2 }, (err) => {
                 if (err) {
                     console.log('Subscription error:', err);
