@@ -33,28 +33,22 @@ client.on('connect', () => {
 
 client.on('message', (topic, message) => {
     console.log("In message");
+    console.log("topic: "+topic);
     // message = from broker buffer obj.
-
     // topic the slot service subscribe to 
-
-    /*
-    if(topic===TOPIC.create_new_slot){
-        slotManagement.create_new_slot(TOPIC,message,client);
-    }
-    */
-
 
     switch(topic){
 
         // create new avaliable time slot 
         case TOPIC.create_new_slot:
-            slotManagement.create_new_slot(TOPIC,message,client);
+            console.log(topic);
+            slotManagement.create_new_slot(message,client);
             break;
         
 
         //update info of an avaliable slot 
         case TOPIC.update_slot:
-            slotManagement.update_slot(topic, message);
+            slotManagement.update_slot(TOPIC, message, client);
             break;
         
 

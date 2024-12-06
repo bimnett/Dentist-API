@@ -33,7 +33,7 @@ const client = mqtt.connect(CREDENTIAL.broker_url, options);
 // Avoid multiple listeners by ensuring they are added once
 client.on('connect', () => {
     console.log('databaseHandler connected to broker');
-    const topic = TOPIC.everything;
+    const topic = TOPIC.new_slot_data;
     client.subscribe(topic, { qos: 2 }, (err) => {
         if (err) {
             console.error('Subscription error:', err);
@@ -49,7 +49,7 @@ client.on('message', async (topic, message) => {
 
     try {
         const messageString = message.toString();  // Convert Buffer to string
-        const jsonMessage = JSON.parse(messageString);  // Parse JSON
+        const jsonMessage = JSON.parse(messageString);  // Parse JSON to enable to save it in db
 
         // Ensure Mongoose connection is ready before saving data
         if (mongoose.connection.readyState !== 1) {
@@ -57,12 +57,21 @@ client.on('message', async (topic, message) => {
             return;
         }
 
-        if(topic === "dentist/slot/create/new/slot"){
-            console.log(jsonMessage);
-            const newSlot = new Timeslot(jsonMessage);
-            await newSlot.save();
-            console.log("New slot saved successfully.");
+        switch (topic){
+
+            case TOPIC.new_slot_data:
+                console.log(jsonMessage);
+                const newSlot = new Timeslot(jsonMessage);
+                await newSlot.save();
+                console.log("New slot saved successfully.");
+                break;
+
+            default:
+                console.log(topic);
+                break;
+            
         }
+        
     } catch (err) {
         console.error('Error processing message:', err);
     }

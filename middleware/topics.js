@@ -62,11 +62,13 @@ module.exports = {
 
         // slot publish topics
         new_slot_data: 'slot/database/insert/new/slot',
+        update_slot_data: 'slot/database/insert/updates/to/slot',
         validated_update_slot: 'slot/database/updated/slot',
         validated_delete_slot: 'slot/database/delete/slot',
 
         specific_clinic: 'slot/database/find/special/clinic',
         specific_dentist: 'slot/database/find/special/dentist',
+        specific_reference_code: 'lot/database/find/special/reference/code',
 
         // dentist server publish 
         create_new_slot: 'dentist/slot/create/new/slot',
