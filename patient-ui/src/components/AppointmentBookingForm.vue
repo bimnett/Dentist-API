@@ -4,15 +4,15 @@
     <form @submit.prevent="submitBooking">
       <div>
         <label for="name">Name:</label>
-        <input v-model="bookingData.patient.name" type="text" id="name" required />
+        <input v-model="bookingData.name" type="text" id="name" required />
       </div>
       <div>
         <label for="email">Email:</label>
-        <input v-model="bookingData.patient.email" type="email" id="email" required />
+        <input v-model="bookingData.email" type="email" id="email" required />
       </div>
       <div>
         <label for="phone">Phone:</label>
-        <input v-model="bookingData.patient.phone" type="tel" id="phone" required />
+        <input v-model="bookingData.phone" type="tel" id="phone" required />
       </div>
       <div>
         <label for="treatment">Select Treatment:</label>
@@ -34,7 +34,7 @@
     </form>
   </div>
 </template>
-  
+
 <script>
 /**
  * AppointmentBookingForm component is responsible for allowing the user to fill in their information
