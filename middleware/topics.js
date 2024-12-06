@@ -62,7 +62,7 @@ module.exports = {
 
         // slot publish topics
         new_slot_data: 'slot/database/insert/new/slot',
-        update_slot_data: 'slot/database/insert/updates/to/slot',
+        updated_slot_data: 'slot/database/insert/updates/to/slot',
         validated_update_slot: 'slot/database/updated/slot',
         validated_delete_slot: 'slot/database/delete/slot',
 

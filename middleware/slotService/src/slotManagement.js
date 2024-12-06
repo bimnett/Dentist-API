@@ -53,6 +53,7 @@ async function create_new_slot(message,client){
                     console.log(string_payload);
                 }
             });
+
         } else {
             console.log("Could not publish message");
         }
@@ -72,7 +73,7 @@ async function create_new_slot(message,client){
 };
 
 
-async function update_slot(TOPIC, message,client){
+async function update_slot(message,client){
     try{
         var[time,date,,referenceCode] = await Promise.all([
             validation.validate_time(message),
@@ -89,39 +90,39 @@ async function update_slot(TOPIC, message,client){
         // only for now
         referenceCode = true;
 
+        console.log(time,date,referenceCode);
+        console.log(message);
+
+        // prepare info to be transform to json to then send via broker to db
+        const messageString = message.toString();  // Convert Buffer to string
+        const jsonMessage = JSON.parse(messageString);  // Parse to JSON
+        console.log(jsonMessage);
+
         // if everything is valid
         if(time && date && referenceCode){
             // send updated slot info via broker to db-handle
+            // can only update the date, time, treatment
 
-            // can only updat the date, time, treatment
-            client.on('connect', () => {
+            //UPDATE TOPIC
+            // send the valid updated info via broker to db-handler
+            const topic = TOPIC.updated_slot_data;
+            const payload = {
+                _id : jsonMessage._id,
+                date : jsonMessage.date,
+                time : jsonMessage.time,
+                treatment: jsonMessage.treatment,
+                referenceCode : jsonMessage.referenceCode
+            }
 
-                //UPDATE TOPIC
-                const topic = TOPIC.update_slot_data;
-                const payload = {
-                    date : date,
-                    time : time,
-                    referenceCode : referenceCode
+            // broker has to send strings so transform json --> string 
+            const string_payload = JSON.stringify(payload);
+
+            client.publish(topic, string_payload, { qos: 2 }, (err) => {
+                if (err) {
+                    console.log('Publish error:', err);
+                } else {
+                    console.log('Message published successfully!');
                 }
-
-                // broker has to send strings so transform json --> string 
-                const string_payload = JSON.stringify(payload);
-
-                client.publish(topic, string_payload, { qos: 2 }, (err) => {
-                    if (err) {
-                        console.log('Publish error:', err);
-                    } else {
-                        console.log('Message published successfully!');
-                    }
-                });
-            });
-
-            client.on('error', (error) => {
-                console.log('Publisher connection error:', error);
-            });
-    
-            client.on('close', () => {
-                console.log('Publisher connection closed');
             });
 
             // only need to forward the info with pub to db-handler on the rigth topic 
@@ -131,6 +132,15 @@ async function update_slot(TOPIC, message,client){
         } else {
             console.log("Can't update the slot")
         }
+
+        client.on('error', (error) => {
+            console.log('Publisher connection error:', error);
+        });
+
+        client.on('close', () => {
+            console.log('Publisher connection closed');
+        });
+
     }catch(error){
         console.log(error);
     }

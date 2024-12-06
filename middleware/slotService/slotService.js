@@ -41,14 +41,15 @@ client.on('message', (topic, message) => {
 
         // create new avaliable time slot 
         case TOPIC.create_new_slot:
-            console.log(topic);
+            console.log("create_new_slot");
             slotManagement.create_new_slot(message,client);
             break;
         
 
         //update info of an avaliable slot 
         case TOPIC.update_slot:
-            slotManagement.update_slot(TOPIC, message, client);
+            console.log("update_slot");
+            slotManagement.update_slot(message, client);
             break;
         
 

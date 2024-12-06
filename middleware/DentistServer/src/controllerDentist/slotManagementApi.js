@@ -71,6 +71,7 @@ router.post('/newSlots', async function(req,res,next){
     }  
 });
 
+// update an exisiting slot's time, date and treatment
 router.patch('/updateSlots/:slotId', async function(req,res,next){
     try {
         

@@ -1,3 +1,5 @@
+// currently un-used
+
 async function retrieve_specific_clinic(TOPIC, message, client, Clinic){
     try {
          // retrive clinic name from message
@@ -85,5 +87,4 @@ module.exports = {
     retrieve_specific_clinic,
     retrieve_specific_dentist,
     insert_new_slot
-
 }

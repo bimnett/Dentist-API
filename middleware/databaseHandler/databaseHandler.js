@@ -2,6 +2,7 @@ const mqtt = require('mqtt');
 const CREDENTIAL = require('../credentials');
 const TOPIC = require('../topics');
 const mongoose = require("mongoose");
+const Timeslot = require('./models/timeslot');
 
 // MQTT connection options
 const options = {
@@ -12,8 +13,10 @@ const options = {
     reconnectPeriod: 1000
 };
 
-
 const dbURI = CREDENTIAL.mongodb_url;
+// Create MQTT client and connect
+const client = mqtt.connect(CREDENTIAL.broker_url, options);
+
 
 // Connect to MongoDB using Mongoose
 mongoose.connect(dbURI, { 
@@ -24,16 +27,12 @@ mongoose.connect(dbURI, {
     .then(() => console.log('Connected to MongoDB'))
     .catch((err) => console.error('Error connecting to MongoDB:', err));
 
-// Import the Timeslot model after the connection is established
-const Timeslot = require('./models/timeslot');
 
-// Create MQTT client and connect
-const client = mqtt.connect(CREDENTIAL.broker_url, options);
 
 // Avoid multiple listeners by ensuring they are added once
 client.on('connect', () => {
     console.log('databaseHandler connected to broker');
-    const topic = TOPIC.new_slot_data;
+    const topic = TOPIC.everything;
     client.subscribe(topic, { qos: 2 }, (err) => {
         if (err) {
             console.error('Subscription error:', err);
@@ -66,12 +65,27 @@ client.on('message', async (topic, message) => {
                 console.log("New slot saved successfully.");
                 break;
 
+            case TOPIC.updated_slot_data:
+                console.log("try to update\n");
+                const updatedSlot = await Timeslot.findByIdAndUpdate(
+                    jsonMessage._id, // the _id of the timeslot to update
+                    { 
+                      date: jsonMessage.date, // New date
+                      time: jsonMessage.time, // New time
+                      treatment: jsonMessage.treatment // New treatment type
+                    },
+                    { 
+                      new: true, runValidators: true // Return the updated document, not the original one
+                    }
+                );
+                break;
+
             default:
                 console.log(topic);
                 break;
             
         }
-        
+
     } catch (err) {
         console.error('Error processing message:', err);
     }
@@ -84,6 +98,8 @@ client.on('error', (error) => {
 client.on('close', () => {
     console.log('DatabaseHandler connection closed');
 });
+
+
 
 // Validate clinic function now returns a Promise to ensure asynchronous flow
 async function validate_clinic(TOPIC, message, client) {
