@@ -73,22 +73,24 @@ async function update_slot(topic, message,client){
         var[time,date,clinic,dentist,referenceCode] = await Promise.all([
             validate_time(message),
             validate_date(message),
+            /*
             validate_clinic(message),
             validate_dentist(message),
+            */
             validate_reference_code(message)
         ]);
 
         // if everything is valid
-        if(time && date && clinic && dentist && referenceCode){
+        if(time && date && referenceCode){
             // send updated slot info via broker to db-handle
 
+            // can only updat the date, time, status, treatment
             client.on('connect', () => {
                 const topic = config.topic_slot_management_updated;
                 const payload = {
-                    time : time,
                     date : date,
-                    dentist : dentist,
-                    clinic : clinic, 
+                    time : time,
+                    
                     referenceCode : referenceCode
                 }
 

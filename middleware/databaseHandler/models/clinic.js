@@ -7,7 +7,6 @@ const ClinicSchema = new Schema({
         type:String,
         require: true
     }, 
-    /*
     coordinates: {
         lat: {
             type: Number,
@@ -18,7 +17,6 @@ const ClinicSchema = new Schema({
             required: true,
         },
     },
-    */
     address: {
         type: String,
         required: true,
@@ -33,12 +31,10 @@ const ClinicSchema = new Schema({
         required: true,
         default: "18:00" // can change later
     }, 
-    /*
     dentists: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Dentist'
-    }]
-    */
+    }]    
 })
 
 module.exports = mongoose.model('Clinic', ClinicSchema);

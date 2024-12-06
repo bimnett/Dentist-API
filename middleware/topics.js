@@ -3,6 +3,7 @@ module.exports = {
         test:'topic/test',
         hello:'topic/hello',
     
+        /*
         // Database topics
         database_insert: 'database/insert',
         database_retrieve: 'database/retrieve',
@@ -47,6 +48,7 @@ module.exports = {
         clinic_dentists: 'clinic/dentists',
         appointments_dentist: 'appointments/dentist/bookedAppointments',
         appointment_info: 'appointments/appointment/reference/info',
+        */
 
         // ---------------
 

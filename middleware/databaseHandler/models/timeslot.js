@@ -38,7 +38,8 @@ const TimeslotSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Dentist',
         required: true,
-        },
+        unique : true,
+    },
     clinic:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Clinic',

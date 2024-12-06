@@ -1,5 +1,7 @@
 // update this - shall the logic be this way? 
 
+// This logic shall be MOVED to PATIENT BOOKING SERVICE
+
 
 /*
 const config = require('../../env');
