@@ -31,10 +31,13 @@ router.post('/newSlots', async function(req,res,next){
                 // ?? null - set the value to null if the user does not provide any input 
                 // malformed input + error handling will be in the slot managment service
                 // or in the UI itself 
-                time : req.body.time ?? null,
                 date : req.body.date ?? null,
+                time : req.body.time ?? null,
+                status: req.body.status ?? null,
+                patient: null,
                 dentist : req.body.dentist ?? null,
                 clinic : req.body.clinic ?? null, 
+                treatment: req.body.treatment ?? null
             }
 
             const json_payload = JSON.stringify(payload);
@@ -44,6 +47,11 @@ router.post('/newSlots', async function(req,res,next){
                     console.log('Publish error:', err);
                 } else {
                     console.log('Message published successfully!');
+
+                    // THNIK IT THROUGH!!!
+                    // just sends a response back for now to close the api endpoint
+                    console.log(json_payload);
+                    res.status(200).json({message : "Message published to broker"});
                 }
             });
         });

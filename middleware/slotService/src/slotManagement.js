@@ -18,15 +18,17 @@ async function create_new_slot(TOPIC,message,client){
 
         // info given is ok --> cretae new slot 
         if(time && date ){
-            
             // send new slot info via broker to db-handler
             client.on('connect', () => {
                 const topic = TOPIC.new_slot_data;
                 const payload = {
-                    time : time,
                     date : date,
+                    time : time,
+                    status: status,
+                    patient: patient,
                     dentist : dentist,
-                    clinic : clinic 
+                    clinic : clinic,
+                    treatment: treatment
                 }
 
                 // broker has to send strings so transform json --> string 
@@ -37,6 +39,7 @@ async function create_new_slot(TOPIC,message,client){
                         console.log('Publish error:', err);
                     } else {
                         console.log('Message published successfully!');
+                        console.log(string_payload);
                     }
                 });
             });
@@ -178,8 +181,10 @@ async function delete_slot(topic, message,client){
 
 async function validate_time(message){
     try {
+        console.log(message);
         // maybe need this to makeit as a string first
         const jsonMessage = JSON.parse(message.toString());
+        console.log(jsonMessage);
         //const jsonMessage = JSON.parse(message);
         const date = jsonMessage.date;
         const time = jsonMessage.time;

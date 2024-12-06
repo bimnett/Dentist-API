@@ -14,6 +14,7 @@ const options = {
 const slotManagement = require('./src/slotManagement');
 
 options.clientId ='slotService_'+Math.random().toString(36).substring(2,10);
+
 // connect to broker 
 const client = mqtt.connect(CREDENTIAL.broker_url, options);
 
@@ -36,9 +37,11 @@ client.on('message', (topic, message) => {
 
     // topic the slot service subscribe to 
 
+    /*
     if(topic===TOPIC.create_new_slot){
         slotManagement.create_new_slot(TOPIC,message,client);
     }
+    */
 
 
     switch(topic){

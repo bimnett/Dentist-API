@@ -58,6 +58,7 @@ client.on('message', async (topic, message) => {
         }
 
         if(topic === "dentist/slot/create/new/slot"){
+            console.log(jsonMessage);
             const newSlot = new Timeslot(jsonMessage);
             await newSlot.save();
             console.log("New slot saved successfully.");
