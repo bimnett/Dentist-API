@@ -1,12 +1,12 @@
 
-This component creates a map that is zoomed in on Gothenburg, and places a marker for each dentist clinic.
+<!--This component creates a map that is zoomed in on Gothenburg, and places a marker for each dentist clinic.-->
 
 <template>
   <div id="map"></div>
 </template>
 
 <script>
-   import api from "@/api";
+// import api from "@/api";
 
   export default {
     name: "DentistMap",
@@ -28,7 +28,7 @@ This component creates a map that is zoomed in on Gothenburg, and places a marke
 
       // Initialize the map
       const map = L.map("map").setView([57.7089, 11.9746], 12);
-  
+
       // Add OpenStreetMap tile layer
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution:
