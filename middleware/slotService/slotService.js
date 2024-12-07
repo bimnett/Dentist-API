@@ -1,6 +1,14 @@
+/* TO DO:
+when to close the connection?
+currentl all 3 functions use the same client, + all sub functionlites in the 3 functionlaites
+if closing it to early all connections will be closed an nothing depending on the client will
+be able to continue
+*/ 
+
 const mqtt = require('mqtt');
 const CREDENTIAL = require('../credentials');
 const TOPIC = require('../topics');
+const slotManagement = require('./src/slotManagement');
 
 // creat a new time slot 
 const options = {
@@ -10,8 +18,6 @@ const options = {
     connectTimeout: 30000, // Set the connection timeout to 30 seconds
     reconnectPeriod: 1000,  // Reconnect every 1 second if disconnected
 }
-
-const slotManagement = require('./src/slotManagement');
 
 options.clientId ='slotService_'+Math.random().toString(36).substring(2,10);
 
@@ -65,9 +71,6 @@ client.on('message', (topic, message) => {
             console.log("message:\n "+message);
             break;
     }
-
-    
-     
 });
 
 client.on('error', (error) => {
