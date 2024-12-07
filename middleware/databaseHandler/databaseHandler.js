@@ -3,6 +3,7 @@ const CREDENTIAL = require('../credentials');
 const TOPIC = require('../topics');
 const mongoose = require("mongoose");
 const Timeslot = require('./models/timeslot');
+const slotManagement = require('./slotManagement');
 
 // MQTT connection options
 const options = {
@@ -58,7 +59,6 @@ client.on('message', async (topic, message) => {
 
         switch (topic){
 
-            // move this logic out to it's own file?
             case TOPIC.new_slot_data:
                 console.log(jsonMessage);
                 const newSlot = new Timeslot(jsonMessage);
@@ -68,17 +68,7 @@ client.on('message', async (topic, message) => {
 
             case TOPIC.updated_slot_data:
                 console.log("try to update\n");
-                const updatedSlot = await Timeslot.findByIdAndUpdate(
-                    jsonMessage._id, // the _id of the timeslot to update
-                    { 
-                      date: jsonMessage.date, // New date
-                      time: jsonMessage.time, // New time
-                      treatment: jsonMessage.treatment // New treatment type
-                    },
-                    { 
-                      new: true, runValidators: true // Return the updated document, not the original one
-                    }
-                );
+                var updatedSlot = await slotManagement.update_slot_in_db(jsonMessage);
                 console.log(updatedSlot);
                 break;
 
@@ -91,8 +81,7 @@ client.on('message', async (topic, message) => {
             default:
                 console.log("default:\n")
                 console.log(topic);
-                break;
-            
+                break;                
         }
 
     } catch (err) {
