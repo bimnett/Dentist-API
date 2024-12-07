@@ -78,9 +78,17 @@ client.on('message', async (topic, message) => {
                       new: true, runValidators: true // Return the updated document, not the original one
                     }
                 );
+                console.log(updatedSlot);
+                break;
+
+            case TOPIC.deletion_of_slot:
+                console.log("try to delete\n");
+                const deletedSlot = await Timeslot.findByIdAndDelete(jsonMessage.id);
+                console.log(deletedSlot);
                 break;
 
             default:
+                console.log("default:\n")
                 console.log(topic);
                 break;
             

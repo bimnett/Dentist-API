@@ -55,7 +55,7 @@ client.on('message', (topic, message) => {
 
         //delte an avaliable slot 
         case TOPIC.delete_slot:
-            slotManagement.delete_slot(topic, message);
+            slotManagement.delete_slot(message, client);
             break;
 
             

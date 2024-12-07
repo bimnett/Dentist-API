@@ -63,9 +63,13 @@ module.exports = {
         // slot publish topics
         new_slot_data: 'slot/database/insert/new/slot',
         updated_slot_data: 'slot/database/insert/updates/to/slot',
+        deletion_of_slot: 'slot/database/delete/an/existing/slot',
+
+        // used?
         validated_update_slot: 'slot/database/updated/slot',
         validated_delete_slot: 'slot/database/delete/slot',
 
+        //used?
         specific_clinic: 'slot/database/find/special/clinic',
         specific_dentist: 'slot/database/find/special/dentist',
         specific_reference_code: 'lot/database/find/special/reference/code',
