@@ -56,12 +56,10 @@ router.post('/newSlots', async function(req,res,next){
                 // close the connection when the aip res 
                 
             });
-            client.end();
         });
         
         client.on('error', (error) => {
             console.log('Publisher connection error:', error);
-            client.end();
             return res.status(500).json({message : "Could not connect to server"});
             
         });
@@ -118,13 +116,11 @@ router.patch('/updateSlots/:slotId', async function(req,res,next){
                     res.status(200).json({message : "Message published to slot-serivce"});
                     
                 };
-                client.end();
             });
         });
         
         client.on('error', (error) => {
             console.log('Publisher connection error:', error);
-            client.end();
             return res.status(500).json({message : "Could not connect to server"})
         });
 
@@ -170,13 +166,11 @@ router.delete('/deleteSlots/:id', async function(req,res,next){
                     // just sends a response back for now to close the api endpoint
                     res.status(200).json({message : "Message published to broker"});
                 };
-                client.end();
             });
         });
         
         client.on('error', (error) => {
             console.log('Publisher connection error:', error);
-            client.end();
             return res.status(500).json({message : "Could not connect to server"})
         });
 

@@ -58,6 +58,7 @@ client.on('message', async (topic, message) => {
 
         switch (topic){
 
+            // move this logic out to it's own file?
             case TOPIC.new_slot_data:
                 console.log(jsonMessage);
                 const newSlot = new Timeslot(jsonMessage);
