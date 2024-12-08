@@ -39,17 +39,21 @@ const TimeslotSchema = new Schema({
         ref: 'Dentist',
         required: true,
     },
-    clinic:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Clinic',
-        required: true,
-    },
+    // clinic:{
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'Clinic',
+    //     required: true,
+    // },
     treatment: {
         type: String,
         enum: ['General', 'Teeth Whitening', 'Tooth Extraction', 'Implant Insertion', 'Laminated Tooth Veneer', 'Tooth Filling', 'Teeth Cleaning', 'Root Canal Treatment'],
         required: false,
         default: 'General'
     },
+    referenceCode: {
+        type: String,
+        required: false,
+    }
 })
 
 module.exports = mongoose.model('Timeslot', TimeslotSchema);
