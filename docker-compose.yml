@@ -14,3 +14,17 @@ services:
     container_name: mongodb
     ports:
       - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  dentistserver:
+    build:
+      context: 
+        ./middleware/dentistserver
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+
+volumes:
+  mongodb_data:
