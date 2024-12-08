@@ -1,6 +1,6 @@
 const mqtt = require('mqtt');
-const CREDENTIAL = require('../credentials');
-const TOPIC = require('../topics');
+const CREDENTIAL = require('./credentials');
+const TOPIC = require('./databaseMqttTopics');
 const mongoose = require("mongoose");
 const Timeslot = require('./models/timeslot');
 const slotManagement = require('./slotManagement');
@@ -14,15 +14,13 @@ const options = {
     reconnectPeriod: 1000
 };
 
-const dbURI = CREDENTIAL.mongodb_url;
+const dbURI = CREDENTIAL.mongodb_uri;
 // Create MQTT client and connect
 const client = mqtt.connect(CREDENTIAL.broker_url, options);
 
 
 // Connect to MongoDB using Mongoose
 mongoose.connect(dbURI, { 
-    useNewUrlParser: true, 
-    useUnifiedTopology: true,
     serverSelectionTimeoutMS: 5000,  // Set timeout for DB connection attempts
 })
     .then(() => console.log('Connected to MongoDB'))
@@ -33,7 +31,7 @@ mongoose.connect(dbURI, {
 // Avoid multiple listeners by ensuring they are added once
 client.on('connect', () => {
     console.log('databaseHandler connected to broker');
-    const topic = TOPIC.everything;
+    const topic = '#';
     client.subscribe(topic, { qos: 2 }, (err) => {
         if (err) {
             console.error('Subscription error:', err);
