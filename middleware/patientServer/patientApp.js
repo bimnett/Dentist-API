@@ -82,25 +82,28 @@ app.post('/api/dentists/:dentistId/bookings', (req, res) => {
     const { dentistId } = req.params;
     const { name, email, phone, date, time } = req.body;
 
-    const dentist = mockDentistsData.find((d) => d.id === parseInt(dentistId, 10));  // use mock data for now
-    if (!dentist) return res.status(404).json({ message: "Dentist not found" });
-
-    const newBooking = {
+    const bookingData = {
         referenceCode: `${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
-        dentistName: dentist.name,
-        clinic: dentist.clinic,
+        dentist: dentistId,
+        date,
         time,
-        patientName: name,
+        name,
         email,
         phone,
-        date,
+        treatment,
     };
 
-    mockBookingData.push(newBooking);  // use mock data for now
+    // Publish booking data to the slotManagement service
+    client.publish(TOPIC.new_slot_data, JSON.stringify(bookingData), { qos: 2 }, (err) => {
+      if (err) {
+          console.error('Publish error:', err);
+          return res.status(500).json({ message: 'Failed to send booking request' });
+      }
 
-    res.status(201).json({
-        message: "Booking successful",
-        referenceCode: newBooking.referenceCode,
+      console.log('Booking request published to slot management service:', bookingData);
+
+      // Respond to frontend with uccess message
+      res.status(201).json({ message: 'Booking request sent successfully' });
     });
 });
 

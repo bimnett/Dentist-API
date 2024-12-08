@@ -5,9 +5,17 @@ async function update_slot_in_db(jsonMessage){
         const updatedSlot = await Timeslot.findByIdAndUpdate(
             jsonMessage._id, // the _id of the timeslot to update
             { 
+                referenceCode: jsonMessage.referenceCode,
+                dentist: jsonMessage.dentist, // dentist ID
                 date: jsonMessage.date, // New date
                 time: jsonMessage.time, // New time
-                treatment: jsonMessage.treatment // New treatment type
+                status: 'Booked', // From 'Available' to 'Booked'
+                patient: {
+                    name: jsonMessage.name, // Patient's name
+                    email: jsonMessage.email, // Patient's email
+                    phone: jsonMessage.phone, // Patient's phone
+                },
+                treatment: jsonMessage.treatment, // New treatment type
             },
             { 
                 new: true, // Return the updated document, not the original one
