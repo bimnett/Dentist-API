@@ -1,3 +1,9 @@
+/*
+shall send mqtt to another service --> schedual service 
+rename to schedualApi.js
+*/
+
+
 const mqtt = require('mqtt');
 const express = require('express');
 const router = express.Router();

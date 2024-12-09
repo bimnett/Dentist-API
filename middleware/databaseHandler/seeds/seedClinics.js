@@ -16,6 +16,9 @@ const clinics = [
         address: "Första Långgatan 26, 413 28 Göteborg",
         openingTime: "08:00",
         closingTime: "17:00",
+        dentists: [{
+            _id: new mongoose.Types.ObjectId("64a69f021234567890abcdef")
+        }]
     },
     {
         _id: new mongoose.Types.ObjectId("64a69f021234567890fedcbb"), // Hardcoded ID for Folktandvården Sannegården

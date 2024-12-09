@@ -1,6 +1,14 @@
+/* TO DO:
+when to close the connection?
+currentl all 3 functions use the same client, + all sub functionlites in the 3 functionlaites
+if closing it to early all connections will be closed an nothing depending on the client will
+be able to continue
+*/ 
+
 const mqtt = require('mqtt');
 const CREDENTIAL = require('../credentials');
 const TOPIC = require('../topics');
+const slotManagement = require('./src/slotManagement');
 
 // creat a new time slot 
 const options = {
@@ -11,9 +19,8 @@ const options = {
     reconnectPeriod: 1000,  // Reconnect every 1 second if disconnected
 }
 
-const slotManagement = require('./src/slotManagement');
-
 options.clientId ='slotService_'+Math.random().toString(36).substring(2,10);
+
 // connect to broker 
 const client = mqtt.connect(CREDENTIAL.broker_url, options);
 
@@ -32,32 +39,27 @@ client.on('connect', () => {
 
 client.on('message', (topic, message) => {
     console.log("In message");
-    // message = from broker buffer obj.
-
-    // topic the slot service subscribe to 
-
-    if(topic===TOPIC.create_new_slot){
-        slotManagement.create_new_slot(TOPIC,message,client);
-    }
-
+    console.log("topic: "+topic);
 
     switch(topic){
 
         // create new avaliable time slot 
         case TOPIC.create_new_slot:
-            slotManagement.create_new_slot(TOPIC,message,client);
+            console.log("create_new_slot");
+            slotManagement.create_new_slot(message,client);
             break;
         
 
         //update info of an avaliable slot 
         case TOPIC.update_slot:
-            slotManagement.update_slot(topic, message);
+            console.log("update_slot");
+            slotManagement.update_slot(message, client);
             break;
         
 
         //delte an avaliable slot 
         case TOPIC.delete_slot:
-            slotManagement.delete_slot(topic, message);
+            slotManagement.delete_slot(message, client);
             break;
 
             
@@ -67,9 +69,6 @@ client.on('message', (topic, message) => {
             console.log("message:\n "+message);
             break;
     }
-
-    
-     
 });
 
 client.on('error', (error) => {

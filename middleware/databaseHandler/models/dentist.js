@@ -14,17 +14,21 @@ const DentistSchema = new Schema({
         type: String,
         default: 'General Dentistry'
     },
+    /*
     clinic: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Clinic',
         required: true
     },
+    */
+    /*
     timeslots: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Timeslot',
         },
     ],
+    */
 });
 
 module.exports = mongoose.model('Dentist', DentistSchema);

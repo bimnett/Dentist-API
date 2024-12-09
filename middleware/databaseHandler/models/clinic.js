@@ -34,7 +34,7 @@ const ClinicSchema = new Schema({
     dentists: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Dentist'
-    }]
+    }]    
 })
 
 module.exports = mongoose.model('Clinic', ClinicSchema);
