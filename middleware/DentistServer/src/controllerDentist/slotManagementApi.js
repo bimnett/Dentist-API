@@ -49,11 +49,9 @@ router.post('/newSlots', async function(req,res,next){
                 } else {
                     console.log('Message published successfully!');
                     console.log(json_payload);
-                    // THNIK IT THROUGH!!!
                     // just sends a response back for now to close the api endpoint
                     res.status(200).json({message : "Message published to broker"});
                 };
-                // close the connection when the aip res 
                 
             });
         });
@@ -111,10 +109,8 @@ router.patch('/updateSlots/:slotId', async function(req,res,next){
                 } else {
                     console.log('Message published successfully!');
                     console.log(json_payload);
-                    // THNIK IT THROUGH!!!
                     // just sends a response back for now to close the api endpoint
-                    res.status(200).json({message : "Message published to slot-serivce"});
-                    
+                    res.status(200).json({message : "Message published to slot-serivce"}); 
                 };
             });
         });
@@ -162,7 +158,6 @@ router.delete('/deleteSlots/:id', async function(req,res,next){
                 } else {
                     console.log('Message published successfully!');
                     console.log(json_payload);
-                    // THNIK IT THROUGH!!!
                     // just sends a response back for now to close the api endpoint
                     res.status(200).json({message : "Message published to broker"});
                 };

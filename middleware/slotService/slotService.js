@@ -40,8 +40,6 @@ client.on('connect', () => {
 client.on('message', (topic, message) => {
     console.log("In message");
     console.log("topic: "+topic);
-    // message = from broker buffer obj.
-    // topic the slot service subscribe to 
 
     switch(topic){
 

@@ -1,10 +1,9 @@
 async function validate_time(message){
     try {
         console.log(message);
-        // maybe need this to makeit as a string first
+        //need to make it as a string first befor turning it info json format
         const jsonMessage = JSON.parse(message.toString());
         console.log(jsonMessage);
-        //const jsonMessage = JSON.parse(message);
         const date = jsonMessage.date;
         const time = jsonMessage.time;
         const messageHour = time.slice(0,2);
@@ -22,15 +21,12 @@ async function validate_time(message){
 
         // book the same day
         if(date == currentDate){
-            // time have passed today, e.g today now 12:00 but want to insert today at 10:00
             if( Number(messageHour) < Number(currentHour) ){
                 return false;
             }
-            // now 15:34 but want to book 15:10
             if( Number(messageMinutes) < Number(currentMinutes) ){
                 return false;
             }
-            // now 12:15 but want to book 18:00
             return true;
         }
 
@@ -42,16 +38,14 @@ async function validate_time(message){
     }
 };
 
-// look this over 
 async function validate_date(message){
     try {
-        // maybe need this to makeit as a string first
+        //need this to make it as a string first before tranforming to json format
         const jsonMessage = JSON.parse(message.toString());
-        //const jsonMessage = JSON.parse(message);
         const date = jsonMessage.date;
         const currentDate = new Date().toJSON().slice(0, 10);
 
-        // date has paased
+        // date has passed
         if(date<currentDate){
             return false;
         }
@@ -64,10 +58,9 @@ async function validate_date(message){
     }
 };
 
-// look over
 async function validate_clinic(TOPIC,message,client){
     return new Promise((resolve, reject) => {
-    // message = from broker, buffer obj.
+    // message from broker is a buffer obj.
         try{
             console.log(message);
             // extract the clinic name from message
@@ -83,7 +76,7 @@ async function validate_clinic(TOPIC,message,client){
             // retrive the clinic from database via broker & database handler
             client.on('connect', () => {
                 
-                // also connect the same client to enable publishing
+                // connect the same client to enable publishing
                 var topic = TOPIC.specific_clinict;
                 const payload = { 
                     clinic : clinic_name
@@ -115,7 +108,6 @@ async function validate_clinic(TOPIC,message,client){
 
             // when reciving the clinic name
             client.on('message', (topic, message) => {
-                //console.log(`Received message: + ${message} + on topic: + ${topic}`);
                 payload = message;
 
                 // validate the clinic 
@@ -150,7 +142,6 @@ async function validate_clinic(TOPIC,message,client){
     });
 }
 
-// look over 
 async function validate_dentist(TOPIC,message,client){
     try{
         // extract the clinic name from message
@@ -190,7 +181,6 @@ async function validate_dentist(TOPIC,message,client){
 
         // look up if dentist in choosen clinic exist in database
         // retrive the dentist from database via broker & database handler
-
         client.on('message', (topic, message) => {
             console.log(`Received message: + ${message} + on topic: + ${topic}`);
             payload = message;
@@ -231,7 +221,7 @@ async function validate_reference_code(TOPIC,message,client){
             const topic = TOPIC.specific_reference_code;
             client.subscribe(topic, {qos:2}, (err) => {
                 if(err){
-                    console.log('Subscrition error', err);
+                    console.log('Subscription error', err);
                 }else {
                     console.log(`Subscribed to topic: ${topic}`);
                 }

@@ -3,8 +3,6 @@ const TOPIC = require('./../../topics');
 
 // dentist creats new avaliable time slot
 async function create_new_slot(message,client){
-// message = from broker, buffer obj.
-    //const topic = TOPIC.new_slot_data;
     // when reciving info about the new slot
     try{
         // validate the input 
@@ -39,7 +37,7 @@ async function create_new_slot(message,client){
                 treatment: jsonMessage.treatment
             }
 
-            // broker has to send strings so transform json --> string 
+            // broker has to send strings, so transform json --> string 
             const string_payload = JSON.stringify(payload);
 
             client.publish(topic, string_payload, { qos: 2 }, (err) => {
@@ -78,12 +76,6 @@ async function update_slot(message,client){
         var[time,date,,referenceCode] = await Promise.all([
             validation.validate_time(message),
             validation.validate_date(message),
-            /*
-            validation.validate_clinic(message),
-            validation.validate_dentist(message),
-            */
-            
-            // USE LATER
             //validation.validate_reference_code(message)
         ]);
 
@@ -103,7 +95,6 @@ async function update_slot(message,client){
             // send updated slot info via broker to db-handle
             // can only update the date, time, treatment
 
-            //UPDATE TOPIC
             // send the valid updated info via broker to db-handler
             const topic = TOPIC.updated_slot_data;
             const payload = {
@@ -114,7 +105,7 @@ async function update_slot(message,client){
                 referenceCode : jsonMessage.referenceCode
             }
 
-            // broker has to send strings so transform json --> string 
+            // broker has to send strings, so transform json --> string 
             const string_payload = JSON.stringify(payload);
 
             client.publish(topic, string_payload, { qos: 2 }, (err) => {
@@ -148,10 +139,7 @@ async function update_slot(message,client){
 
 
 async function delete_slot(message,client){
-
-    // same question as above 
     try{
-
         //will use it later when doing error handeling
         //var referenceCode = await Promise (validation.validate_reference_code(message));
 
@@ -160,7 +148,7 @@ async function delete_slot(message,client){
         console.log(message);
 
         
-        // if the referance code exist = a slot exist in db
+        // if the referance code exist mening a slot exist in db
         if(id){
             // prepare info to be transform to json to then send via broker to db
             const messageString = message.toString();  // Convert Buffer to string
@@ -173,7 +161,7 @@ async function delete_slot(message,client){
                 id : jsonMessage.id
             }
 
-            // broker has to send strings so transform json --> string 
+            // broker has to send strings, so transform json --> string 
             const string_payload = JSON.stringify(payload);
 
             client.publish(topic, string_payload, { qos: 2 }, (err) => {
@@ -187,7 +175,6 @@ async function delete_slot(message,client){
             console.log("delete slot with referance code: "+ id);
             console.log("the question to delete the slot has been sent to db-handler succesfully");
         } else {
-            // do pub here to?
             console.log("Can't delete slot");
         }
 
