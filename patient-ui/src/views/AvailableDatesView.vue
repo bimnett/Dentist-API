@@ -1,13 +1,13 @@
 <template>
     <div>
-      <<h1>Select a Date for {{ selectedClinic }}</h1>
+      <h1>Select a Date for {{ selectedClinic }}</h1>
       <AvailableDates @date-selected="navigateToSlotSelection" />
     </div>
   </template>
-  
+
   <script>
   import AvailableDates from '../components/AvailableDates.vue';
-  
+
   export default {
     name: 'AvailableDatesView',
     components: { AvailableDates },

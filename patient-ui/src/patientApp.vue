@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <nav class="navbar navbar-expand-lg custom-navbar">
+    <nav class="navbar navbar-expand-sm custom-navbar">
       <div class="container-fluid">
         <a class="navbar-brand" href="/">The Dentist For You</a>
         <button
@@ -56,8 +56,8 @@ body, #app {
 }
 
 .custom-navbar {
-  background-color: #96b7d8; 
-  color: white; 
+  background-color: #96b7d8;
+  color: white;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
 }
 
