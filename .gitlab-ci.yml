@@ -67,6 +67,16 @@ test:
     - npm install
     - npm install cross-env --save-dev
     - npm install mongoose
+    - echo "Creating credentials.js..."
+    - echo "module.exports = {" > credentials.js
+    - echo "  username: \"$USERNAME\"," >> credentials.js
+    - echo "  password: \"$PASSWORD\"," >> credentials.js
+    - echo "  mongodb_url: \"$MONGODB_URL\"," >> credentials.js
+    - echo "  broker_url: \"$BROKER_URL\"" >> credentials.js
+    - echo "};" >> credentials.js
+    - echo "credentials.js created successfully."
+    
+
     - npm run ci-test
     - cd ../patientServer
     - npm run ci-test
