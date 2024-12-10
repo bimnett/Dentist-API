@@ -76,6 +76,7 @@ test:
 
     - cd DentistServer
     - npm install
+    - npm install --include=dev
     - npm install cross-env --save-dev
     - npm install mongoose
     - npm run ci-test
