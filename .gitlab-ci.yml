@@ -61,7 +61,7 @@ test:
     - name: mvertes/alpine-mongo:latest
       alias: mongo
   variables:
-    mongodb_url: "mongodb://mongo:27017/serverTestDB"
+    MONGODB_URL: "mongodb://mongo:27017/serverTestDB"
   script:
 
     - cd middleware
@@ -69,8 +69,8 @@ test:
     - echo "module.exports = {" > credentials.js
     - echo "username :\"$USERNAME\"," >> credentials.js
     - echo "password :\"$PASSWORD\"," >> credentials.js
-    - echo "broker_url :\"$BROKER_URL\"" >> credentials.js
-    - echo "mongodb_url" :\"$MONGODB_URL\"" >> credentials.js
+    - echo "broker_url :\"$BROKER_URL\"," >> credentials.js
+    - echo "mongodb_url" :\$MONGODB_URL\" >> credentials.js
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
 
