@@ -28,12 +28,6 @@ build:
     - cd ../../middleware
     - echo "Current directory: $(pwd)"
 
-    - cd databaseHandler
-    - npm install
-    - npm install mongoose
-    - echo "Current directory: $(pwd)"
-
-    - cd ..
     - cd dentistServer
     - npm install
     - echo "Current directory: $(pwd)"
@@ -46,6 +40,12 @@ build:
     - cd ..
     - cd slotService
     - npm install
+    - echo "Current directory: $(pwd)"
+
+    - cd ..
+    - cd databaseHandler
+    - npm install
+    - npm install mongoose
     - echo "Current directory: $(pwd)"
 
     - cd ..
