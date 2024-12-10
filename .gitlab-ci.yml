@@ -69,7 +69,6 @@ test:
     - echo "module.exports = {" > credentials.js
     - echo "username :\"$USERNAME\"," >> credentials.js
     - echo "password :\"$PASSWORD\"," >> credentials.js
-    - echo "mongodb_url :\"$MONGODB_URL\"," >> credentials.js
     - echo "broker_url :\"$BROKER_URL\"" >> credentials.js
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
