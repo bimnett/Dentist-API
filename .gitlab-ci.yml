@@ -63,10 +63,8 @@ test:
   variables:
     MONGODB_URI: "mongodb://mongo:27017/serverTestDB"
   script:
-    - cd middleware/DentistServer
-    - npm install
-    - npm install cross-env --save-dev
-    - npm install mongoose
+
+    - cd middleware
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "username \"$USERNAME\"," >> credentials.js
@@ -75,8 +73,12 @@ test:
     - echo "broker_url \"$BROKER_URL\"" >> credentials.js
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
-    
 
+    - cd DentistServer
+    - npm install
+    - npm install cross-env --save-dev
+    - npm install mongoose
     - npm run ci-test
+
     - cd ../patientServer
     - npm run ci-test
