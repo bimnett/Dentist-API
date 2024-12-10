@@ -11,7 +11,6 @@ cache:
     - middleware/slotService/node_modules
     - patient-ui/node_modules
 
-
 stages:
   - build
   - test
@@ -23,28 +22,38 @@ build:
   script:
     - cd dentist-ui/dentist-client
     - npm install
-    - npm install --save-dev vite 
+    - npm install --save-dev vite
+    - echo "Current directory: $(pwd)"
 
     - cd ../../middleware
-    #- npm install
+    - echo "Current directory: $(pwd)"
 
     - cd databaseHandler
     - npm install
     - npm install mongoose
+    - echo "Current directory: $(pwd)"
 
-    - cd ./dentistServer
+    - cd ..
+    - cd dentistServer
     - npm install
+    - echo "Current directory: $(pwd)"
 
-    - cd ../patientServer
+    - cd ..
+    - cd patientServer
     - npm install 
+    - echo "Current directory: $(pwd)"
 
-    - cd ../slotService
+    - cd ..
+    - cd slotService
     - npm install
+    - echo "Current directory: $(pwd)"
 
-    - cd ../..patient-ui
+    - cd ..
+    - cd ..
+    - cd patient-ui
     - npm install
-    - npm install --save dev vite
-
+    - npm install --save-dev vite
+    - echo "Current directory: $(pwd)"
 
 test:
   stage: test
