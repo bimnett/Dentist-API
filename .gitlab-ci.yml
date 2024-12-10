@@ -41,7 +41,7 @@ build:
     - npm install mongoose
 
     - cd .. 
-    - cd dentistServer
+    - cd DentistServer
     - npm install
 
     - cd ..
