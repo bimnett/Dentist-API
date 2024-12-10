@@ -61,7 +61,7 @@ test:
     - name: mvertes/alpine-mongo:latest
       alias: mongo
   variables:
-    MONGODB_URI: "mongodb://mongo:27017/serverTestDB"
+    mongodb_url: "mongodb://mongo:27017/serverTestDB"
   script:
 
     - cd middleware
