@@ -1,0 +1,62 @@
+image: node:20-alpine
+
+# Cache modules in between jobs per-branch
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - dentist-ui/dentist-client/node_modules
+    - middleware/dentistServer/node_modules
+    - middleware/node_modules/
+    - middleware/patientServer/node_modules
+    - middleware/slotService/node_modules
+    - patient-ui/node_modules
+
+
+stages:
+  - build
+  - test
+
+build:
+  stage: build
+  tags:
+    - docker
+  script:
+    - cd dentist-ui/dentist-client
+    - npm install
+    - npm install --save-dev vite 
+
+    - cd ../../middleware
+    - npm install
+
+    - cd databaseHandeler
+    - npm instll
+    - npm install mongoose
+
+    - cd ../dentistServer
+    - npm install
+
+    - cd ../patientServer
+    - npm install 
+
+    - cd ../slotService
+    - npm install
+
+    - cd ../..patient-ui
+    - npm install
+    - npm install --save dev vite
+
+
+test:
+  stage: test
+  tags:
+    - docker
+  services:
+    - name: mvertes/alpine-mongo:latest
+      alias: mongo
+  variables:
+    MONGODB_URI: "mongodb://mongo:27017/serverTestDB"
+  script:
+    - cd middlware/dentistServer
+    - npm run ci-test
+    - cd ../patientServer
+    - npm run ci-test
