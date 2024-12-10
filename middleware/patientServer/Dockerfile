@@ -6,7 +6,7 @@ COPY . .
 
 RUN npm install
 
-EXPOSE 3000
+EXPOSE 3001
 
 ENV NODE_ENV=production
 
