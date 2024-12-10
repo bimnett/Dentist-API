@@ -25,6 +25,9 @@ build:
     - npm install --save-dev vite
 
     - cd ..
+
+    - cd ..
+    - cd middleware
     - cd patientServer
     - npm install 
 
