@@ -1,8 +1,8 @@
 var mongoose = require('mongoose');
-const credentials = require('../../credentials');
+const credentials = require('../../credentials')
 
 // Variables
-var mongoURI = credentials.mongodb_url;
+var mongoURI = process.env.MONGODB_URI;
 
 if (!mongoURI) {
     console.error('Missing MONGODB_URI for dropping test database.');
