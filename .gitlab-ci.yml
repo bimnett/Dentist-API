@@ -31,25 +31,21 @@ build:
     - cd ..
     - cd patientServer
     - npm install 
-    - echo "Current directory: $(pwd)"
 
     - cd ..
     - cd slotService
     - npm install
-    - echo "Current directory: $(pwd)"
 
     - cd ..
     - cd databaseHandler
     - npm install
     - npm install mongoose
-    - echo "Current directory: $(pwd)"
 
     - cd ..
     - cd ..
     - cd patient-ui
     - npm install
     - npm install --save-dev vite
-    - echo "Current directory: $(pwd)"
 
 test:
   stage: test
