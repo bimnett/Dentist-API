@@ -1,6 +1,5 @@
 <template>
   <div class="slot-selection">
-    <h2>Available Time Slots for {{ formatDate(selectedDate) }} at {{ clinic }}</h2>
     <div v-if="timeSlots.length > 0" class="time-slots">
       <button
         v-for="time in timeSlots"
@@ -12,7 +11,7 @@
       </button>
     </div>
     <div v-else>
-      <p>No available slots for the selected date at this clinic.</p>
+      <p>No available slots.</p>
     </div>
   </div>
 </template>
@@ -24,6 +23,8 @@
  * Upon selection, the user will be directed to a booking form to fill in their details to make the appointment.
  */
  import api from "@/api";
+ import mqtt from 'mqtt';
+
  export default {
   name: "SlotSelection",
   props: {
@@ -36,25 +37,19 @@
       required: true,
     },
   },
+
   data() {
     return {
       timeSlots: [], // Available time slots fetched from API
+      mqttClient: null,
     };
   },
+
   async created() {
-    try {
-      // GET request to the middleware endpoint to fetch available slots for specified clinic and date
-      const response = await api.get('/available-slots', {
-        params: {
-          date: this.selectedDate,
-          clinic: this.clinic,
-        },
-      });
-      this.timeSlots = response.data.slots; // slots = response key
-    } catch (error) {
-      console.error("Error fetching available slots:", error.message);
-    }
+    await this.fetchAvailableSlots();
+    this.setupMqttConnection();
   },
+
   methods: {
     formatDate(date) {
       const options = { weekday: "long", month: "long", day: "numeric" };
@@ -63,7 +58,88 @@
     showSelectedTime(time) {
       this.$emit("time-selected", time);
     },
+
+    async fetchAvailableSlots(){
+      try {
+        // GET request to the middleware endpoint to fetch available slots for specified clinic and date
+        const response = await api.get('/available-slots', {
+          params: {
+            date: this.selectedDate,
+            clinic: this.clinic,
+          },
+        });
+        this.timeSlots = response.data.slots; // slots = response key
+      } catch (error) {
+          console.error("Error fetching available slots:", error.message);
+      }
+    },
+
+    // Connect to mqtt broker for real-time availability updates
+    setupMqttConnection(){
+      this.mqttClient = mqtt.connect('') // Add WSS broker url
+      this.mqttClient.on('connect', () => {
+        console.log('Connected to MQTT broker!');
+
+        this.mqttClient.subscribe(`availability/clinic/${this.clinic}/status`);
+      });
+
+      this.mqttClient.on('message', (topic, message) => {
+        const data = JSON.parse(message.toString());
+
+        if(data.date === this.selectedDate){
+          if(data.type === 'RESERVED'){
+            this.timeSlots = this.timeSlots.filter(slot => slot !== data.time);
+          }
+        }
+      });
+
+      this.mqttClient.on('error', (err) => {
+        console.error('MQTT connection error.');
+      })
+    },
+
+    async handleTimeSelection(time) {
+      try {
+        const response = await api.get('/check-slot-availability', {
+          params: {
+            date: this.selectedDate,
+            time,
+            clinic: this.clinic,
+          }
+        });
+
+        if(response.data.available){
+
+          this.mqttClient.publish(
+            `availability/clinic/${this.clinic}/reserve`,
+            JSON.stringify({
+              type: 'SLOT_RESERVED',
+              date: this.selectedDate,
+              time,
+              clinic: this.clinic,
+              timestamp: Date.now(),
+            })
+          );
+
+          this.$emit('time-selected', time);
+        } else {
+
+          alert('Sorry, this slot is no longer available. Please select another time.');
+        }
+      } catch(err){
+        console.error("Error checking slot availability:", err.message);
+        alert('Error checking slot availability. Please try again.');
+      }
+    }
   },
+
+  // Unsubscribe and close mqtt connection when leaving the page
+  beforeUnmount() {
+    if(this.mqttClient){
+      this.mqttClient.unsubscribe(`availability/clinic/${this.clinic}/status`);
+      this.mqttClient.end();
+    }
+  }
 };
 </script>
 
