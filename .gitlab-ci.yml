@@ -63,6 +63,8 @@ test:
     MONGODB_URI: "mongodb://mongo:27017/serverTestDB"
   script:
     - cd middleware/DentistServer
+    - npm install
+    - npm install cross-env --save-dev
     - npm run ci-test
     - cd ../patientServer
     - npm run ci-test
