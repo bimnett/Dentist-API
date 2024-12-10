@@ -25,11 +25,6 @@ build:
     - npm install --save-dev vite
 
     - cd ..
-    - cd ../middleware
-    - cd dentistServer
-    - npm install
-
-    - cd ..
     - cd patientServer
     - npm install 
 
