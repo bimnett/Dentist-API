@@ -42,7 +42,7 @@ build:
 
     - cd .. 
     - cd DentistServer
-    - npm 
+    - npm install
     - npm install cross-env --save-dev
 
 
