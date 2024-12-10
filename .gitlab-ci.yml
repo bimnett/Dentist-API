@@ -23,14 +23,10 @@ build:
     - cd dentist-ui/dentist-client
     - npm install
     - npm install --save-dev vite
-    - echo "Current directory: $(pwd)"
 
-    - cd ../../middleware
-    - echo "Current directory: $(pwd)"
-
+    - cd ./middleware
     - cd dentistServer
     - npm install
-    - echo "Current directory: $(pwd)"
 
     - cd ..
     - cd patientServer
