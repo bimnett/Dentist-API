@@ -40,6 +40,10 @@ build:
     - npm install
     - npm install mongoose
 
+    - cd .. 
+    - cd dentistServer
+    - npm install
+
     - cd ..
     - cd ..
     - cd patient-ui
