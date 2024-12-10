@@ -34,4 +34,3 @@ env.js
 node_modules
 
 credentials.js
-dropdb.js
