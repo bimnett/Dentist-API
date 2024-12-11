@@ -5,7 +5,7 @@ cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
     - dentist-ui/dentist-client/node_modules
-    - middleware/dentistServer/node_modules
+    - middleware/dentistApiServer/node_modules
     - middleware/node_modules
     - middleware/patientServer/node_modules
     - middleware/slotService/node_modules
@@ -41,7 +41,7 @@ build:
     - npm install mongoose
 
     - cd .. 
-    - cd DentistServer
+    - cd dentistApiServer
     - npm install
     - npm install cross-env --save-dev
     - npm install mongoose
@@ -65,7 +65,7 @@ test:
   script:
 
     - cd middleware
-    - cd DentistServer
+    - cd dentisApiServer
     - cd src
     - cd controllerDentist
     - echo "Creating credentials.js..."

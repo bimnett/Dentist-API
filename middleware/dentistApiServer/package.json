@@ -1,0 +1,33 @@
+{
+  "name": "dentistapiserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dentistApp.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "start": "node ./dentistApp.js",
+    "dev": "nodemon ./dentistApp.js",
+    "test": "cross-env-shell MONGODB_URI=mongodb://localhost:27017/serverTestDB \"npm run newman-server\"",
+    "ci-test": "npm run newman-server",
+    "newman-server": "cross-env-shell PORT=3002 \"npm run dropdb && run-p --race start newman-wait\"",
+    "newman-wait": "wait-on http://localhost:3002/api && npm run newman",
+    "newman": "newman run ./tests/dentistServer.postman_collection.json --env-var host=http://localhost:3002",
+    "dropdb": "node ./tests/dropdb.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "newman": "^6.2.1",
+    "nodemon": "^3.1.4",
+    "npm-run-all": "^4.1.5",
+    "wait-on": "^8.0.0"
+
+  },
+  "dependencies": {
+    "mongoose": "^8.8.4"
+  }
+}
