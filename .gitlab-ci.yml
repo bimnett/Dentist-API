@@ -65,7 +65,7 @@ test:
   script:
 
     - cd middleware
-    - cd dentisApiServer
+    - cd dentistApiServer
     - cd src
     - cd controllerDentist
     - echo "Creating credentials.js..."
