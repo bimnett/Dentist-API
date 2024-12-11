@@ -6,8 +6,8 @@ be able to continue
 */ 
 
 const mqtt = require('mqtt');
-const CREDENTIAL = require('../credentials');
-const TOPIC = require('../topics');
+const CREDENTIAL = require('./credentials');
+const TOPIC = require('./topics');
 const slotManagement = require('./src/slotManagement');
 
 // creat a new time slot 
