@@ -10,7 +10,7 @@
     "ci-test": "npm run newman-server",
     "newman-server": "cross-env-shell PORT=3002 \"npm run dropdb && run-p --race start newman-wait\"",
     "newman-wait": "wait-on http://localhost:3002/api && npm run newman",
-    "newman": "newman run ./tests/server.postman_collection.json --env-var host=http://localhost:3002",
+    "newman": "newman run ./tests/dentistServer.postman_collection.json --env-var host=http://localhost:3002",
     "dropdb": "node ./tests/dropdb.js"
   },
   "dependencies": {
