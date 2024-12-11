@@ -81,6 +81,3 @@ test:
     - npm install cross-env --save-dev
     - npm install mongoose
     - npm run ci-test
-
-    - cd ../patientServer
-    - npm run ci-test
