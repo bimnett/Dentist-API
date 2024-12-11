@@ -7,8 +7,8 @@ rename to schedualApi.js
 const mqtt = require('mqtt');
 const express = require('express');
 const router = express.Router();
-const CREDENTIAL = require('./credentials');
-const TOPIC = require('./topics');
+const CREDENTIAL = require('dentist_app/middleware/DentistServer/src/controllerDentist/credentials');
+const TOPIC = require('dentist_app/middleware/DentistServer/src/controllerDentist/topics');
 
 
 const options = {
