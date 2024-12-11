@@ -122,8 +122,9 @@
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
-    "npm-run-all": "^4.1.5",
+    "newman": "^6.2.1",
     "nodemon": "^3.1.7",
+    "npm-run-all": "^4.1.5",
     "wait-on": "^8.0.0"
   },
   "author": "",
