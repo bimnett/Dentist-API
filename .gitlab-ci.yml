@@ -65,6 +65,28 @@ test:
   script:
 
     - cd middleware
+    - cd DentistServer
+    - cd src
+    - cd controllerDentist
+    - echo "Creating credentials.js..."
+    - echo "module.exports = {" > credentials.js
+    - echo "username :\"$USERNAME\"," >> credentials.js
+    - echo "password :\"$PASSWORD\"," >> credentials.js
+    - echo "broker_url :\"$BROKER_URL\"," >> credentials.js
+    - echo "mongodb_url :\"mongodb://mongo:27017/serverTestDB\"" >> credentials.js
+    - echo "};" >> credentials.js
+    - echo "credentials.js created successfully."
+    - npm install
+    - npm install npm-run-all --save-dev
+    - npm install --include=dev
+    - npm install cross-env --save-dev
+    - npm install mongoose
+    - npm run ci-test
+
+    - cd ..
+    - cd ..
+    - cd ..
+    - cd databaseHandler
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "username :\"$USERNAME\"," >> credentials.js
@@ -74,10 +96,28 @@ test:
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
 
-    - cd DentistServer
-    - npm install
-    - npm install npm-run-all --save-dev
-    - npm install --include=dev
-    - npm install cross-env --save-dev
-    - npm install mongoose
-    - npm run ci-test
+    - cd ..
+    - cd patientServer
+    - cd src
+    - cd controllerPatient
+    - echo "Creating credentials.js..."
+    - echo "module.exports = {" > credentials.js
+    - echo "username :\"$USERNAME\"," >> credentials.js
+    - echo "password :\"$PASSWORD\"," >> credentials.js
+    - echo "broker_url :\"$BROKER_URL\"," >> credentials.js
+    - echo "mongodb_url :\"mongodb://mongo:27017/serverTestDB\"" >> credentials.js
+    - echo "};" >> credentials.js
+    - echo "credentials.js created successfully."
+
+    - cd ..
+    - cd ..
+    - cd ..
+    - cd slotService
+    - echo "Creating credentials.js..."
+    - echo "module.exports = {" > credentials.js
+    - echo "username :\"$USERNAME\"," >> credentials.js
+    - echo "password :\"$PASSWORD\"," >> credentials.js
+    - echo "broker_url :\"$BROKER_URL\"," >> credentials.js
+    - echo "mongodb_url :\"mongodb://mongo:27017/serverTestDB\"" >> credentials.js
+    - echo "};" >> credentials.js
+    - echo "credentials.js created successfully."
