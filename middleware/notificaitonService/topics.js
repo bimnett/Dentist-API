@@ -2,5 +2,5 @@ module.exports = {
 
     everything: '#',
 
-    cancel_appointment: 'database/cancel/appointment',
+    cancel_appointment: 'database/send/notification/cancel',
 }

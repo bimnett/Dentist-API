@@ -66,6 +66,8 @@ module.exports = {
     // schedule service
     cached_dentist_schedule: 'schedule/dentist/send/dentist/schedule/cached',
 
+    // notification topics
+    notification_cancel: 'database/send/notification/cancel'
 
 
 

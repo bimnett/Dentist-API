@@ -116,7 +116,7 @@ client.on('message', async (topic, message) => {
                 const deletedSlot = await Timeslot.findByIdAndDelete(jsonMessage.id);
                 console.log(deletedSlot);
 
-                let publish_topic = TOPIC.cancel_appointment;
+                let publish_topic = TOPIC.notification_cancel;
                 let payload = JSON.stringify(deletedSlot);
 
                 client.publish(publish_topic, payload, { qos: 2 }, (err) => {
