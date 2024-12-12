@@ -108,6 +108,7 @@ test:
     - echo "mongodb_url :\"mongodb://mongo:27017/serverTestDB\"" >> credentials.js
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
+    - npm run ci-test
 
     - cd ..
     - cd ..
