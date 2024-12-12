@@ -4,8 +4,8 @@
   "description": "",
   "main": "patientApp.js",
   "scripts": {
-    "start": "node ./app.js",
-    "dev": "nodemon ./app.js",
+    "start": "node ./patientApp.js",
+    "dev": "nodemon ./patientApp.js",
     "test": "cross-env-shell MONGODB_URI=mongodb://localhost:27017/serverTestDB \"npm run newman-server\"",
     "ci-test": "npm run newman-server",
     "newman-server": "cross-env-shell PORT=3003 \"npm run dropdb && run-p --race start newman-wait\"",
