@@ -6,16 +6,7 @@
 		"_exporter_id": "38505698",
 		"_collection_link": "https://ramenfinder2.postman.co/workspace/dentist_app~f95af140-7fb9-4ed0-a2a1-5923c61a28c3/collection/38505698-cd4201fd-a2cf-4c60-bd19-340897c9b3c4?action=share&source=collection_link&creator=38505698"
 	},
-	"item": [
-		{
-			"name": "New Request",
-			"request": {
-				"method": "GET",
-				"header": []
-			},
-			"response": []
-		}
-	],
+	"item": [],
 	"variable": [
 		{
 			"key": "host",
