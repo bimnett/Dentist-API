@@ -3,21 +3,21 @@ const TOPIC = require('./databaseMqttTopics');
 
 async function retrieveDentistSchedule(jsonMessage,client){
     try {
+        console.log(jsonMessage);
+
+
         const dentistSchedule = await Timeslot.find({
             dentist: jsonMessage.dentist,
-            date: {
-                // greater or equal to this date
-                $gte: jsonMessage.startDate,
-                $lte: jsonMessage.endDate
-            }
+            date: jsonMessage.date
         });
+
 
         payload = dentistSchedule;
 
         // broker has to send strings, so transform json --> string 
         const string_payload = JSON.stringify(payload);
 
-        const topic = TOPIC.dentist_schedule+jsonMessage.dentist.id;
+        const topic = TOPIC.dentist_schedule;
 
         client.publish(topic, string_payload, { qos: 2 }, (err) => {
             if (err) {

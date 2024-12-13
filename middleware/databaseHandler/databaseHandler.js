@@ -15,7 +15,7 @@ const options = {
     reconnectPeriod: 1000
 };
 
-const dbURI = CREDENTIAL.mongodb_uri;
+const dbURI = CREDENTIAL.mongodb_url;
 // Create MQTT client and connect
 const client = mqtt.connect(CREDENTIAL.broker_url, options);
 

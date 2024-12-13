@@ -16,7 +16,7 @@ const options = {
 
 
 // get all schedule for a dentist 
-router.get('/schedules/:dentistId', async function(req,res,next){
+router.get('/:dentistId', async function(req,res,next){
     try {
         options.clientId ='pub_dentistServer'+Math.random().toString(36).substring(2,10);
     
@@ -46,7 +46,7 @@ router.get('/schedules/:dentistId', async function(req,res,next){
             });
 
             // ADD SUBSCRIPTION TOO
-            topic = TOPIC.dentist_schedule+req.body.dentist.id;
+            topic = TOPIC.dentist_schedule;
             client.subscribe(topic, { qos: 2 }, (err) => {
                 if (err) {
                     console.log('Subscription error:', err);
@@ -59,7 +59,8 @@ router.get('/schedules/:dentistId', async function(req,res,next){
 
         client.on('message', (topic, message) => {
             console.log(`Received message: + ${message} + on topic: + ${topic}`);
-            return res.status(200).json(message);
+            const parsedMessage = JSON.parse(message.toString());
+            return res.status(200).json(parsedMessage);
         });
 
         client.on('error', (error) => {
