@@ -34,7 +34,7 @@ client.on('connect', () => {
 client.on('message', (topic, message) => {
     console.log(`Received message on topic ${topic}`);
 
-    if(topic === 'cancelAppointment'){
+    if(topic === TOPIC.cancel_appointment){
         try{
             let isBooked = parser.parseStatus(message) === "Booked";
             if(isBooked){
