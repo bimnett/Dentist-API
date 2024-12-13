@@ -32,6 +32,7 @@ module.exports = {
         create_new_slot: 'dentist/slot/create/new/slot',
         update_slot: 'dentist/slot/update/slot',
         delete_slot: 'dentist/slot/delete/slot',
+        dentist_id: 'dentist/database/send/dentist/id',
 
         // all topics
         everything: '#'
