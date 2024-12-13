@@ -17,7 +17,7 @@ async function retrieveDentistSchedule(jsonMessage,client){
         // broker has to send strings, so transform json --> string 
         const string_payload = JSON.stringify(payload);
 
-        const topic = TOPIC.dentist_schedule;
+        const topic = TOPIC.dentist_schedule+jsonMessage.dentist.id;
 
         client.publish(topic, string_payload, { qos: 2 }, (err) => {
             if (err) {

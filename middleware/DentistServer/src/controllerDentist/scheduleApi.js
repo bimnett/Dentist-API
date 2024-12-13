@@ -26,7 +26,7 @@ router.get('/schedules/:dentistId', async function(req,res,next){
         client.on('connect', () => {
             console.log('Publisher connected to broker');
 
-            const topic = TOPIC.dentist_id;
+            var topic = TOPIC.dentist_id;
             const payload = { 
                 // date - to see between which dates the schedual shall be shown
                 // need to know which dentist's schedual
@@ -46,6 +46,14 @@ router.get('/schedules/:dentistId', async function(req,res,next){
             });
 
             // ADD SUBSCRIPTION TOO
+            topic = TOPIC.dentist_schedule+req.body.dentist.id;
+            client.subscribe(topic, { qos: 2 }, (err) => {
+                if (err) {
+                    console.log('Subscription error:', err);
+                } else {
+                    console.log(`Subscribed to topic: ${topic}`);
+                }
+            });
 
         });
 
