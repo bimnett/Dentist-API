@@ -4,6 +4,7 @@ const TOPIC = require('./databaseMqttTopics');
 const mongoose = require("mongoose");
 const Timeslot = require('./models/timeslot');
 const slotManagement = require('./slotManagement');
+const dentistSchedule = require('./dentistSchedule');
 
 // MQTT connection options
 const options = {
@@ -39,6 +40,29 @@ client.on('connect', () => {
             console.log(`Subscribed to topic: ${topic}`);
         }
     });
+
+    /*
+    const sendDentistSchedule = async () => {
+        try {
+            const schedule = await Timeslot.find({ dentist: dentistId });
+            const topic = TOPIC.dentist_schedule;
+            client.publish(topic, JSON.stringify(schedule), { qos: 2 }, (err) => {
+                if (err) {
+                    console.error('Failed to publish:', err);
+                } else {
+                    console.log(`Published schedule to ${topic}`);
+                }
+            });
+        } catch (error) {
+            console.error('Error fetching or publishing schedule:', error);
+        }
+    };
+
+    // Call the async function in a setInterval wrapper
+    setInterval(() => {
+        sendDentistSchedule().catch(err => console.error('Error in schedule interval:', err));
+    }, 5 * 60 * 1000); // 5 minutes in milliseconds
+    */
 });
 
 // Ensure that message event listener is only registered once
@@ -74,6 +98,12 @@ client.on('message', async (topic, message) => {
                 console.log("try to delete\n");
                 const deletedSlot = await Timeslot.findByIdAndDelete(jsonMessage.id);
                 console.log(deletedSlot);
+                break;
+
+            case TOPIC.dentist_id:
+                console.log('retrive dentist schedule and send to dentist-ui');
+                const schedule = dentistSchedule.retrieveDentistSchedule(jsonMessage,client);
+                console.log(schedule);
                 break;
 
             default:
