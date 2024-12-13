@@ -36,8 +36,11 @@ client.on('message', (topic, message) => {
 
     if(topic === 'cancelAppointment'){
         try{
-            let email = parser.parseEmail(message);
-            notifications.notifyCancelation(email);
+            let isBooked = parser.parseStatus(message) === "Booked";
+            if(isBooked){
+                let email = parser.parseEmail(message);
+                notifications.notifyCancelation(email);
+            }
         } catch (error) {
             console.log(error.stack);
         }
