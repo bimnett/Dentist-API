@@ -16,7 +16,7 @@ const TimeslotSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ['Available', 'Booked'],
+        enum: ['Available', 'Booked', 'Reserved'],
         required: true,
         default: 'Available'
     },
@@ -33,6 +33,10 @@ const TimeslotSchema = new Schema({
             type: String,
             required: false,
         },
+    },
+    referenceCode: {
+        type: String,
+        required: false,
     },
     dentist: {
         type: mongoose.Schema.Types.ObjectId,
