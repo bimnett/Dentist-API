@@ -44,6 +44,21 @@ services:
     build:
       context:
         ./middleware/patientserver
+    ports:
+      - "3001:3001"
+    restart:
+      always
+    networks:
+      - backend
+
+  slotavavailabilityservice:
+    build:
+      context:
+       ./middleware/slotAvailability
+    depends_on:
+      - mosquitto
+    restart:
+      always
     networks:
       - backend
 
