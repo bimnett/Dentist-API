@@ -49,32 +49,45 @@ client.on('connect', () => {
 // client.on message
 client.on('message', (topic, message) => {
     if(topic === TOPIC.cached_dentist_id){
+        console.log("Horse");
         console.log(scheduleCache)
-
+        console.log("Horse end");
         currentDentist = message.toString();
         // Filter the schedule for the current dentist
+
+        /*
         var filteredSchedule = scheduleCache.data
         ? scheduleCache.data.filter((timeslot) => timeslot.dentist.toString() === currentDentist)
         : ['nothing found'];
+        */
 
-        //filteredSchedule = scheduleCache.filter(timeslot => dentist.toString() === currentDentist );
+        var filteredSchedule = {};
+        //filteredSchedule = scheduleCache.filter(scheduleCache.data.timeslot => scheduleCache.data.timeslot.dentist.toString() === currentDentist );
         // let output = employees.filter(employee => employee.department == "IT");
 
         //filteredSchedule = {"data": "test tests value semlan" };
+
+        for (let i = 0; i <scheduleCache.length; i++){
+            if(scheduleCache.data[i].dentist===currentDentist){
+                filteredSchedule += scheduleCache[i];
+            }
+        }
+
 
         if (filteredSchedule.length === 0) {
             console.log('No schedule found for the current dentist.');
         }
 
         // client.publisher
-        const string_payload = JSON.stringify(filteredSchedule.data);
+        const string_payload = JSON.stringify(filteredSchedule);
 
         const pubTopic = TOPIC.cached_dentist_schedule;
         client.publish(pubTopic, string_payload, { qos: 2 }, (err) => {
             if (err) {
                 console.error('Publish error:', err);
             } else {
-                console.log(string_payload)
+                console.log("Cat");
+                console.log(string_payload);
                 console.log('Cached schedule published successfully: ' + Date.now());
             }
         });
@@ -83,7 +96,7 @@ client.on('message', (topic, message) => {
         console.log('Received schedule from databaseHandler');
         scheduleCache.data = JSON.parse(message.toString());
         scheduleCache.timestamp = Date.now();
-        console.log("\n"+scheduleCache.data.toString()+"\nRecived the timeslot collection");
+        console.log("Dog\n"+scheduleCache.data.toString()+"\nRecived the timeslot collection");
     } 
 });
 
