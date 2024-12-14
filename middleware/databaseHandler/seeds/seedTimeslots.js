@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const CREDENTIAL = require('../../credentials');
+const CREDENTIAL = require('../credentials');
 const Timeslot = require('../models/timeslot');
 
 // Connect to MongoDB
