@@ -1,43 +1,100 @@
 <template>
-    <div>
-      <h1>Select a Time Slot for {{ clinic }}</h1>
-      <SlotSelection 
-      :selectedDate="selectedDate" 
-      :clinic="clinic" 
+  <div>
+    <h1>Select a Time Slot for {{ clinic }}</h1>
+    <SlotSelection 
+      :timeSlots="timeSlots"
       @time-selected="navigateToAvailableDentists" 
     />
-    </div>
-  </template>
-  
-  <script>
-  import SlotSelection from "../components/SlotSelection.vue";
-  
-  export default {
-    name: "SlotSelectionView",
-    components: { SlotSelection },
-    props: {
-      selectedDate: {
-        type: String,
-        required: true,
-      },
-      clinic: {
+  </div>
+</template>
+
+<script>
+import SlotSelection from "../components/SlotSelection.vue";
+import api from '@/api';
+
+// Import mqtt package and topic
+import mqtt from "mqtt";
+import { CLIENT_SLOT_UPDATES } from "../topics";
+
+export default {
+  name: "SlotSelectionView",
+  components: { SlotSelection },
+  props: {
+    selectedDate: {
       type: String,
       required: true,
-      },
     },
-  //   computed: {
-  //     clinic() {
-  //       return this.$route.query.clinic || "Unknown Clinic";
-  //     },
-  // },
-    methods: {
-      navigateToAvailableDentists(selectedTime) {
-        this.$router.push({
-          name: "AvailableDentists",
-          params: { selectedDate: this.selectedDate, selectedTime },
-          query: { clinic: this.clinic },
+    clinic: {
+      type: String,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      timeSlots: [], // Available time slots
+      mqttClient: null, // MQTT client instance
+    };
+  },
+  methods: {
+    async fetchAvailableSlots() {
+      try {
+        const response = await api.get("/available-slots", {
+          params: {
+            date: this.selectedDate,
+            clinic: this.clinic,
+          },
         });
-      },
+        this.timeSlots = response.data.slots;
+      } catch (error) {
+        console.error("Error fetching available slots:", error.message);
+      }
     },
-  };
-  </script>
+
+    setupMqttConnection() {
+      this.mqttClient = mqtt.connect("ws://localhost:9001");
+      this.mqttClient.on("connect", () => {
+        console.log("Connected to MQTT broker!");
+        this.mqttClient.subscribe(`${CLIENT_SLOT_UPDATES}/${this.selectedDate}/${this.$route.query.clinic}`);
+      });
+
+      // Message event triggers when another client initiates a booking for an available dentist for this specific time slot.
+      this.mqttClient.on("message", (topic, message) => {
+        const data = JSON.parse(message.toString());
+
+        // Remove the reserved time slot from the list
+        this.timeSlots = this.timeSlots.filter(slot => slot !== data.time);
+
+        // If no time slots left, navigate back
+        if (this.timeSlots.length === 0) {
+          alert("No timeslots available. Returning to available dates.");
+          this.$router.push(`/available-dates?clinic=${this.$route.query.clinic}`);
+        }
+      });
+
+      this.mqttClient.on("error", err => {
+        console.error("MQTT connection error:", err.message);
+      });
+    },
+
+    navigateToAvailableDentists(selectedTime) {
+      this.$router.push({
+        name: "AvailableDentists",
+        params: { selectedDate: this.selectedDate, selectedTime },
+        query: { clinic: this.clinic },
+      });
+    },
+  },
+  
+  // Get all available dentists for this clinic and date, and subscribe to real-time changes
+  async created() {
+    await this.fetchAvailableSlots();
+    this.setupMqttConnection();
+  },
+
+  beforeUnmount() {
+    if (this.mqttClient) {
+      this.mqttClient.end();
+    }
+  },
+};
+</script>

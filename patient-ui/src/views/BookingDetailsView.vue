@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Booking Details</h1>
-    <div v-if="!referenceCode || !booking">
+    <div v-if="!booking">
       <label for="reference-code">Enter Reference Code:</label>
       <input
         id="reference-code"
@@ -43,13 +43,13 @@ export default {
     }
   },
   methods: {
-    async fetchBookingDetails(referenceCode = this.referenceCodeInput) {
-      console.log("Fetching booking with reference code:", referenceCode);
+    async fetchBookingDetails() {
+      console.log("Fetching booking with reference code:", this.referenceCodeInput);
       try {
         // fetch booking details from backend (middleware) API
-        const response = await api.get(`/bookings/${referenceCode}`);
-        this.booking = response.data.booking;
-        this.referenceCode = referenceCode; 
+        const response = await api.get(`/bookings/${this.referenceCodeInput}`);
+        console.log(response.data.data);
+        this.booking = response.data.data;
       } catch (error) {
         console.error("Error fetching booking details:", error.message);
         alert("Failed to fetch booking details. Please check the reference code.");
