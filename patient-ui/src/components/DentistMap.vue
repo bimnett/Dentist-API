@@ -44,7 +44,7 @@
             <div>
               <strong>${clinic.name}</strong><br>
               ${clinic.address}<br>
-              <button class="appointment-button" onclick="window.location.href='/available-dates?clinic=${encodeURIComponent(
+              <button onclick="window.location.href='/available-dates?clinic=${encodeURIComponent(
                 clinic.name
               )}'">
                 Make Appointment
