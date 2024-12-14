@@ -73,7 +73,7 @@ test:
     - echo "username :\"$USERNAME\"," >> credentials.js
     - echo "password :\"$PASSWORD\"," >> credentials.js
     - echo "broker_url :\"$BROKER_URL\"," >> credentials.js
-    - echo "mongodb_url :\"mongodb://mongo:27017/serverTestDB\"" >> credentials.js
+    - echo "test_mongodb_url :\"mongodb://mongo:27017/serverTestDB\"" >> credentials.js
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
     - npm install
@@ -92,7 +92,7 @@ test:
     - echo "username :\"$USERNAME\"," >> credentials.js
     - echo "password :\"$PASSWORD\"," >> credentials.js
     - echo "broker_url :\"$BROKER_URL\"," >> credentials.js
-    - echo "mongodb_url :\"mongodb://mongo:27017/serverTestDB\"" >> credentials.js
+    - echo "test_mongodb_url :\"mongodb://mongo:27017/serverTestDB\"" >> credentials.js
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
 
@@ -105,7 +105,7 @@ test:
     - echo "username :\"$USERNAME\"," >> credentials.js
     - echo "password :\"$PASSWORD\"," >> credentials.js
     - echo "broker_url :\"$BROKER_URL\"," >> credentials.js
-    - echo "mongodb_url :\"mongodb://mongo:27017/serverTestDB\"" >> credentials.js
+    - echo "test_mongodb_url :\"mongodb://mongo:27017/serverTestDB\"" >> credentials.js
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
     - npm run ci-test
@@ -119,6 +119,6 @@ test:
     - echo "username :\"$USERNAME\"," >> credentials.js
     - echo "password :\"$PASSWORD\"," >> credentials.js
     - echo "broker_url :\"$BROKER_URL\"," >> credentials.js
-    - echo "mongodb_url :\"mongodb://mongo:27017/serverTestDB\"" >> credentials.js
+    - echo "test_mongodb_url :\"mongodb://mongo:27017/serverTestDB\"" >> credentials.js
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
