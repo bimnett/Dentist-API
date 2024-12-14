@@ -53,6 +53,20 @@ client.on('message', (topic, message) => {
         console.log(scheduleCache)
         console.log("Horse end");
         currentDentist = message.toString();
+        console.log("currentDentist: "+currentDentist);
+        var jsonDentist = JSON.parse(currentDentist);
+        console.log("jsonDentist"+jsonDentist);
+        var dentistId = jsonDentist.dentist;
+        console.log("denistId: "+dentistId);
+        
+
+        /*
+        const messageString = message.toString();  // Convert Buffer to string
+        const jsonMessage = JSON.parse(messageString);  // Parse JSON to enable to save it in db
+        */
+
+
+        
         // Filter the schedule for the current dentist
 
         /*
@@ -61,17 +75,25 @@ client.on('message', (topic, message) => {
         : ['nothing found'];
         */
 
-        var filteredSchedule = {};
+        let filteredSchedule = [];
         //filteredSchedule = scheduleCache.filter(scheduleCache.data.timeslot => scheduleCache.data.timeslot.dentist.toString() === currentDentist );
         // let output = employees.filter(employee => employee.department == "IT");
 
         //filteredSchedule = {"data": "test tests value semlan" };
 
-        for (let i = 0; i <scheduleCache.length; i++){
-            if(scheduleCache.data[i].dentist===currentDentist){
-                filteredSchedule += scheduleCache[i];
+        if (scheduleCache.data) {
+            for (let i = 0; i < scheduleCache.data.length; i++) {
+                console.log("Current timeslot object in cache: " + scheduleCache.data[i].dentist);
+                if (scheduleCache.data[i].dentist === dentistId) {
+                    filteredSchedule.push(scheduleCache.data[i]); // Add matching item to the array
+                }
             }
+        } else {
+            console.log('Schedule cache is empty.');
         }
+
+        console.log("Tiger");
+        console.log(filteredSchedule);
 
 
         if (filteredSchedule.length === 0) {
