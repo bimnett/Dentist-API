@@ -76,7 +76,7 @@ class SlotAvailabilityService {
       const { date, time, clinicId, dentistId } = data;
 
       // Request slot information from database
-      this.internalClient.publish('database/request/timeslot/find', JSON.stringify({
+      this.internalClient.publish(TOPICS.DATABASE_REQUEST_TIMESLOT_FIND, JSON.stringify({
         requestId: `check_${Date.now()}`,
         query: {
           date,
@@ -93,7 +93,7 @@ class SlotAvailabilityService {
       const { date, time, clinicId, dentistId, type } = data;
 
       // Request slot update in the database
-      this.internalClient.publish('database/request/timeslot/update', JSON.stringify({
+      this.internalClient.publish(TOPICS.DATABASE_REQUEST_TIMESLOT_UPDATE, JSON.stringify({
         requestId: `update_${Date.now()}`,
         query: {
           date,

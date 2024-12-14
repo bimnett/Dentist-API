@@ -15,6 +15,7 @@ import api from '@/api';
 // Import mqtt package and topic
 import mqtt from "mqtt";
 import { CLIENT_SLOT_UPDATES } from "../topics";
+import { MQTT_BROKER_URL } from "../mqttVariables";
 
 export default {
   name: "SlotSelectionView",
@@ -51,7 +52,7 @@ export default {
     },
 
     setupMqttConnection() {
-      this.mqttClient = mqtt.connect("ws://localhost:9001");
+      this.mqttClient = mqtt.connect(MQTT_BROKER_URL);
       this.mqttClient.on("connect", () => {
         console.log("Connected to MQTT broker!");
         this.mqttClient.subscribe(`${CLIENT_SLOT_UPDATES}/${this.selectedDate}/${this.$route.query.clinic}`);

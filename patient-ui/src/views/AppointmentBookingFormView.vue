@@ -14,6 +14,7 @@
 <script>
   import AppointmentBookingForm from "../components/AppointmentBookingForm.vue";
   import api from "@/api";
+  import { MQTT_BROKER_URL } from "../mqttVariables";
 
   // Import mqtt package and topic
   import mqtt from "mqtt";
@@ -82,7 +83,7 @@
         }
 
         // Publish that this slot is now reserved to all connected patient clients
-        this.mqttClient = mqtt.connect("ws://localhost:9001");
+        this.mqttClient = mqtt.connect(MQTT_BROKER_URL);
           this.mqttClient.on("connect", () => {
               console.log("Connected to MQTT broker!");
 
