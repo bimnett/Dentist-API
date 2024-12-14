@@ -48,39 +48,18 @@ client.on('connect', () => {
 
 // client.on message
 client.on('message', (topic, message) => {
+
+    // To ensure 96 hours retrival of timeslots for dentists
     if(topic === TOPIC.cached_dentist_id){
-        console.log("Horse");
-        console.log(scheduleCache)
-        console.log("Horse end");
+        // derive dentist's mongdb id
         currentDentist = message.toString();
-        console.log("currentDentist: "+currentDentist);
         var jsonDentist = JSON.parse(currentDentist);
-        console.log("jsonDentist"+jsonDentist);
         var dentistId = jsonDentist.dentist;
-        console.log("denistId: "+dentistId);
-        
 
-        /*
-        const messageString = message.toString();  // Convert Buffer to string
-        const jsonMessage = JSON.parse(messageString);  // Parse JSON to enable to save it in db
-        */
-
-
-        
-        // Filter the schedule for the current dentist
-
-        /*
-        var filteredSchedule = scheduleCache.data
-        ? scheduleCache.data.filter((timeslot) => timeslot.dentist.toString() === currentDentist)
-        : ['nothing found'];
-        */
-
+        // save a specific dentist's all timeslots
         let filteredSchedule = [];
-        //filteredSchedule = scheduleCache.filter(scheduleCache.data.timeslot => scheduleCache.data.timeslot.dentist.toString() === currentDentist );
-        // let output = employees.filter(employee => employee.department == "IT");
 
-        //filteredSchedule = {"data": "test tests value semlan" };
-
+        // filter out the timelots for certain dentist
         if (scheduleCache.data) {
             for (let i = 0; i < scheduleCache.data.length; i++) {
                 console.log("Current timeslot object in cache: " + scheduleCache.data[i].dentist);
@@ -92,33 +71,30 @@ client.on('message', (topic, message) => {
             console.log('Schedule cache is empty.');
         }
 
-        console.log("Tiger");
-        console.log(filteredSchedule);
-
-
         if (filteredSchedule.length === 0) {
             console.log('No schedule found for the current dentist.');
         }
 
-        // client.publisher
+        // prepare the cachedSchedule to send via broker 
         const string_payload = JSON.stringify(filteredSchedule);
 
+        // send chachedSchedule
         const pubTopic = TOPIC.cached_dentist_schedule;
         client.publish(pubTopic, string_payload, { qos: 2 }, (err) => {
             if (err) {
                 console.error('Publish error:', err);
             } else {
-                console.log("Cat");
                 console.log(string_payload);
                 console.log('Cached schedule published successfully: ' + Date.now());
             }
         });
 
+    // For cashing the timeslot collection 
     } else if (topic === TOPIC.cached_schedule) {
         console.log('Received schedule from databaseHandler');
         scheduleCache.data = JSON.parse(message.toString());
         scheduleCache.timestamp = Date.now();
-        console.log("Dog\n"+scheduleCache.data.toString()+"\nRecived the timeslot collection");
+        console.log("\n"+scheduleCache+"\nRecieved the timeslot collection");
     } 
 });
 
