@@ -8,7 +8,7 @@ async function retrieveDentistSchedule(jsonMessage,client){
 
         const dentistSchedule = await Timeslot.find({
             dentist: jsonMessage.dentist,
-            date: jsonMessage.date
+            //date: jsonMessage.date
         });
 
 

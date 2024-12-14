@@ -12,6 +12,7 @@ module.exports = {
         retrieved_specific_clinic: 'database/slot/found/special/clinic',
         retrieved_specific_dentist: 'database/slot/found/special/dentist',
         dentist_schedule: 'database/schedule/all/slots/for/special/dentist',
+        cached_scheduele: 'database/schedule/all/slots',
         
 
 

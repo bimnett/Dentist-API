@@ -63,6 +63,50 @@ client.on('connect', () => {
         sendDentistSchedule().catch(err => console.error('Error in schedule interval:', err));
     }, 5 * 60 * 1000); // 5 minutes in milliseconds
     */
+
+    // Set a daily interval to query the database and publish timeslots to scheduleService.js
+    const publishDailyTimeslots = async () => {
+        try {
+            const today = new Date();
+            const endOf96Hours = new Date(today.getTime() + 96 * 60 * 60 * 1000); // 96 hours ahead
+
+            // Query timeslots for the next 96 hours
+            const dentistSchedule = await Timeslot.find({
+                date: {
+                    $gte: today.toISOString(),
+                    $lte: endOf96Hours.toISOString()
+                }
+            });
+
+            // Publish the timeslots to the scheduleService
+            const payload = JSON.stringify(dentistSchedule);
+            const topic = TOPIC.cached_scheduele;
+
+            client.publish(topic, payload, { qos: 2 }, (err) => {
+                if (err) {
+                    console.error('Publish error:', err);
+                } else {
+                    console.log('Daily schedule published successfully');
+                }
+            });
+        } catch (error) {
+            console.error('Error querying timeslots or publishing:', error);
+        }
+    };
+    // Schedule the function to run every 6 hours
+    const now = new Date();
+    const nextSixHours = new Date(
+        Math.ceil(now.getTime() / (6 * 60 * 60 * 1000)) * (6 * 60 * 60 * 1000)
+    ); 
+    // Calculate the next 6-hour mark
+    const delay = nextSixHours - now;
+
+    // Publish dentists schedules every 6 hours to scheduleService
+    setTimeout(() => {
+        publishDailyTimeslots(); // First execution
+        setInterval(publishDailyTimeslots, 6 * 60 * 60 * 1000); 
+    }, delay);
+
 });
 
 // Ensure that message event listener is only registered once
@@ -124,6 +168,8 @@ client.on('error', (error) => {
 client.on('close', () => {
     console.log('DatabaseHandler connection closed');
 });
+
+
 
 
 

@@ -60,18 +60,26 @@ router.get('/:dentistId', async function(req,res,next){
         client.on('message', (topic, message) => {
             console.log(`Received message: + ${message} + on topic: + ${topic}`);
             const parsedMessage = JSON.parse(message.toString());
-            return res.status(200).json(parsedMessage);
+            res.status(200).json(parsedMessage);
+            // Unsubscribe from the topic and close the connection
+            client.unsubscribe(topic, () => {
+                console.log(`Unsubscribed from topic: ${topic}`);
+            });
+            client.end(); // Close the connection
         });
 
         client.on('error', (error) => {
             console.log('Subscriber/publisher connection error:', error);
-            return res.status(500).json({message: "Could not connect to server"})
+            //return res.status(500).json({message: "Could not connect to server"})
         });
 
         client.on('close', () => {
             console.log('Subscriber/publisher connection closed');
-            return res.status(200).json({message : "Closed connection"});
+            //return res.status(200).json({message : "Closed connection"});
         });
+
+        
+
 
     } catch(e) {
         return next(e);
