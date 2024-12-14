@@ -46,7 +46,7 @@ app.get('/api', function(req, res) {
 */
 
 // MQTT
-const slotRoutes = require('./src/controllers/bookSlotApi');
+const slotRoutes = require('./src/controllerPatient/bookSlotApi');
 app.use('/api/slots', slotRoutes);
 
 
