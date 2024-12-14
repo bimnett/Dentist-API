@@ -25,13 +25,22 @@ const client = mqtt.connect(CREDENTIAL.broker_url, options);
 // client.on connect
 client.on('connect', () => {
 
-    // client.subscribe
-    var topic = [TOPIC.cached_dentist_id, TOPIC.cached_schedule];
-    client.subscribe(topic, { qos: 2 }, (err) => {
+    // endpoint topic
+    var topic_ep = TOPIC.cached_dentist_id;
+    // database topic
+    var topic_db = TOPIC.cached_schedule;
+    client.subscribe(topic_ep, { qos: 2 }, (err) => {
         if (err) {
             console.error('Subscription error:', err);
         } else {
-            console.log(`Subscribed to topic: ${topic}`);
+            console.log(`Subscribed to topic: ${topic_ep}`);
+        }
+    });
+    client.subscribe(topic_db, { qos: 2 }, (err) => {
+        if (err) {
+            console.error('Subscription error:', err);
+        } else {
+            console.log(`Subscribed to topic: ${topic_db}`);
         }
     });
 
@@ -40,27 +49,41 @@ client.on('connect', () => {
 // client.on message
 client.on('message', (topic, message) => {
     if(topic === TOPIC.cached_dentist_id){
+        console.log(scheduleCache)
+
         currentDentist = message.toString();
         // Filter the schedule for the current dentist
-        const filteredSchedule = scheduleCache.data
+        var filteredSchedule = scheduleCache.data
         ? scheduleCache.data.filter((timeslot) => timeslot.dentist.toString() === currentDentist)
         : ['nothing found'];
 
-        const pubTopic = TOPIC.cached_dentist_schedule;
+        //filteredSchedule = scheduleCache.filter(timeslot => dentist.toString() === currentDentist );
+        // let output = employees.filter(employee => employee.department == "IT");
+
+        //filteredSchedule = {"data": "test tests value semlan" };
+
+        if (filteredSchedule.length === 0) {
+            console.log('No schedule found for the current dentist.');
+        }
+
         // client.publisher
         const string_payload = JSON.stringify(filteredSchedule.data);
-        topic = TOPIC.cached_dentist_schedule;
+
+        const pubTopic = TOPIC.cached_dentist_schedule;
         client.publish(pubTopic, string_payload, { qos: 2 }, (err) => {
             if (err) {
                 console.error('Publish error:', err);
             } else {
+                console.log(string_payload)
                 console.log('Cached schedule published successfully: ' + Date.now());
             }
         });
+
     } else if (topic === TOPIC.cached_schedule) {
         console.log('Received schedule from databaseHandler');
         scheduleCache.data = JSON.parse(message.toString());
         scheduleCache.timestamp = Date.now();
+        console.log("\n"+scheduleCache.data.toString()+"\nRecived the timeslot collection");
     } 
 });
 

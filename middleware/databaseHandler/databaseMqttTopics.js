@@ -33,7 +33,7 @@ module.exports = {
     update_slot: 'dentist/slot/update/slot',
     delete_slot: 'dentist/slot/delete/slot',
     dentist_id: 'dentist/database/send/dentist/id',
-    cached_dentist_id: 'dentist/database/send/dentist/id/cached',
+    cached_dentist_id: 'dentist/schedule/send/dentist/id/cached',
 
     // schedule service
     cached_dentist_schedule: 'schedule/dentist/send/dentist/schedule/cached',

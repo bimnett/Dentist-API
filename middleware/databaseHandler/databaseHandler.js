@@ -30,7 +30,7 @@ mongoose.connect(dbURI, {
 
 
 // Avoid multiple listeners by ensuring they are added once
-client.on('connect', () => {
+client.on('connect', async () => {
     console.log('databaseHandler connected to broker');
     const topic = '#';
     client.subscribe(topic, { qos: 2 }, (err) => {
@@ -41,72 +41,28 @@ client.on('connect', () => {
         }
     });
 
-    /*
-    const sendDentistSchedule = async () => {
-        try {
-            const schedule = await Timeslot.find({ dentist: dentistId });
-            const topic = TOPIC.dentist_schedule;
-            client.publish(topic, JSON.stringify(schedule), { qos: 2 }, (err) => {
-                if (err) {
-                    console.error('Failed to publish:', err);
-                } else {
-                    console.log(`Published schedule to ${topic}`);
-                }
-            });
-        } catch (error) {
-            console.error('Error fetching or publishing schedule:', error);
-        }
-    };
+    try {
+        // Fetch all schedules from the Timeslot collection
+        const schedules = await Timeslot.find({}); // Adjust query if needed
+        console.log('Fetched schedules:', schedules);
 
-    // Call the async function in a setInterval wrapper
-    setInterval(() => {
-        sendDentistSchedule().catch(err => console.error('Error in schedule interval:', err));
-    }, 5 * 60 * 1000); // 5 minutes in milliseconds
-    */
+        // Ensure schedules are in JSON format
+        const payload = JSON.stringify(schedules);
 
-    // Set a daily interval to query the database and publish timeslots to scheduleService.js
-    const publishDailyTimeslots = async () => {
-        try {
-            const today = new Date();
-            const endOf96Hours = new Date(today.getTime() + 96 * 60 * 60 * 1000); // 96 hours ahead
+        // Define the topic for publishing cached schedules
+        const pubTopic = TOPIC.cached_schedule;
 
-            // Query timeslots for the next 96 hours
-            const dentistSchedule = await Timeslot.find({
-                date: {
-                    $gte: today.toISOString(),
-                    $lte: endOf96Hours.toISOString()
-                }
-            });
-
-            // Publish the timeslots to the scheduleService
-            const payload = JSON.stringify(dentistSchedule);
-            const topic = TOPIC.cached_schedule;
-
-            client.publish(topic, payload, { qos: 2 }, (err) => {
-                if (err) {
-                    console.error('Publish error:', err);
-                } else {
-                    console.log('Daily schedule published successfully');
-                }
-            });
-        } catch (error) {
-            console.error('Error querying timeslots or publishing:', error);
-        }
-    };
-    // Schedule the function to run every 6 hours
-    const now = new Date();
-    const nextSixHours = new Date(
-        Math.ceil(now.getTime() / (6 * 60 * 60 * 1000)) * (6 * 60 * 60 * 1000)
-    ); 
-    // Calculate the next 6-hour mark
-    const delay = nextSixHours - now;
-
-    // Publish dentists schedules every 6 hours to scheduleService
-    setTimeout(() => {
-        publishDailyTimeslots(); // First execution
-        //setInterval(publishDailyTimeslots, 6 * 60 * 60 * 1000); 
-        setInterval(publishDailyTimeslots, 1 * 60 * 1000); 
-    }, delay);
+        // Publish the fetched schedules to the MQTT broker
+        client.publish(pubTopic, payload, { qos: 2 }, (err) => {
+            if (err) {
+                console.error('Publish error:', err);
+            } else {
+                console.log('Cached schedule published successfully: ' + Date.now());
+            }
+        });
+    } catch (err) {
+        console.error('Error fetching schedules:', err);
+    }
 
 });
 
