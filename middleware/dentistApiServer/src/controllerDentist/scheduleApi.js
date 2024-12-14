@@ -1,6 +1,12 @@
-var express = require('express');
-var router= express.Router();
+/*
+shall send mqtt to another service --> schedual service 
+rename to schedualApi.js
+*/
+
+
 const mqtt = require('mqtt');
+const express = require('express');
+const router = express.Router();
 const CREDENTIAL = require('./credentials');
 const TOPIC = require('./topics');
 
@@ -11,19 +17,21 @@ const options = {
     password: CREDENTIAL.password, // Use the password defined in env.js
     connectTimeout: 30000, // Set the connection timeout to 30 seconds
     reconnectPeriod: 1000,  // Reconnect every 1 second if disconnected
-  }
-  
+}
 
-//  get appointment info by reference code 
-router.get('/bookSlots/:appointmentId', async function(req,res,next){
+
+// get all the appointments for a dentist 
+router.get('/bookedAppointments', async function(req,res,next){
     try {
-        options.clientId ='sub_patientService'+Math.random().toString(36).substring(2,10);
+        options.clientId ='sub_dentistApi'+Math.random().toString(36).substring(2,10);
+    
+        // connect to broker 
         const client = mqtt.connect(CREDENTIAL.broker_url, options);
     
         client.on('connect', () => {
             console.log('Subscriber connected to broker');
 
-            const topic = TOPIC.appointment_info;
+            const topic = TOPIC.appointments_dentist;
             client.subscribe(topic, { qos: 2 }, (err) => {
                 if (err) {
                     console.log('Subscription error:', err);

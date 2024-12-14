@@ -1,3 +1,4 @@
+
 var express = require('express');
 var morgan = require('morgan');
 var path = require('path');
@@ -30,9 +31,8 @@ app.get('/api', function(req, res) {
  <<<<<<<<<<<<<<<<<<<<<<<<<<< Insert all of the routes - start >>>>>>>>>>>>>>>>>>>>>>>>>>>>
 */
 
-
 const scheduleRoutes = require('./src/controllerDentist/scheduleApi');
-app.use('/api/schedules',scheduleRoutes);
+app.use('/api/schedule/',scheduleRoutes);
 
 const slotRoutes = require('./src/controllerDentist/slotManagementApi');
 app.use('/api/slots', slotRoutes);

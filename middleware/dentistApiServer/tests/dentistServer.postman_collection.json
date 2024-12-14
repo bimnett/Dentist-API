@@ -1,0 +1,126 @@
+{
+	"info": {
+		"_postman_id": "7cdc7368-f8ed-4d2f-a1dd-eae82a6710a2",
+		"name": "dentistServer",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38505698",
+		"_collection_link": "https://ramenfinder2.postman.co/workspace/dentist_app~f95af140-7fb9-4ed0-a2a1-5923c61a28c3/collection/38505698-7cdc7368-f8ed-4d2f-a1dd-eae82a6710a2?action=share&source=collection_link&creator=38505698"
+	},
+	"item": [
+		{
+			"name": "create new slot",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"date\" : \"2025-11-10\",\r\n    \"time\": \"11:00\",\r\n    \"status\" : \"Available\",\r\n    \"patient\" : null,\r\n    \"dentist\": \"64a69f021234567890abcdef\",\r\n    \"clinic\" : \"64a69f021234567890fedcba\",\r\n    \"treatment\": \"General\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/slots/newSlots",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"slots",
+						"newSlots"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update slot",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"64a69f021234567890f11111\",\r\n    \"date\" : \"2025-01-10\",\r\n    \"time\": \"16:00\",\r\n    \"treatment\": \"General\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/slots/updateSlots/64a69f021234567890f11111",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"slots",
+						"updateSlots",
+						"64a69f021234567890f11111"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update slot Copy",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"64a69f021234567890f22222\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/slots/deleteSlots/64a69f021234567890f22222",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"slots",
+						"deleteSlots",
+						"64a69f021234567890f22222"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "http://localhost:3000",
+			"type": "string"
+		}
+	]
+}
