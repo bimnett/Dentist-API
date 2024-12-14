@@ -15,7 +15,7 @@ const options = {
 }
 
 
-// get all schedule for a dentist 
+// get all schedule for a dentist from db-handler
 router.get('/:dentistId', async function(req,res,next){
     try {
         options.clientId ='pub_dentistServer'+Math.random().toString(36).substring(2,10);
@@ -78,8 +78,80 @@ router.get('/:dentistId', async function(req,res,next){
             //return res.status(200).json({message : "Closed connection"});
         });
 
-        
+    } catch(e) {
+        return next(e);
+    }
+});
 
+
+// get all schedule for a dentist from scheduleService
+router.get('cached/:dentistId', async function(req,res,next){
+    try {
+        options.clientId ='pub_dentistServer'+Math.random().toString(36).substring(2,10);
+    
+        // connect to broker 
+        const client = mqtt.connect(CREDENTIAL.broker_url, options);
+    
+        client.on('connect', () => {
+            console.log('Publisher connected to broker');
+            
+            const payload = { 
+                // date - to see between which dates the schedual shall be shown
+                // need to know which dentist's schedual
+                dentist : req.body.dentist,
+            };
+
+            const json_payload = JSON.stringify(payload);
+
+            const pubTopics = [TOPIC.cached_dentist_id];
+            // Publishes to a topic with a certain payload ( change the payload to what you want to publish)
+            client.publish(pubTopics, json_payload, { qos: 2 }, (err) => {
+                if (err) {
+                    console.error('Publishing error:', err);
+                } else {
+                    console.log('Message published successfully!');
+                }
+            });
+
+            // ADD SUBSCRIPTION TOO
+
+            const subTopics = [TOPIC.cached_dentist_schedule];
+            client.subscribe(subTopics, { qos: 2 }, (err) => {
+                if (err) {
+                    console.log('Subscription error:', err);
+                } else {
+                    console.log(`Subscribed to topic: ${topic}`);
+                }
+            });
+
+        });
+
+        client.on('message', (topic, message) => {
+            console.log(`Received message: + ${message} + on topic: + ${topic}`);
+            try {
+                const parsedMessage = JSON.parse(message.toString());
+                
+                // Unsubscribe from the topic and close the connection
+                client.unsubscribe(topic, () => {
+                    console.log(`Unsubscribed from topic: ${topic}`);
+                });
+                client.end(); // Close the connection
+                return res.status(200).json(parsedMessage);
+            }catch(err){
+                console.log(err);
+            }
+            
+        });
+
+        client.on('error', (error) => {
+            console.log('Subscriber/publisher connection error:', error);
+            //return res.status(500).json({message: "Could not connect to server"})
+        });
+
+        client.on('close', () => {
+            console.log('Subscriber/publisher connection closed');
+            //return res.status(200).json({message : "Closed connection"});
+        });
 
     } catch(e) {
         return next(e);

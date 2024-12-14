@@ -12,9 +12,7 @@ module.exports = {
         retrieved_specific_clinic: 'database/slot/found/special/clinic',
         retrieved_specific_dentist: 'database/slot/found/special/dentist',
         dentist_schedule: 'database/schedule/all/slots/for/special/dentist',
-        cached_scheduele: 'database/schedule/all/slots',
-        
-
+        cached_schedule: 'database/schedule/all/slots',
 
         // slot publish topics
         new_slot_data: 'slot/database/insert/new/slot',
@@ -35,6 +33,10 @@ module.exports = {
         update_slot: 'dentist/slot/update/slot',
         delete_slot: 'dentist/slot/delete/slot',
         dentist_id: 'dentist/database/send/dentist/id',
+        cached_dentist_id: 'dentist/database/send/dentist/id/cached',
+
+        // schedule service
+        cached_dentist_schedule: 'schedule/dentist/send/dentist/schedule/cached',
 
         // all topics
         everything: '#'

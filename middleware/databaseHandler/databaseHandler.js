@@ -80,7 +80,7 @@ client.on('connect', () => {
 
             // Publish the timeslots to the scheduleService
             const payload = JSON.stringify(dentistSchedule);
-            const topic = TOPIC.cached_scheduele;
+            const topic = TOPIC.cached_schedule;
 
             client.publish(topic, payload, { qos: 2 }, (err) => {
                 if (err) {
@@ -104,7 +104,8 @@ client.on('connect', () => {
     // Publish dentists schedules every 6 hours to scheduleService
     setTimeout(() => {
         publishDailyTimeslots(); // First execution
-        setInterval(publishDailyTimeslots, 6 * 60 * 60 * 1000); 
+        //setInterval(publishDailyTimeslots, 6 * 60 * 60 * 1000); 
+        setInterval(publishDailyTimeslots, 1 * 60 * 1000); 
     }, delay);
 
 });
