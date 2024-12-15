@@ -34,3 +34,5 @@ env.js
 node_modules
 
 credentials.js
+
+publisher.js

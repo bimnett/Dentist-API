@@ -4,13 +4,13 @@
   "description": "",
   "main": "patientApp.js",
   "scripts": {
-    "start": "node ./app.js",
-    "dev": "nodemon ./app.js",
+    "start": "node ./patientApp.js",
+    "dev": "nodemon ./patientApp.js",
     "test": "cross-env-shell MONGODB_URI=mongodb://localhost:27017/serverTestDB \"npm run newman-server\"",
     "ci-test": "npm run newman-server",
     "newman-server": "cross-env-shell PORT=3003 \"npm run dropdb && run-p --race start newman-wait\"",
     "newman-wait": "wait-on http://localhost:3003/api && npm run newman",
-    "newman": "newman run ./tests/server.postman_collection.json --env-var host=http://localhost:3001",
+    "newman": "newman run ./tests/patientServer.postman_collection.json --env-var host=http://localhost:3003",
     "dropdb": "node ./tests/dropdb.js",
     "servePatient": "node patientApp.js"
   },
@@ -123,7 +123,11 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.7"
+    "cross-env": "^7.0.3",
+    "newman": "^6.2.1",
+    "nodemon": "^3.1.4",
+    "npm-run-all": "^4.1.5",
+    "wait-on": "^8.0.0"
   },
   "author": "",
   "license": "ISC"
