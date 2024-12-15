@@ -35,10 +35,10 @@ services:
     networks:
       - backend
 
-  dentistserver:
+  dentistapiserver:
     build:
       context: 
-        ./middleware/dentistserver
+        ./middleware/dentistapiserver
     ports:
       - "3000:3000"
     networks:
