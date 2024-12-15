@@ -4,5 +4,7 @@ module.exports = {
     updated_slot_data: 'slot/database/insert/updates/to/slot',
     deletion_of_slot: 'slot/database/delete/an/existing/slot',
 
-    cancel_appointment: 'cancel/appointment'
+    dentist_delete_slot: 'dentist/slot/delete/slot',
+
+    cancel_appointment: 'database/cancel/appointment',
 }

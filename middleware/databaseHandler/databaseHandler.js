@@ -70,15 +70,18 @@ client.on('message', async (topic, message) => {
                 console.log(updatedSlot);
                 break;
 
+            case TOPIC.dentist_delete_slot:
             case TOPIC.deletion_of_slot:
                 console.log("try to delete\n");
+                console.log(jsonMessage)
                 const deletedSlot = await Timeslot.findByIdAndDelete(jsonMessage.id);
+
                 console.log(deletedSlot);
 
-                const topic = TOPIC.cancel_appointment;
-                const payload = JSON.stringify(deletedSlot);
+                let publish_topic = TOPIC.cancel_appointment;
+                let payload = JSON.stringify(deletedSlot);
 
-                client.publish(topic, payload, { qos: 2 }, (err) => {
+                client.publish(publish_topic, payload, { qos: 2 }, (err) => {
                     if (err) {
                         console.log('Publish error:', err);
                     } else {
