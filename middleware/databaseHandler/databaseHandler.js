@@ -6,6 +6,7 @@ const Timeslot = require('./models/timeslot');
 const Clinic = require('./models/clinic');
 const Dentist = require('./models/dentist');
 const slotManagement = require('./slotManagement');
+const timeslot = require('./models/timeslot');
 
 // MQTT connection options
 const options = {
@@ -339,6 +340,7 @@ client.on('message', async (topic, message) => {
             
                     // Update the timeslot to 'Reserved' and assign the patient details
                     timeslot.status = 'Reserved';
+                    timeslot.timeOfBooking = Date.now();
                     await timeslot.save();
             
                     console.log(`Timeslot reserved successfully.`);
@@ -394,6 +396,7 @@ client.on('message', async (topic, message) => {
                     timeslot.status = "Booked";
                     timeslot.treatment = treatment;
                     timeslot.referenceCode = generateReferenceCode();
+                    timeslot.timeOfBooking = Date.now();
 
                     await timeslot.save();
 
@@ -456,7 +459,7 @@ client.on('message', async (topic, message) => {
     
                     try {
                         
-                        const booking = await Timeslot.findOne({ referenceCode: jsonMessage });
+                        const booking = await Timeslot.findOneAndDelete({ referenceCode: jsonMessage });
     
                         if(!booking){
                             console.error(`Booking not found.`);
@@ -466,16 +469,6 @@ client.on('message', async (topic, message) => {
                             }));
                             return;
                         }
-    
-                        console.log(`Booking found.`);
-                        
-                        // Remove booking and set it to available
-                        booking.status = 'Available';
-                        booking.patient = undefined;
-                        booking.treatment = "General";
-                        booking.referenceCode = undefined;
-
-                        await booking.save();
     
                         // Respond with no error
                         client.publish(TOPIC.database_response_reference_code, JSON.stringify({
@@ -491,6 +484,56 @@ client.on('message', async (topic, message) => {
                         }));
                     }
                     break;
+
+            case TOPIC.database_request_check_expired_reservations:
+
+                console.log('Checking for expired reservations...');
+
+                try {
+
+                    const { cutOffTime } = jsonMessage;
+
+                    if(!cutOffTime){
+                        console.log("Cutoff time is missing from request.")
+                        throw new Error("Cutoff time is missing from request.");
+                    }
+
+                    // Get all expired reservations
+                    // Used for notifying clients of available time slots
+                    const expiredSlots = await Timeslot.find({
+                        status: 'Reserved', 
+                        timeOfBooking: { $lt: new Date(cutOffTime) }
+                    }).populate('clinic');
+
+                    // Update all expired reservations to available.
+                    const result = await Timeslot.updateMany(
+                        { // query criteria for expired bookings
+                            status: 'Reserved', 
+                            timeOfBooking: { $lt: new Date(cutOffTime) }
+                        },
+                        { // Update time slots to available
+                            $set: {
+                                status: 'Available',
+                                patient: null,
+                                timeOfBooking: null,
+                            }
+                        }
+                    );
+
+                    console.log(`Updated ${result.modifiedCount} expired reservations`);
+
+                    // Respond with number of updated reservations
+                    client.publish(TOPIC.database_response_check_expired_reservations, JSON.stringify(expiredSlots));
+
+                } catch(error){
+                    console.log("Error checking expired reservations:", error);
+
+                    // Publish error
+                    client.publish(TOPIC.database_response_check_expired_reservations, JSON.stringify({
+                        error: error.message
+                    }));
+                }
+                break;
 
             default:
                 console.log("Default case hit. Received topic:", topic);

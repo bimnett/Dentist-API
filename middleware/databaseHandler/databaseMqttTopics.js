@@ -32,4 +32,8 @@ module.exports = {
     // Deleting booking
     database_request_delete_reference_code: 'database/request/delete/reference-code',
     database_response_delete_reference_code: 'database/response/delete/reference-code',
+
+    // Reset expired reservations
+    database_request_check_expired_reservations: 'database/request/check/expired/reservations',
+    database_response_check_expired_reservations: 'database/response/check/expired/reservations',
 }

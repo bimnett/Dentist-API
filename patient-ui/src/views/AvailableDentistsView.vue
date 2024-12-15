@@ -54,6 +54,7 @@ export default {
                 },
             });
             this.dentists = response.data.dentists;
+            console.log(this.dentists);
 
           } catch (error) {
               console.error("Error fetching available dentists:", error.message);
@@ -70,13 +71,18 @@ export default {
           this.mqttClient.on("message", async (topic, message) => {
               const data = JSON.parse(message.toString());
 
-              // Remove the reserved dentist from the list
-              this.dentists = this.dentists.filter(d => d.id !== data.dentist);
-              
-              // If no dentists left, navigate back
-              if (this.dentists.length === 0) {
-                alert("All dentists are unavailable for this time slot in this clinic. Returning to available dates.");
-                this.$router.push(`/available-dates?clinic=${this.$route.query.clinic}`);
+              if (data.type === "AVAILABLE") {
+
+                this.fetchDentists();
+              } else if (data.type === "RESERVED") {
+                // Remove the reserved dentist from the list
+                this.dentists = this.dentists.filter(d => d.id !== data.dentistId);
+                
+                // If no dentists left, navigate back
+                if (this.dentists.length === 0) {
+                    alert("All dentists are unavailable for this time slot in this clinic. Returning to available dates.");
+                    this.$router.push(`/available-dates?clinic=${this.clinic}`);
+                }
               }
           });
           this.mqttClient.on("error", (err) => {

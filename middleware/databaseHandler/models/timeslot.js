@@ -54,6 +54,10 @@ const TimeslotSchema = new Schema({
         required: false,
         default: 'General'
     },
+    timeOfBooking: {
+        type: Date,
+        required: false
+    }
 })
 
 module.exports = mongoose.model('Timeslot', TimeslotSchema);

@@ -58,18 +58,24 @@ export default {
         this.mqttClient.subscribe(`${CLIENT_SLOT_UPDATES}/${this.selectedDate}/${this.$route.query.clinic}`);
       });
 
-      // Message event triggers when another client initiates a booking for an available dentist for this specific time slot.
+      // Message event triggers when another booking slot availability changes.
       this.mqttClient.on("message", (topic, message) => {
         const data = JSON.parse(message.toString());
-
-        // Remove the reserved time slot from the list
-        this.timeSlots = this.timeSlots.filter(slot => slot !== data.time);
-
-        // If no time slots left, navigate back
-        if (this.timeSlots.length === 0) {
-          alert("No timeslots available. Returning to available dates.");
-          this.$router.push(`/available-dates?clinic=${this.$route.query.clinic}`);
-        }
+        if (data.type === "AVAILABLE") {
+            // Add newly available slot if it's not already in the array
+            if (!this.timeSlots.includes(data.time)) {
+              this.timeSlots.push(data.time);
+            }
+        } else {
+            // Remove the reserved time slot from the list
+            this.timeSlots = this.timeSlots.filter(slot => slot !== data.time);
+            
+            // If no time slots left, navigate back
+            if (this.timeSlots.length === 0) {
+                alert("No timeslots available. Returning to available dates.");
+                this.$router.push(`/available-dates?clinic=${this.clinic}`);
+            }
+          }
       });
 
       this.mqttClient.on("error", err => {

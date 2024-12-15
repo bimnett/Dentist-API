@@ -6,6 +6,7 @@ class SlotAvailabilityService {
     constructor(publicBrokerUrl, internalBrokerUrl, internalBrokerCredentials){
         this.publicClient = null;
         this.internalClient = null;
+        this.cleanupInterval = null;
         this.initialize(publicBrokerUrl, internalBrokerUrl, internalBrokerCredentials);
     }
 
@@ -37,10 +38,19 @@ class SlotAvailabilityService {
 
         this.internalClient.on('connect', () => {
             console.log('Connected to internal broker');
-            this.internalClient.subscribe('database/response/timeslot/#');  // Subscribe to all response topics related to timeslots
+            this.internalClient.subscribe('database/response/timeslot/#'); // Subscribe to all response topics related to timeslots
+            this.internalClient.subscribe(TOPICS.DATABASE_RESPONSE_CHECK_EXPIRED_RESERVATIONS); 
+            this.startCleanupInterval();
         });
 
         this.internalClient.on('message', async (topic, message) => {
+
+            if(topic === TOPICS.DATABASE_RESPONSE_CHECK_EXPIRED_RESERVATIONS){
+              console.log("expired reservations:", JSON.parse(message.toString()));
+              this.handleCleanupResponse(JSON.parse(message.toString()));
+              return;
+            }
+
             const response = JSON.parse(message.toString());
             const { requestId, error, data } = response;
             console.log(`Message received: ${topic}: ${message.toString()}`);
@@ -109,6 +119,65 @@ class SlotAvailabilityService {
       }), { qos: 2 });
     }
 
+    // Start 1 minute timer to keep track of expired reserved bookings
+    startCleanupInterval() {
+      // Clear any existing interval
+      if (this.cleanupInterval) {
+          clearInterval(this.cleanupInterval);
+      }
+  
+      // Set new interval to run every minute
+      this.cleanupInterval = setInterval(() => {
+          this.cleanupExpiredReservations();
+      }, 60000);
+    }
+  
+    async cleanupExpiredReservations() {
+        const currentTime = new Date();
+        const cutoffTime = new Date(currentTime.getTime() - 15 * 60000); // 15 minutes ago
+    
+        // Request cleanup of expired reservations
+        this.internalClient.publish(TOPICS.DATABASE_REQUEST_CHECK_EXPIRED_RESERVATIONS, JSON.stringify({
+            cutOffTime: cutoffTime
+        }), { qos: 2 });
+    }
+
+    handleCleanupResponse(expiredSlots) {
+      if (!expiredSlots) {
+          console.error('No data received in handleCleanupResponse');
+          return;
+      }
+  
+      console.log(`Cleaned up ${expiredSlots.length} expired reservations`);
+      
+      // Notify patient clients of newly available time slots
+      for(let i = 0; i < expiredSlots.length; i++){
+        // Notify SlotSelectionView - publishes to the clinic-specific topic
+        console.log("publishing to my slotview:", `${TOPICS.CLIENT_SLOT_UPDATES}/${expiredSlots[i].date}/${expiredSlots[i].clinic.name}`);
+        this.publicClient.publish(
+          `${TOPICS.CLIENT_SLOT_UPDATES}/${expiredSlots[i].date}/${expiredSlots[i].clinic.name}`,
+          JSON.stringify({
+              type: "AVAILABLE",
+              date: expiredSlots[i].date,
+              time: expiredSlots[i].time,
+              clinic: expiredSlots[i].clinic.name,
+          }),
+          { qos: 2 }
+        );
+
+        // Notify AvailableDentistsView - publishes to the time-specific topic
+        console.log("publishing to availabledentistsview:", `${TOPICS.CLIENT_SLOT_UPDATES}/${expiredSlots[i].date}/${expiredSlots[i].time}/${expiredSlots[i].clinic.name}`);
+        this.publicClient.publish(
+          `${TOPICS.CLIENT_SLOT_UPDATES}/${expiredSlots[i].date}/${expiredSlots[i].time}/${expiredSlots[i].clinic.name}`,
+          JSON.stringify({
+              type: "AVAILABLE",
+              dentist: expiredSlots[i].dentist,
+          }),
+          { qos: 2 }
+        );
+      }
+    }
+
     // Handle the availability check response
     handleAvailabilityCheckResponse(slot) {
         if (!slot) {
@@ -135,9 +204,6 @@ class SlotAvailabilityService {
             console.error('No slot data received in handleStatusUpdateResponse');
             return;
         }
-    
-        // Log the entire slot object to see what we're getting
-        console.log('Received slot data:', slot);
     
         try {
           this.publicClient.publish(
