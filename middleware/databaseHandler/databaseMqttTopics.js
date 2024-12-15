@@ -57,9 +57,9 @@ module.exports = {
     specific_reference_code: 'lot/database/find/special/reference/code',
 
     // dentist server publish
-    create_new_slot: 'dentist/slot/create/new/slot',
-    update_slot: 'dentist/slot/update/slot',
-    delete_slot: 'dentist/slot/delete/slot',
+    dentist_create_new_slot: 'dentist/slot/create/new/slot',
+    dentist_update_slot: 'dentist/slot/update/slot',
+    dentist_delete_slot: 'dentist/slot/delete/slot',
     dentist_id: 'dentist/database/send/dentist/id',
     cached_dentist_id: 'dentist/schedule/send/dentist/id/cached',
 
