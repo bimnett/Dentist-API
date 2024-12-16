@@ -20,7 +20,7 @@ const options = {
 }
 
 
-// get all schedule for a dentist from db-handler
+// get schedule for a dentist from db-handler
 router.get('/:dentistId', async function(req,res,next){
     try {
         options.clientId ='pub_dentistServer'+Math.random().toString(36).substring(2,10);
@@ -33,15 +33,10 @@ router.get('/:dentistId', async function(req,res,next){
 
             const pubTopic = TOPIC.dentist_id;
             const payload = { 
-                // date - to see between which dates the schedual shall be shown
-                // need to know which dentist's schedual
-                //date : req.body.date,
                 dentist : req.body.dentist,
             };
 
             const json_payload = JSON.stringify(payload);
-            
-            // Publishes to a topic with a certain payload ( change the payload to what you want to publish)
             client.publish(pubTopic, json_payload, { qos: 2 }, (err) => {
                 if (err) {
                     console.error('Publishing error:', err);
@@ -50,7 +45,7 @@ router.get('/:dentistId', async function(req,res,next){
                 }
             });
 
-            // ADD SUBSCRIPTION TOO
+            // Subscribe in order to receive a certain dentist's schedule 
             const subTopic = TOPIC.dentist_schedule;
             client.subscribe(subTopic, { qos: 2 }, (err) => {
                 if (err) {
@@ -76,12 +71,10 @@ router.get('/:dentistId', async function(req,res,next){
 
         client.on('error', (error) => {
             console.log('Subscriber/publisher connection error:', error);
-            //return res.status(500).json({message: "Could not connect to server"})
         });
 
         client.on('close', () => {
             console.log('Subscriber/publisher connection closed');
-            //return res.status(200).json({message : "Closed connection"});
         });
 
     } catch(e) {
@@ -102,15 +95,14 @@ router.get('/cached/:dentistId', async function(req,res,next){
             console.log('Publisher connected to broker');
             
             const payload = { 
-                // date - to see between which dates the schedual shall be shown
-                // need to know which dentist's schedual
+                // publish the dentist's id in order to filter the schedules in
+                // dentistSchedule.js
                 dentist : req.body.dentist,
             };
 
             const json_payload = JSON.stringify(payload);
 
             const pubTopic = TOPIC.cached_dentist_id;
-            // Publishes to a topic with a certain payload ( change the payload to what you want to publish)
             client.publish(pubTopic, json_payload, { qos: 2 }, (err) => {
                 if (err) {
                     console.error('Publishing error:', err);
@@ -119,8 +111,7 @@ router.get('/cached/:dentistId', async function(req,res,next){
                 }
             });
 
-            // ADD SUBSCRIPTION TOO
-
+            // Subscription for the dentist's schedule 96 hours in the future 
             const subTopic = TOPIC.cached_dentist_schedule;
             client.subscribe(subTopic, { qos: 2 }, (err) => {
                 if (err) {
@@ -141,7 +132,7 @@ router.get('/cached/:dentistId', async function(req,res,next){
                 client.unsubscribe(topic, () => {
                     console.log(`Unsubscribed from topic: ${topic}`);
                 });
-                client.end(); // Close the connection
+                client.end(); // Close connection
                 return res.status(200).json(parsedMessage);
             }catch(err){
                 console.log(err);
@@ -151,12 +142,10 @@ router.get('/cached/:dentistId', async function(req,res,next){
 
         client.on('error', (error) => {
             console.log('Subscriber/publisher connection error:', error);
-            //return res.status(500).json({message: "Could not connect to server"})
         });
 
         client.on('close', () => {
             console.log('Subscriber/publisher connection closed');
-            //return res.status(200).json({message : "Closed connection"});
         });
 
     } catch(e) {

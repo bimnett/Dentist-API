@@ -16,7 +16,7 @@ const TimeslotSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ['Available', 'Booked'],
+        enum: ['Available', 'Booked', 'Reserved'],
         required: true,
         default: 'Available'
     },
@@ -34,6 +34,10 @@ const TimeslotSchema = new Schema({
             required: false,
         },
     },
+    referenceCode: {
+        type: String,
+        required: false,
+    },
     dentist: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Dentist',
@@ -50,6 +54,10 @@ const TimeslotSchema = new Schema({
         required: false,
         default: 'General'
     },
+    timeOfBooking: {
+        type: Date,
+        required: false
+    }
 })
 
 module.exports = mongoose.model('Timeslot', TimeslotSchema);

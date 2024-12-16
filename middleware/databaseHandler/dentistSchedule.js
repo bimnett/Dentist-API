@@ -8,13 +8,12 @@ async function retrieveDentistSchedule(jsonMessage,client){
 
         const dentistSchedule = await Timeslot.find({
             dentist: jsonMessage.dentist,
-            //date: jsonMessage.date
         });
 
 
         payload = dentistSchedule;
 
-        // broker has to send strings, so transform json --> string 
+        // MQTT client has to send strings, so transform json --> string 
         const string_payload = JSON.stringify(payload);
 
         const topic = TOPIC.dentist_schedule;
