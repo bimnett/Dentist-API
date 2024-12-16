@@ -3,6 +3,8 @@ const CREDENTIAL = require('./credentials');
 const TOPIC = require('./databaseMqttTopics');
 const mongoose = require("mongoose");
 const Timeslot = require('./models/timeslot');
+const Clinic = require('./models/clinic');
+const Dentist = require('./models/dentist');
 const slotManagement = require('./slotManagement');
 const dentistSchedule = require('./dentistSchedule');
 
@@ -75,11 +77,17 @@ client.on('connect', async () => {
 
 // Ensure that message event listener is only registered once
 client.on('message', async (topic, message) => {
-    console.log(`Received message on topic: ${topic}`);
+
+    // Ignore messages that we send
+    if(topic.startsWith('database/response')){
+        return;
+    }
 
     try {
         const messageString = message.toString();  // Convert Buffer to string
         const jsonMessage = JSON.parse(messageString);  // Parse JSON to enable to save it in db
+
+        console.log('Incoming topic:', topic);
 
         // Ensure Mongoose connection is ready before saving data
         if (mongoose.connection.readyState !== 1) {
@@ -114,9 +122,458 @@ client.on('message', async (topic, message) => {
                 console.log(schedule);
                 break;
 
+
+            // Finds all available dentists for a clinic and specific date and time
+            case TOPIC.database_request_dentists:
+                console.log("Processing dentists request");
+                try {
+                    const { date, time, clinic } = jsonMessage;
+                    console.log('Looking for dentists with:', { date, time, clinic });
+                    
+                    // Find clinic
+                    const clinicDoc = await Clinic.findOne({ name: clinic });
+            
+                    if (!clinicDoc) {
+                        console.log('No clinic found with name:', clinic);
+                        client.publish(TOPIC.database_response_dentists, JSON.stringify({
+                            data: [],
+                            error: null
+                        }));
+                        return;
+                    }
+                    
+                    // Find dentists - using clinic reference
+                    const dentists = await Dentist.find({ 
+                        clinic: clinicDoc._id  // This should work now based on your seed data
+                    });
+                    console.log('Found dentists:', JSON.stringify(dentists, null, 2));
+            
+                    if (!dentists || dentists.length === 0) {
+                        console.log('No dentists found for clinic:', clinic);
+                        client.publish(TOPIC.database_response_dentists, JSON.stringify({
+                            data: [],
+                            error: null
+                        }));
+                        return;
+                    }
+            
+                    // Find available timeslots
+                    const availableDentists = [];
+                    for (const dentist of dentists) {
+                        const slot = await Timeslot.findOne({
+                            date: date,
+                            time: time,
+                            clinic: clinicDoc._id,
+                            dentist: dentist._id,
+                            status: 'Available'
+                        });
+                        
+                        console.log('Found slot:', slot);
+            
+                        if (slot) {
+                            availableDentists.push({
+                                id: dentist._id,
+                                name: dentist.name,
+                                specialty: dentist.specialty,
+                                clinic: clinic,
+                                clinicId: clinicDoc._id
+                            });
+                        }
+                    }
+            
+                    // Publish all available dentists
+                    client.publish(TOPIC.database_response_dentists, JSON.stringify({
+                        data: availableDentists,
+                        error: null
+                    }));
+            
+                } catch (error) {
+                    console.error('Error finding dentists:', error);
+
+                    // Publish error
+                    client.publish(TOPIC.database_response_dentists, JSON.stringify({
+                        data: null,
+                        error: error.message
+                    }));
+                }
+                break;
+
+            // Queries a specific timeslot
+            case TOPIC.database_request_find:
+                console.log("Processing find request");
+                try {
+                    const { requestId, query } = jsonMessage;
+                    const slot = await Timeslot.findOne(query);
+
+                    // Publish response
+                    client.publish(`${TOPIC.database_response_timeslot}/find`, JSON.stringify({
+                        requestId,
+                        data: slot,
+                        error: null
+                    }));
+
+                } catch (error) {
+
+                    // Publish error
+                    client.publish(`${TOPIC.database_response_timeslot}/find`, JSON.stringify({
+                        requestId: jsonMessage.requestId,
+                        data: null,
+                        error: error.message
+                    }));
+                }
+                break;  
+
+            // Update a time slot document in the database
+            case TOPIC.database_request_update:
+                console.log("Match found for database_request_update");
+                try {
+                    const { requestId, query, update } = jsonMessage;
+                    const updatedSlot = await Timeslot.findOneAndUpdate(
+                        query,
+                        update,
+                        { new: true } // Return updated document
+                    );
+
+                    // Publish response
+                    client.publish(`${TOPIC.database_response_timeslot}/update`, JSON.stringify({
+                        requestId,
+                        data: updatedSlot,
+                        error: null
+                    }));
+
+                } catch (error) {
+                    console.error("Update error:", error);
+
+                    // Publish error
+                    client.publish(`${TOPIC.database_response_timeslot}/update`, JSON.stringify({
+                        requestId: jsonMessage.requestId,
+                        data: null,
+                        error: error.message
+                    }));
+                }
+                break;
+
+            // Queries all slots for a specific date and clinic
+            case TOPIC.database_request_slots:
+                console.log("Processing slots request");
+                try {
+                    const { date, clinic } = jsonMessage;
+                    console.log('Looking for slots with:', { date, clinic });
+                    
+                    // First find the clinic to get its ObjectId
+                    const clinicDoc = await Clinic.findOne({ name: clinic });
+                    if (!clinicDoc) {
+                        throw new Error('Clinic not found');
+                    }
+            
+                    // Use the clinic's ObjectId in the timeslot query
+                    const slots = await Timeslot.find({
+                        date: date,
+                        clinic: clinicDoc._id,
+                        status: 'Available'
+                    }).sort('time');
+            
+                    console.log('Found slots:', slots);
+            
+                    client.publish(TOPIC.database_response_slots, JSON.stringify({
+                        data: slots,
+                        error: null
+                    }));
+            
+                } catch (error) {
+                    console.error('Error processing slots request:', error);
+
+                    // Publish error
+                    client.publish(TOPIC.database_response_slots, JSON.stringify({
+                        data: null,
+                        error: error.message
+                    }));
+                }
+                break;
+            
+            // Queries database for all dentists for a specific clinic, date, and time
+            case TOPIC.database_request_dentists:
+                console.log("Processing dentists request");
+                try {
+                    const { date, time, clinic } = jsonMessage;
+                    console.log('Looking for dentists with:', { date, time, clinic });
+                    
+                    // First find the clinic
+                    const clinicDoc = await Clinic.findOne({ name: clinic });
+                    if (!clinicDoc) {
+                        throw new Error('Clinic not found');
+                    }
+                    
+                    // Find all dentists for this clinic
+                    const dentists = await Dentist.find({ 
+                        clinic: clinicDoc._id
+                    });
+                    
+                    // Now find available timeslots for these dentists
+                    const availableDentists = [];
+                    for (const dentist of dentists) {
+                        const slot = await Timeslot.findOne({
+                            date: date,
+                            time: time,
+                            clinic: clinicDoc._id,
+                            dentist: dentist._id,
+                            status: 'Available'
+                        });
+                        
+                        if (slot) {
+                            availableDentists.push({
+                                id: dentist._id,
+                                name: dentist.name,
+                                specialty: dentist.specialty,
+                                clinic: clinic
+                            });
+                        }
+                    }
+
+                    console.log('Available dentists:', availableDentists);
+
+                    client.publish(TOPIC.database_response_dentists, JSON.stringify({
+                        data: availableDentists,
+                        error: null
+                    }));
+
+                } catch (error) {
+                    console.error('Error finding dentists:', error);
+
+                    // Publish error
+                    client.publish(TOPIC.database_response_dentists, JSON.stringify({
+                        data: null,
+                        error: error.message
+                    }));
+                }
+                break;
+
+            // Reserve time slot
+            case TOPIC.database_request_reserve:
+                console.log("Processing slot reservation request");
+                try {
+                    const { dentistId, date, time } = jsonMessage; // Extract slot ID and patient information
+                    const dentistIdObjectId = new mongoose.Types.ObjectId(dentistId);
+                    console.log(jsonMessage);
+
+                    // Validate the inputs
+                    if (!dentistId || !date || !time) {
+                        throw new Error('Invalid reservation request. Required fields are missing.');
+                    }
+            
+                    console.log(`Attempting to reserve slot.`);
+            
+                    // Find the timeslot and ensure it is available
+                    const timeslot = await Timeslot.findOne({ dentist: dentistIdObjectId, status: 'Available', date: date, time: time });
+            
+                    if (!timeslot) {
+                        console.error(`Timeslot is not available`);
+                        client.publish(TOPIC.database_response_reserve, JSON.stringify({
+                            data: null,
+                            error: `Timeslot is not available`
+                        }));
+                        return;
+                    }
+            
+                    // Update the timeslot to 'Reserved' and assign the patient details
+                    timeslot.status = 'Reserved';
+                    timeslot.timeOfBooking = Date.now();
+                    await timeslot.save();
+            
+                    console.log(`Timeslot reserved successfully.`);
+            
+                    // Respond with the updated timeslot
+                    client.publish(TOPIC.database_response_reserve, JSON.stringify({
+                        data: timeslot,
+                        error: null
+                    }));
+                } catch (error) {
+                    console.error('Error processing slot reservation:', error.message);
+
+                    // Publish error
+                    client.publish(TOPIC.database_response_reserve, JSON.stringify({
+                        data: null,
+                        error: error.message
+                    }));
+                }
+                break;
+
+            // Book a time slot
+            case TOPIC.database_request_book_slot:
+                console.log("Processing slot booking request");
+
+                try {
+                    const { dentistId, date, time, clinic, name, email, phone, treatment } = jsonMessage; // Extract slot ID and patient information
+                    const dentistIdObjectId = new mongoose.Types.ObjectId(dentistId);
+                    console.log(jsonMessage);
+
+                    // Validate the inputs
+                    if (!dentistId || !date || !time) {
+                        throw new Error('Invalid reservation request. Required fields are missing.');
+                    }
+
+                    const timeslot = await Timeslot.findOne({ dentist: dentistIdObjectId, status: 'Reserved', date: date, time: time });
+
+                    if (!timeslot) {
+                        console.error(`Timeslot is not available`);
+                        client.publish(TOPIC.database_response_book_slot, JSON.stringify({
+                            data: null,
+                            error: `Timeslot is not available`
+                        }));
+                        return;
+                    }
+
+                    const generateReferenceCode = () => {
+                        const timestamp = Date.now().toString(36); // Base36 timestamp
+                        const randomStr = Math.random().toString(36).substring(2, 7); // 5 random chars
+                        return `REF-${timestamp}-${randomStr}`.toUpperCase();
+                    };
+
+                    timeslot.patient = { name: name, email: email, phone: phone };
+                    timeslot.status = "Booked";
+                    timeslot.treatment = treatment;
+                    timeslot.referenceCode = generateReferenceCode();
+                    timeslot.timeOfBooking = Date.now();
+
+                    await timeslot.save();
+
+                    console.log(`Booking successful.`);
+
+                    // Respond with the updated timeslot
+                    client.publish(TOPIC.database_response_book_slot, JSON.stringify({
+                        data: timeslot,
+                        error: null
+                    }));
+
+                } catch(error){
+                    console.error('Error processing slot booking:', error.message);
+                    client.publish(TOPIC.database_response_book_slot, JSON.stringify({
+                        data: null,
+                        error: error.message
+                    }));
+                }
+                break;
+            
+            // Query database for time slot with a specific reference code
+            case TOPIC.database_request_reference_code:
+                console.log("Processing booking reference code request");
+
+                try {
+                    
+                    const booking = await Timeslot.findOne({ referenceCode: jsonMessage })
+                                                          .populate('dentist', 'name') // Populate dentist with the name field
+                                                          .populate('clinic', 'name'); // Populate clinic with the name field
+
+                    if(!booking){
+                        console.error(`Booking not found.`);
+                        client.publish(TOPIC.database_response_reference_code, JSON.stringify({
+                            data: null,
+                            error: `Booking not found`
+                        }));
+                        return;
+                    }
+
+                    // Respond with the updated timeslot
+                    client.publish(TOPIC.database_response_reference_code, JSON.stringify({
+                        data: booking,
+                        error: null
+                    }));
+
+                } catch(error){
+                    console.error('Error processing reference code for booking:', error.message);
+
+                    // Publish error
+                    client.publish(TOPIC.database_response_book_slot, JSON.stringify({
+                        data: null,
+                        error: error.message
+                    }));
+                }
+                break;
+        
+                // Cancel booking and reset it to available
+                case TOPIC.database_request_delete_reference_code:
+                    console.log("Processing booking deletion request");
+    
+                    try {
+                        
+                        const booking = await Timeslot.findOneAndDelete({ referenceCode: jsonMessage });
+    
+                        if(!booking){
+                            console.error(`Booking not found.`);
+                            client.publish(TOPIC.database_response_reference_code, JSON.stringify({
+                                data: null,
+                                error: `Booking not found`
+                            }));
+                            return;
+                        }
+    
+                        // Respond with no error
+                        client.publish(TOPIC.database_response_reference_code, JSON.stringify({
+                            error: null
+                        }));
+    
+                    } catch(error){
+                        console.error('Error processing reference code for booking:', error.message);
+
+                        // Publish error
+                        client.publish(TOPIC.database_response_book_slot, JSON.stringify({
+                            error: error.message
+                        }));
+                    }
+                    break;
+
+            case TOPIC.database_request_check_expired_reservations:
+
+                console.log('Checking for expired reservations...');
+
+                try {
+
+                    const { cutOffTime } = jsonMessage;
+
+                    if(!cutOffTime){
+                        console.log("Cutoff time is missing from request.")
+                        throw new Error("Cutoff time is missing from request.");
+                    }
+
+                    // Get all expired reservations
+                    // Used for notifying clients of available time slots
+                    const expiredSlots = await Timeslot.find({
+                        status: 'Reserved', 
+                        timeOfBooking: { $lt: new Date(cutOffTime) }
+                    }).populate('clinic');
+
+                    // Update all expired reservations to available.
+                    const result = await Timeslot.updateMany(
+                        { // query criteria for expired bookings
+                            status: 'Reserved', 
+                            timeOfBooking: { $lt: new Date(cutOffTime) }
+                        },
+                        { // Update time slots to available
+                            $set: {
+                                status: 'Available',
+                                patient: null,
+                                timeOfBooking: null,
+                            }
+                        }
+                    );
+
+                    console.log(`Updated ${result.modifiedCount} expired reservations`);
+
+                    // Respond with number of updated reservations
+                    client.publish(TOPIC.database_response_check_expired_reservations, JSON.stringify(expiredSlots));
+
+                } catch(error){
+                    console.log("Error checking expired reservations:", error);
+
+                    // Publish error
+                    client.publish(TOPIC.database_response_check_expired_reservations, JSON.stringify({
+                        error: error.message
+                    }));
+                }
+                break;
+
             default:
-                console.log("default:\n")
-                console.log(topic);
+                console.log("Default case hit. Received topic:", topic);
                 break;                
         }
 
@@ -132,58 +589,3 @@ client.on('error', (error) => {
 client.on('close', () => {
     console.log('DatabaseHandler connection closed');
 });
-
-
-// Validate clinic function now returns a Promise to ensure asynchronous flow
-async function validate_clinic(TOPIC, message, client) {
-    return new Promise((resolve, reject) => {
-        try {
-            const string_message = message.toString();
-            const json_message = JSON.parse(string_message);
-            const clinic_name = json_message.clinic;
-
-            const topic = TOPIC.specific_clinic;
-            const payload = { clinic: clinic_name };
-            const json_payload = JSON.stringify(payload);
-
-            client.publish(topic, json_payload, { qos: 2 }, (err) => {
-                if (err) {
-                    console.log('Publish error:', err);
-                    reject(err);  // Reject if there was a publish error
-                } else {
-                    console.log('Message published successfully:', clinic_name);
-                }
-            });
-
-            const subscriptionTopic = TOPIC.retrived_specific_clinic;
-            client.subscribe(subscriptionTopic, { qos: 2 }, (err) => {
-                if (err) {
-                    console.log('Subscription error', err);
-                    reject(err);  // Reject if there was a subscription error
-                } else {
-                    console.log(`Subscribed to topic: ${subscriptionTopic}`);
-                }
-            });
-
-            // Listen for the specific clinic response
-            client.on('message', (topic, responseMessage) => {
-                if (topic === subscriptionTopic) {
-                    const response = responseMessage.toString();
-                    try {
-                        const responseJson = JSON.parse(response);
-                        if (responseJson.clinic === clinic_name) {
-                            resolve(true);  // Resolve with true if clinic matches
-                        } else {
-                            resolve(false);  // Resolve with false if clinic doesn't match
-                        }
-                    } catch (err) {
-                        reject(err);  // Reject if there's an error parsing the response
-                    }
-                }
-            });
-        } catch (err) {
-            console.log('Error in validate_clinic:', err);
-            reject(err);  // Reject the Promise if there is an error
-        }
-    });
-}

@@ -17,6 +17,18 @@ services:
     networks:
       - backend
 
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    networks:
+      - backend
+
   nginx:
     image: nginx:latest
     ports:
@@ -32,6 +44,21 @@ services:
     build:
       context:
         ./middleware/patientserver
+    ports:
+      - "3001:3001"
+    restart:
+      always
+    networks:
+      - backend
+
+  slotavavailabilityservice:
+    build:
+      context:
+       ./middleware/slotAvailability
+    depends_on:
+      - mosquitto
+    restart:
+      always
     networks:
       - backend
 
