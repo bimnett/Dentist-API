@@ -1,3 +1,4 @@
+
 var express = require('express');
 var morgan = require('morgan');
 var path = require('path');
@@ -31,7 +32,7 @@ app.get('/api', function(req, res) {
 */
 
 const scheduleRoutes = require('./src/controllerDentist/scheduleApi');
-app.use('/api/schedule/',scheduleRoutes);
+app.use('/api/schedules/',scheduleRoutes);
 
 const slotRoutes = require('./src/controllerDentist/slotManagementApi');
 app.use('/api/slots', slotRoutes);

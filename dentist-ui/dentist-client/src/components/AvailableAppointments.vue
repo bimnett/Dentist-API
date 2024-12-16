@@ -158,7 +158,8 @@ export default {
   methods: {
     async fetchWeeklySlots() {
       try {
-        const response = await axios.get('https://api.example.com/booked-slots', {
+        // const response = await axios.get('https://api.example.com/booked-slots'
+        const response = await axios.get('schedule', {
           params: {
             startDate: this.weekStart.toISOString().split('T')[0],
             endDate: this.weekEnd.toISOString().split('T')[0],
