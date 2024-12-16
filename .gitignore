@@ -2,3 +2,8 @@
 .idea
 .env
 node_modules
+
+# Mosquitto MQTT
+
+mosquitto/data/*
+mosquitto/log/*

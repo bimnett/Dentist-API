@@ -1,6 +1,5 @@
 <template>
   <div class="booking-form">
-    <h2>Book Appointment with {{ dentist.name }}</h2>
     <form @submit.prevent="submitBooking">
       <div>
         <label for="name">Name:</label>
@@ -43,7 +42,6 @@
  export default {
   name: "AppointmentBookingForm",
   props: {
-    dentist: Object,
     bookingData: Object,
   },
   data() {

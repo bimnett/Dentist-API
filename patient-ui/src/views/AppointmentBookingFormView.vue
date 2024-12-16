@@ -14,6 +14,11 @@
 <script>
   import AppointmentBookingForm from "../components/AppointmentBookingForm.vue";
   import api from "@/api";
+  import { MQTT_BROKER_URL } from "../mqttVariables";
+
+  // Import mqtt package and topic
+  import mqtt from "mqtt";
+  import { CLIENT_SLOT_UPDATES } from "../topics";
 
   export default {
     name: "AppointmentBookingFormView",
@@ -36,6 +41,7 @@
           time: this.selectedTime,
           clinic: this.clinic,
         },
+        mqttClient: null,
       };
     },
     async created() {
@@ -45,29 +51,72 @@
       clinic: this.clinic,
       });
       try {
-        // get available dentists for selected date, time and clinic
-        const response = await api.get("/dentists", {
-          params: { date: this.selectedDate, time: this.selectedTime, clinic: this.clinic },
+        // Check slot availability
+        const response = await api.get("/available-slots", {
+            params: {
+                date: this.$route.params.selectedDate,
+                clinic: this.$route.query.clinic,
+            },
         });
 
-        // find the dentist by ID
-        const dentist = response.data.dentists.find((d) => d.id === Number(this.dentistId));
-        if (dentist) {
-          this.dentist = dentist;
-        } else {
-          alert("Dentist not found for the selected date and time.");
+        const availableSlots = response.data.slots || [];
+
+        if (!availableSlots.includes(this.$route.params.selectedTime)) {
+          // If not available, alert and navigate back
+          alert('The selected slot is no longer available.');
+          this.$router.push(`/available-dates?clinic=${this.$route.query.clinic}`);
+          return;
         }
+
+        // Reserve the slot
+        let reserveResponse = await api.post("/reserve-slot", {
+          dentistId: this.$route.params.dentistId,
+          date: this.$route.params.selectedDate,
+          time: this.$route.params.selectedTime,
+        });
+
+        reserveResponse = reserveResponse.data.data;
+
+        if (reserveResponse.error) {
+          alert('Unable to reserve the slot. Returning to the previous page.');
+          this.$router.push(`/available-dates?clinic=${this.$route.query.clinic}`);
+        }
+
+        // Publish that this slot is now reserved to all connected patient clients
+        this.mqttClient = mqtt.connect(MQTT_BROKER_URL);
+          this.mqttClient.on("connect", () => {
+              console.log("Connected to MQTT broker!");
+
+              this.mqttClient.publish(
+                `${CLIENT_SLOT_UPDATES}/${this.selectedDate}/${this.selectedTime}/${this.$route.query.clinic}`,
+                JSON.stringify(reserveResponse)
+              );
+
+              this.mqttClient.publish(
+                `${CLIENT_SLOT_UPDATES}/${this.selectedDate}/${this.$route.query.clinic}`,
+                JSON.stringify(reserveResponse)
+              );
+          });
+
+        this.dentist = reserveResponse.dentist;
+
       } catch (error) {
-        console.error("Error fetching dentist details:", error.message);
-        alert("Failed to load dentist details. Please try again.");
-      }
+          console.error('Error checking or reserving slot:', error);
+          alert('An error occurred. Returning to the previous page.');
+          this.$router.push(`/available-dates?clinic=${this.$route.query.clinic}`);
+        }
     },
     methods: {
       async handleBookingSubmission() {
         try {
           // submit booking data to backend (middleware)
-          const response = await api.post(`/dentists/${this.dentistId}/bookings`, this.bookingData);
-          alert(response.data.message || "Booking successful");
+          const response = await api.post(`/dentists/${this.dentist}/bookings`, this.bookingData);
+          if(response.data.error){
+            alert("Booking unsuccessful. Try again.");
+            return;
+          }
+
+          alert("Booking successful. Your booking reference code is " + response.data.referenceCode);
 
           // redirect to booking details page
           this.$router.push({

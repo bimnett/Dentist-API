@@ -4,11 +4,13 @@
       <h2>Appointment Details</h2>
       <p><strong>Time:</strong> {{ booking.time }}</p>
       <p><strong>Date:</strong> {{ booking.date }}</p>
-      <p><strong>Clinic Name:</strong> {{ booking.clinicName }}</p>
-      <p><strong>Dentist:</strong> {{ booking.dentist }}</p>
+      <p><strong>Clinic Name:</strong> {{ booking.clinic.name }}</p>
+      <p><strong>Dentist:</strong> {{ booking.dentist.name }}</p>
       <p><strong>Treatment:</strong> {{ booking.treatment }}</p>
       <p><strong>Reference Code:</strong> {{ booking.referenceCode }}</p>
-      <button class="btn btn-danger mt-3" @click="confirmCancel">Cancel Appointment</button>
+
+      <!-- Add booking cancel button if booking date is in the future -->>
+      <button v-if="bookingDateIsInFuture" class="btn btn-danger mt-3" @click="confirmCancel">Cancel Appointment</button>
     </div>
     <div v-else>
       <p>No booking details available. Please enter a valid reference code.</p>
@@ -36,6 +38,17 @@ export default {
       type: Object,
       required: false,
     },
+  },
+  computed: {
+    // Calculate if booking date is in the future
+    bookingDateIsInFuture(){
+      const compareDate = new Date(this.booking.date);
+    
+      // Create date object for today
+      const today = new Date();
+      
+      return compareDate > today;
+    }
   },
   methods: {
     async cancelAppointment() {

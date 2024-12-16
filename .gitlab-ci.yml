@@ -98,8 +98,6 @@ test:
 
     - cd ..
     - cd patientServer
-    - cd src
-    - cd controllerPatient
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "username :\"$USERNAME\"," >> credentials.js
@@ -110,8 +108,6 @@ test:
     - echo "credentials.js created successfully."
     - npm run ci-test
 
-    - cd ..
-    - cd ..
     - cd ..
     - cd slotService
     - echo "Creating credentials.js..."
