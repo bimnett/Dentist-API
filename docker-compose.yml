@@ -25,9 +25,9 @@ services:
       - "1883:1883"
       - "9001:9001"
     volumes:
-      - ./mosquitto/config:/mosquitto/config
-      - ./mosquitto/data:/mosquitto/data
-      - ./mosquitto/log:/mosquitto/log
+      - ./mosquitto/public/config:/mosquitto/config
+      - ./mosquitto/public/data:/mosquitto/data
+      - ./mosquitto/public/log:/mosquitto/log
     networks:
       - backend
 
@@ -94,11 +94,10 @@ services:
     image: eclipse-mosquitto:latest
     ports:
       - "1884:1884"
-      - "9004:9004"
     volumes:
-       - ${PWD}/mosquitto/patient/config/mosquitto.conf
-       - ${PWD}/mosquitto/patient/data:/mosquitto/data
-       - ${PWD}/mosquitto/patient/log:/mosquitto/log
+      - ./mosquitto/patient/config:/mosquitto/config
+      - ./mosquitto/patient/data:/mosquitto/data
+      - ./mosquitto/patient/log:/mosquitto/log
     networks:
       - backend
 
@@ -106,11 +105,10 @@ services:
     image: eclipse-mosquitto:latest
     ports:
       - "1885:1885"
-      - "9005:9005"
     volumes:
-      - ${PWD}/mosquitto/dentist/config/mosquitto.conf
-      - ${PWD}/mosquitto/dentist/data:/mosquitto/data
-      - ${PWD}/mosquitto/dentist/log:/mosquitto/log
+      - ./mosquitto/dentist/config:/mosquitto/config
+      - ./mosquitto/dentist/data:/mosquitto/data
+      - ./mosquitto/dentist/log:/mosquitto/log
     networks:
       - backend
 
