@@ -4,6 +4,7 @@ const TOPIC = require('./databaseMqttTopics');
 const mongoose = require("mongoose");
 const Timeslot = require('./models/timeslot');
 const slotManagement = require('./slotManagement');
+const dentistSchedule = require('./dentistSchedule');
 
 // MQTT connection options
 const options = {
@@ -14,7 +15,7 @@ const options = {
     reconnectPeriod: 1000
 };
 
-const dbURI = CREDENTIAL.mongodb_uri;
+const dbURI = CREDENTIAL.mongodb_url;
 // Create MQTT client and connect
 const client = mqtt.connect(CREDENTIAL.broker_url, options);
 
@@ -26,10 +27,39 @@ mongoose.connect(dbURI, {
     .then(() => console.log('Connected to MongoDB'))
     .catch((err) => console.error('Error connecting to MongoDB:', err));
 
+    // Function for publishing 
+    const recurringPublish = async () => {
+
+        try {
+            // Fetch all schedules from the Timeslot collection
+            const schedules = await Timeslot.find({});
+            console.log('Fetched schedules:', schedules);
+
+            // Ensure schedules are in JSON format
+            // Define the topic for publishing cached schedules
+            const payload = JSON.stringify(schedules);
+            const pubTopic = TOPIC.cached_schedule;
+
+            // Publish the fetched schedules to the MQTT broker
+            client.publish(pubTopic, payload, { qos: 2 }, (err) => {
+                if (err) {
+                    console.error('Publish error:', err);
+                } else {
+                    console.log('Cached schedule published successfully at:', Date.now());
+                }
+            });
+        } catch (err) {
+            console.error('Error fetching schedules:', err);
+        }
+
+        // Schedule the next execution of the task
+        setTimeout(recurringPublish, 1000 * 60 * 60 * 6); // Call it every 6th hour for caching in scheduleService.js
+    };
+
 
 
 // Avoid multiple listeners by ensuring they are added once
-client.on('connect', () => {
+client.on('connect', async () => {
     console.log('databaseHandler connected to broker');
     const topic = '#';
     client.subscribe(topic, { qos: 2 }, (err) => {
@@ -39,6 +69,8 @@ client.on('connect', () => {
             console.log(`Subscribed to topic: ${topic}`);
         }
     });
+
+    recurringPublish();
 });
 
 // Ensure that message event listener is only registered once
@@ -76,6 +108,12 @@ client.on('message', async (topic, message) => {
                 console.log(deletedSlot);
                 break;
 
+            case TOPIC.dentist_id:
+                console.log('retrive dentist schedule and send to dentist-ui');
+                const schedule = dentistSchedule.retrieveDentistSchedule(jsonMessage,client);
+                console.log(schedule);
+                break;
+
             default:
                 console.log("default:\n")
                 console.log(topic);
@@ -94,7 +132,6 @@ client.on('error', (error) => {
 client.on('close', () => {
     console.log('DatabaseHandler connection closed');
 });
-
 
 
 // Validate clinic function now returns a Promise to ensure asynchronous flow

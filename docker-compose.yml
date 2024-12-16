@@ -35,10 +35,10 @@ services:
     networks:
       - backend
 
-  dentistserver:
+  dentistapiserver:
     build:
       context: 
-        ./middleware/dentistserver
+        ./middleware/dentistapiserver
     ports:
       - "3000:3000"
     networks:
@@ -48,6 +48,14 @@ services:
     build:
       context:
         ./middleware/slotservice
+    networks:
+      - backend
+    restart: always
+
+  scheduleservice:
+    build:
+      context:
+        ./middleware/scheduleservice
     networks:
       - backend
 
