@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-const credentials = require('../src/controllerPatient/credentials')
+const credentials = require('../credentials');
 
 // Variables
 var mongoURI = credentials.test_mongodb_url;
