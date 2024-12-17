@@ -12,6 +12,10 @@ const LogSchema = {
         enum: ['patient', 'dentist'],
         default: null 
     },
+    origin: {
+        type: String, 
+        require: false
+    },
     failure: {
         type: String,
         require: false,

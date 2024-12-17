@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const Timeslot = require('./models/timeslot');
 const Clinic = require('./models/clinic');
 const Dentist = require('./models/dentist');
-const Lig = require('./models/log');
+const Log = require('./models/log');
 const slotManagement = require('./slotManagement');
 const dentistSchedule = require('./dentistSchedule');
 
@@ -192,7 +192,7 @@ dentistClient.on('message', async (topic, message) => {
                 break;
 
             case TOPIC.logs:
-                const newLog = new log(jsonMessage);
+                const newLog = new Log(jsonMessage);
                 await newLog.save();
                 console.log("New log was inserted");
                 break;
@@ -621,7 +621,7 @@ patientClient.on('message', async (topic, message) => {
                 break;
 
             case TOPIC.logs:
-                const newLog = new log(jsonMessage);
+                const newLog = new Log(jsonMessage);
                 await newLog.save();
                 console.log("New log was inserted");
                 break;

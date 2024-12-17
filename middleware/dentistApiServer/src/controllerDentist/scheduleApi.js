@@ -11,6 +11,7 @@ const CREDENTIAL = require('./credentials');
 const TOPIC = require('./topics');
 
 const LOG_USER = 'dentsit';
+const ORIGIN_SERVER = 'dnetistApiServer';
 
 
 const options = {
@@ -42,6 +43,28 @@ router.get('/:dentistId', async function(req,res,next){
                     console.error('Publishing error:', err);
                 } else {
                     console.log('Message published successfully!');
+                    // -------- Log -------------
+                    // Format the date into YYYY-MM-DD
+                    const formattedDate = formatTimestamp();
+
+                    const payloadLogs = {
+                        timeStamp: formattedDate,
+                        user: LOG_USER,
+                        origin: ORIGIN_SERVER,
+                        failure: '-',
+                        reason: "send message to shceduleService"
+                    }
+                    const jsonLogs = JSON.parse(payloadLogs);
+                    
+                    // publish to db-handler to insert db, logs
+                    client.publish(TOPIC.logs, jsonLogs, { qos: 2 }, (err) => {
+                        if (err) {
+                            console.error('Publishing error:', err);
+                        } else {
+                            console.log('Message published successfully!');
+                        }
+                    });
+                    // ----------- Log end --------
                 }
             });
 
@@ -67,14 +90,14 @@ router.get('/:dentistId', async function(req,res,next){
             });
 
 
-            // when api endpoint was succesful
-
+            // -------- Log -------------
             // Format the date into YYYY-MM-DD
             const formattedDate = formatTimestamp();
 
             const payloadLogs = {
                 timeStamp: formattedDate,
                 user: LOG_USER,
+                origin: ORIGIN_SERVER,
                 failure: 'sucess',
                 reason: "received a dentist's schedule"
             }
@@ -88,26 +111,27 @@ router.get('/:dentistId', async function(req,res,next){
                     console.log('Message published successfully!');
                 }
             });
-            client.unsubscribe(TOPIC.logs, () => {
-                console.log(`Unsubscribed from topic: ${TOPIC.logs}`);
-            });
+            // ----------- Log end --------
             return res.status(200).json(parsedMessage);
         });
 
         client.on('error', (error) => {
             console.log('Subscriber/publisher connection error:', error);
 
-            // log error
+            // -------- Log -------------
+            // Format the date into YYYY-MM-DD
             const formattedDate = formatTimestamp();
+
             const payloadLogs = {
                 timeStamp: formattedDate,
                 user: LOG_USER,
-                failure: 'connection error',
-                reason: error.toString()
+                origin: ORIGIN_SERVER,
+                failure: 'error',
+                reason: "connection error"
             }
             const jsonLogs = JSON.parse(payloadLogs);
-
-            // publish to db-handler to insert db logs
+            
+            // publish to db-handler to insert db, logs
             client.publish(TOPIC.logs, jsonLogs, { qos: 2 }, (err) => {
                 if (err) {
                     console.error('Publishing error:', err);
@@ -115,6 +139,8 @@ router.get('/:dentistId', async function(req,res,next){
                     console.log('Message published successfully!');
                 }
             });
+            // ----------- Log end --------
+
             return res.status(500).json({message: "Conncetion error"});
         });
 
@@ -152,6 +178,28 @@ router.get('/cached/:dentistId', async function(req,res,next){
                 if (err) {
                     console.error('Publishing error:', err);
                 } else {
+                    // -------- Log -------------
+                    // Format the date into YYYY-MM-DD
+                    const formattedDate = formatTimestamp();
+
+                    const payloadLogs = {
+                        timeStamp: formattedDate,
+                        user: LOG_USER,
+                        origin: ORIGIN_SERVER,
+                        failure: '-',
+                        reason: "sent message to schedule service to recive cached schedule"
+                    }
+                    const jsonLogs = JSON.parse(payloadLogs);
+                    
+                    // publish to db-handler to insert db, logs
+                    client.publish(TOPIC.logs, jsonLogs, { qos: 2 }, (err) => {
+                        if (err) {
+                            console.error('Publishing error:', err);
+                        } else {
+                            console.log('Message published successfully!');
+                        }
+                    });
+                    // ----------- Log end --------
                     console.log('Message published successfully!');
                 }
             });
@@ -172,15 +220,21 @@ router.get('/cached/:dentistId', async function(req,res,next){
             console.log(`Received message: + ${message} + on topic: + ${topic}`);
             try {
                 const parsedMessage = JSON.parse(message.toString());
+                // Unsubscribe from the topic and close the connection
+                client.unsubscribe(topic, () => {
+                    console.log(`Unsubscribed from topic: ${topic}`);
+                });
 
+                // -------- Log -------------
                 // Format the date into YYYY-MM-DD
                 const formattedDate = formatTimestamp();
 
                 const payloadLogs = {
                     timeStamp: formattedDate,
                     user: LOG_USER,
+                    origin: ORIGIN_SERVER,
                     failure: 'sucess',
-                    reason: "received a dentist's schedule"
+                    reason: "received a dentist's cached schedule"
                 }
                 const jsonLogs = JSON.parse(payloadLogs);
                 
@@ -192,11 +246,8 @@ router.get('/cached/:dentistId', async function(req,res,next){
                         console.log('Message published successfully!');
                     }
                 });
+                // ----------- Log end --------
                 
-                // Unsubscribe from the topic and close the connection
-                client.unsubscribe(topic, () => {
-                    console.log(`Unsubscribed from topic: ${topic}`);
-                });
                 return res.status(200).json(parsedMessage);
             }catch(err){
                 console.log(err);
@@ -206,17 +257,20 @@ router.get('/cached/:dentistId', async function(req,res,next){
 
         client.on('error', (error) => {
             console.log('Subscriber/publisher connection error:', error);
-            // log error
+            // -------- Log -------------
+            // Format the date into YYYY-MM-DD
             const formattedDate = formatTimestamp();
+
             const payloadLogs = {
                 timeStamp: formattedDate,
                 user: LOG_USER,
-                failure: 'connection error',
-                reason: error.toString()
+                origin: ORIGIN_SERVER,
+                failure: 'sucess',
+                reason: "received a dentist's cached schedule"
             }
             const jsonLogs = JSON.parse(payloadLogs);
-
-            // publish to db-handler to insert db logs
+            
+            // publish to db-handler to insert db, logs
             client.publish(TOPIC.logs, jsonLogs, { qos: 2 }, (err) => {
                 if (err) {
                     console.error('Publishing error:', err);
@@ -224,6 +278,7 @@ router.get('/cached/:dentistId', async function(req,res,next){
                     console.log('Message published successfully!');
                 }
             });
+            // ----------- Log end --------
             return res.status(500).json({message: "Conncetion error"});
         });
 

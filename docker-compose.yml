@@ -71,10 +71,10 @@ services:
     networks:
       - backend
 
-  monitoringService:
+  monitoringservice:
     build:
       context: 
-        .middleware/monitoringService
+        ./middleware/monitoringservice
     networks: 
       - backend
     deploy: 

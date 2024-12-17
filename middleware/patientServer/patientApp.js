@@ -3,8 +3,8 @@ var morgan = require('morgan');
 var path = require('path');
 var cors = require('cors');
 var history = require('connect-history-api-fallback');
-const TOPIC = require('./topics');
-const CREDENTIAL = require('./credentials')
+const TOPIC = require('./src/topics');
+const CREDENTIAL = require('./src/credentials')
 const mqtt = require('mqtt');
 
 const options = {
