@@ -75,6 +75,15 @@ services:
     deploy:
       replicas: 3  # Scale to 2 instances
 
+  monitoringService:
+    build:
+      context: 
+        .middleware/monitoringService
+    networks: 
+      - backend
+    deploy: 
+      replicas: 2 # scale to 2 instances 
+
   slotservice:
     build:
       context:
