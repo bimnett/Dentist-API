@@ -140,12 +140,12 @@ router.delete('/deleteSlots/:id', async function(req,res,next){
             console.log('Publisher connected to broker');
         
             const topic = TOPIC.delete_slot;
-            
             const payload = { 
                 // ?? null - set the value to null if the user does not provide any input 
-                // malformed input + error handling will be in the slot managment service
-                // + in the UI itself 
-                id: req.body.id ?? null
+                // malformed input + error handling will be in the slot management service
+                // + in the UI itself
+
+                id: req.params.id ?? null
             }
 
             const json_payload = JSON.stringify(payload);

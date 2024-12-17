@@ -89,6 +89,16 @@ async function seedTimeslots() {
             dentist: new mongoose.Types.ObjectId("64a69f021234567890abcded"), // Sarah Sarah
             clinic: new mongoose.Types.ObjectId("64a69f021234567890fedcbc"), // Folktandvården Lundby
         },
+        //notification testing booking
+        {
+            _id: ObjectId('675dd761cb4060f79d4b447c'),
+            status: "Booked",
+            date: "2024-12-03",
+            time: "5:00 PM",
+            dentist: new mongoose.Types.ObjectId("64a69f021234567890abcded"), // Sarah Sarah
+            clinic: new mongoose.Types.ObjectId("64a69f021234567890fedcbc"), // Folktandvården Lundby
+            patient: {name: "Cancel Test", email: CREDENTIAL.email}
+        }
     ];
 
     Timeslot.insertMany(timeslots)

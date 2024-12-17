@@ -56,16 +56,18 @@ module.exports = {
     specific_dentist: 'slot/database/find/special/dentist',
     specific_reference_code: 'lot/database/find/special/reference/code',
 
-    // dentist server publish 
-    create_new_slot: 'dentist/slot/create/new/slot',
-    update_slot: 'dentist/slot/update/slot',
-    delete_slot: 'dentist/slot/delete/slot',
+    // dentist server publish
+    dentist_create_new_slot: 'dentist/slot/create/new/slot',
+    dentist_update_slot: 'dentist/slot/update/slot',
+    dentist_delete_slot: 'dentist/slot/delete/slot',
     dentist_id: 'dentist/database/send/dentist/id',
     cached_dentist_id: 'dentist/schedule/send/dentist/id/cached',
 
     // schedule service
     cached_dentist_schedule: 'schedule/dentist/send/dentist/schedule/cached',
 
+    // notification topics
+    notification_cancel: 'database/send/notification/cancel'
 
 
 
