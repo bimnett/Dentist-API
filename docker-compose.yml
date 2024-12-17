@@ -6,8 +6,6 @@ services:
       - mongodb
     networks:
       - backend
-    deploy:
-      replicas: 3  # Scale to 3 instances
 
   mongodb:
     image: mongo:6
@@ -46,8 +44,8 @@ services:
     build:
       context:
         ./middleware/patientserver
-    ports:
-      - "3001:3001"
+    deploy:
+      replicas: 3
     restart:
       always
     networks:
@@ -63,17 +61,15 @@ services:
       always
     networks:
       - backend
-    deploy:
-      replicas: 3  # Scale to 2 instances
 
   dentistapiserver:
     build:
       context: 
         ./middleware/dentistapiserver
+    deploy:
+      replicas: 3
     networks:
       - backend
-    deploy:
-      replicas: 3  # Scale to 2 instances
 
   slotservice:
     build:

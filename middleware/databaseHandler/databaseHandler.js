@@ -11,8 +11,6 @@ const dentistSchedule = require('./dentistSchedule');
 // MQTT connection options
 const options = {
     clientId: 'database_' + Math.random().toString(36).substring(2, 10),
-    username: CREDENTIAL.username,
-    password: CREDENTIAL.password,
     connectTimeout: 30000,
     reconnectPeriod: 1000
 };

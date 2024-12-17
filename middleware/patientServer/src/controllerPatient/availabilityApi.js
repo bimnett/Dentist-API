@@ -1,13 +1,11 @@
 var express = require('express');
 var router= express.Router();
 const mqtt = require('mqtt');
-const CREDENTIAL = require('./credentials');
+const CREDENTIAL = require('../../credentials');
 const TOPIC = require('./topics');
 
 const options = {
     clientId: "", // You can set a unique client ID here
-    username: CREDENTIAL.username, // Use the username defined in env.js
-    password: CREDENTIAL.password, // Use the password defined in env.js
     connectTimeout: 30000, // Set the connection timeout to 30 seconds
     reconnectPeriod: 1000,  // Reconnect every 1 second if disconnected
 };
@@ -19,7 +17,7 @@ router.get('/bookSlots/clinics', async function(req,res,next){
        
         options.clientId = "sub_patientServer"+Math.random().toString(36).substring(2,10);
          // subscribe to the topic that will give us all the clinics 
-        const client = mqtt.connect(CREDENTIAL.broker_url, options);
+        const client = mqtt.connect(CREDENTIAL.brokerUrl, options);
           
         client.on('connect', () => {
             console.log('Subscriber connected to broker');

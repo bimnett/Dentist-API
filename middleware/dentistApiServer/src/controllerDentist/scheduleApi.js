@@ -13,8 +13,6 @@ const TOPIC = require('./topics');
 
 const options = {
     clientId: "", // You can set a unique client ID here
-    username: CREDENTIAL.username, // Use the username defined in env.js
-    password: CREDENTIAL.password, // Use the password defined in env.js
     connectTimeout: 30000, // Set the connection timeout to 30 seconds
     reconnectPeriod: 1000,  // Reconnect every 1 second if disconnected
 }
@@ -26,7 +24,7 @@ router.get('/:dentistId', async function(req,res,next){
         options.clientId ='pub_dentistServer'+Math.random().toString(36).substring(2,10);
     
         // connect to broker 
-        const client = mqtt.connect(CREDENTIAL.broker_url, options);
+        const client = mqtt.connect(CREDENTIAL.brokerUrl, options);
     
         client.on('connect', () => {
             console.log('Publisher connected to broker');
