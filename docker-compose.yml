@@ -45,7 +45,7 @@ services:
       context:
         ./middleware/patientserver
     deploy:
-      replicas: 3
+      replicas: 6
     restart:
       always
     networks:
@@ -67,7 +67,9 @@ services:
       context: 
         ./middleware/dentistapiserver
     deploy:
-      replicas: 3
+      replicas: 6
+    restart:
+      always
     networks:
       - backend
 
