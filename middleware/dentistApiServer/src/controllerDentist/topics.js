@@ -14,6 +14,9 @@ module.exports = {
     dentist_schedule: 'database/schedule/all/slots/for/special/dentist',
     cached_schedule: 'database/schedule/all/slots',
 
+    // for logs (logs sub)
+    logs: 'servers/database/insert/logs',
+
     // slot publish topics
     new_slot_data: 'slot/database/insert/new/slot',
     updated_slot_data: 'slot/database/insert/updates/to/slot',

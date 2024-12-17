@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const Timeslot = require('./models/timeslot');
 const Clinic = require('./models/clinic');
 const Dentist = require('./models/dentist');
+const Lig = require('./models/log');
 const slotManagement = require('./slotManagement');
 const dentistSchedule = require('./dentistSchedule');
 
@@ -190,6 +191,12 @@ dentistClient.on('message', async (topic, message) => {
                         error: error.message
                     }));
                 }
+                break;
+
+            case TOPIC.logs:
+                const newLog = new log(jsonMessage);
+                await newLog.save();
+                console.log("New log was inserted");
                 break;
 
             default:
@@ -612,6 +619,17 @@ patientClient.on('message', async (topic, message) => {
                         error: error.message
                     }));
                 }
+                break;
+
+            case TOPIC.logs:
+                const newLog = new log(jsonMessage);
+                await newLog.save();
+                console.log("New log was inserted");
+                break;
+            
+            default:
+                console.log("Topic: default\n");
+                console.log(jsonMessage);
                 break;
         }
 

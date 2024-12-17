@@ -20,6 +20,9 @@ const LogSchema = {
     },
     reason: {
         type: String,
-        require: false
+        require: false,
+        default: null
     }
 };
+
+module.exports = mongoose.model('Log', LogSchema);
