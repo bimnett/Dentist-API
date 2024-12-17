@@ -116,7 +116,9 @@
             return;
           }
 
-          alert("Booking successful. Your booking reference code is " + response.data.referenceCode);
+          console.dir(response.data);
+
+          alert("Booking successful. Your booking reference code is " + response.data.data.referenceCode);
 
           // redirect to booking details page
           this.$router.push({

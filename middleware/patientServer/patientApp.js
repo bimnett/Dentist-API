@@ -44,11 +44,11 @@ app.get('/api', function(req, res) {
 
 // MQTT
 const slotRoutes = require('./src/controllerPatient/bookSlotApi');
-app.use('/api/patient/slots', slotRoutes);
+app.use('/api/patients/slots', slotRoutes);
 
 
 // Get available slots with given date and clinic
-app.get('/api/patient/available-slots', async (req, res) => {
+app.get('/api/patients/available-slots', async (req, res) => {
   const { date, clinic } = req.query;
 
   if (!date) {
@@ -103,7 +103,7 @@ app.get('/api/patient/available-slots', async (req, res) => {
 });
 
 // Get available dentists with given time, date, and clinic
-app.get('/api/patient/dentists', async (req, res) => {
+app.get('/api/patients/dentists', async (req, res) => {
   const { date, time, clinic } = req.query;
 
   if (!date || !time) {
@@ -157,7 +157,7 @@ app.get('/api/patient/dentists', async (req, res) => {
 
 
 // Reserve a time slot
-app.post('/api/patient/reserve-slot', async (req, res) => {
+app.post('/api/patients/reserve-slot', async (req, res) => {
   const { dentistId, date, time } = req.body;
 
   if (!dentistId || !date || !time) {
@@ -207,7 +207,7 @@ app.post('/api/patient/reserve-slot', async (req, res) => {
 
 
 // Add booking for dentist with given dentistId
-app.post('/api/patient/dentists/:dentistId/bookings', (req, res) => {
+app.post('/api/patients/dentists/:dentistId/bookings', (req, res) => {
     const { dentistId } = req.params;
     const { name, email, phone, treatment, date, time, clinic } = req.body;
 
@@ -256,7 +256,7 @@ app.post('/api/patient/dentists/:dentistId/bookings', (req, res) => {
 });
 
 // Get booking by reference code
-app.get('/api/patient/bookings/:referenceCode', (req, res) => {
+app.get('/api/patients/bookings/:referenceCode', (req, res) => {
     const { referenceCode } = req.params;
 
     if(!referenceCode){
@@ -295,7 +295,7 @@ app.get('/api/patient/bookings/:referenceCode', (req, res) => {
 });
 
 // Cancel booking by reference code
-app.delete('/api/patient/bookings/:referenceCode', (req, res) => {
+app.delete('/api/patients/bookings/:referenceCode', (req, res) => {
   const { referenceCode } = req.params;
 
   if(!referenceCode){
