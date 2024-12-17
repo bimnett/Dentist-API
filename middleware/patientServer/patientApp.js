@@ -9,8 +9,6 @@ const mqtt = require('mqtt');
 
 const options = {
   clientId: "", // You can set a unique client ID here
-  username: CREDENTIAL.username, // Use the username defined in env.js
-  password: CREDENTIAL.password, // Use the password defined in env.js
   connectTimeout: 30000, // Set the connection timeout to 30 seconds
   reconnectPeriod: 1000,  // Reconnect every 1 second if disconnected
 }
@@ -46,11 +44,11 @@ app.get('/api', function(req, res) {
 
 // MQTT
 const slotRoutes = require('./src/controllerPatient/bookSlotApi');
-app.use('/api/slots', slotRoutes);
+app.use('/api/patients/slots', slotRoutes);
 
 
 // Get available slots with given date and clinic
-app.get('/api/available-slots', async (req, res) => {
+app.get('/api/patients/available-slots', async (req, res) => {
   const { date, clinic } = req.query;
 
   if (!date) {
@@ -62,7 +60,7 @@ app.get('/api/available-slots', async (req, res) => {
 
   try {
       options.clientId = "patientServer" + Math.random().toString(36).substring(2, 10);
-      const client = mqtt.connect(CREDENTIAL.broker_url, options);
+      const client = mqtt.connect(CREDENTIAL.brokerUrl, options);
       
       client.on('connect', () => {
           console.log('Subscriber connected to broker');
@@ -98,14 +96,6 @@ app.get('/api/available-slots', async (req, res) => {
           return res.status(500).json({ message: "Unable to connect to the server" });
       });
 
-      // Add timeout
-      setTimeout(() => {
-          client.end();
-          if (!res.headersSent) {
-              return res.status(504).json({ message: "Request timeout" });
-          }
-      }, 5000);
-
   } catch(error) {
     console.error('Error:', error);
     return res.status(500).json({ message: "Internal server error" });
@@ -113,7 +103,7 @@ app.get('/api/available-slots', async (req, res) => {
 });
 
 // Get available dentists with given time, date, and clinic
-app.get('/api/dentists', async (req, res) => {
+app.get('/api/patients/dentists', async (req, res) => {
   const { date, time, clinic } = req.query;
 
   if (!date || !time) {
@@ -125,7 +115,7 @@ app.get('/api/dentists', async (req, res) => {
 
   try {
     options.clientId = "patientServer" + Math.random().toString(36).substring(2, 10);
-    const client = mqtt.connect(CREDENTIAL.broker_url, options);
+    const client = mqtt.connect(CREDENTIAL.brokerUrl, options);
     
     client.on('connect', () => {
       console.log('Subscriber connected to broker');
@@ -159,14 +149,6 @@ app.get('/api/dentists', async (req, res) => {
         return res.status(500).json({ message: "Unable to connect to the server" });
       });
 
-      // Add timeout to avoid hanging connections
-      setTimeout(() => {
-        client.end();
-        if (!res.headersSent) {
-          return res.status(504).json({ message: "Request timeout" });
-        }
-      }, 5000);
-
   } catch(error) {
       console.error('Error:', error);
       return res.status(500).json({ message: "Internal server error" });
@@ -175,7 +157,7 @@ app.get('/api/dentists', async (req, res) => {
 
 
 // Reserve a time slot
-app.post('/api/reserve-slot', async (req, res) => {
+app.post('/api/patients/reserve-slot', async (req, res) => {
   const { dentistId, date, time } = req.body;
 
   if (!dentistId || !date || !time) {
@@ -184,7 +166,7 @@ app.post('/api/reserve-slot', async (req, res) => {
 
   try {
       options.clientId = "patientServer" + Math.random().toString(36).substring(2, 10);
-      const client = mqtt.connect(CREDENTIAL.broker_url, options);
+      const client = mqtt.connect(CREDENTIAL.brokerUrl, options);
 
       client.on('connect', () => {
           console.log('Subscriber connected to broker');
@@ -217,14 +199,6 @@ app.post('/api/reserve-slot', async (req, res) => {
           return res.status(500).json({ message: "Unable to connect to the server" });
       });
 
-      // Add 5 second timeout
-      setTimeout(() => {
-          client.end();
-          if (!res.headersSent) {
-              return res.status(504).json({ message: "Request timeout" });
-          }
-      }, 5000);
-
   } catch (error) {
       console.error('Error:', error);
       return res.status(500).json({ message: "Internal server error" });
@@ -233,7 +207,7 @@ app.post('/api/reserve-slot', async (req, res) => {
 
 
 // Add booking for dentist with given dentistId
-app.post('/api/dentists/:dentistId/bookings', (req, res) => {
+app.post('/api/patients/dentists/:dentistId/bookings', (req, res) => {
     const { dentistId } = req.params;
     const { name, email, phone, treatment, date, time, clinic } = req.body;
 
@@ -243,7 +217,7 @@ app.post('/api/dentists/:dentistId/bookings', (req, res) => {
 
     try {
       options.clientId = "patientServer" + Math.random().toString(36).substring(2, 10);
-      const client = mqtt.connect(CREDENTIAL.broker_url, options);
+      const client = mqtt.connect(CREDENTIAL.brokerUrl, options);
 
       client.on('connect', () => {
           console.log('Subscriber connected to broker');
@@ -276,21 +250,13 @@ app.post('/api/dentists/:dentistId/bookings', (req, res) => {
         return res.status(201).json(response);
       });
 
-      // Add 5 second timeout
-      setTimeout(() => {
-        client.end();
-        if (!res.headersSent) {
-          return res.status(504).json({ message: "Request timeout" });
-        }
-      }, 5000);
-
     } catch(err){
       console.log("Error in booking creation endpoint:", err);
     }
 });
 
 // Get booking by reference code
-app.get('/api/bookings/:referenceCode', (req, res) => {
+app.get('/api/patients/bookings/:referenceCode', (req, res) => {
     const { referenceCode } = req.params;
 
     if(!referenceCode){
@@ -299,7 +265,7 @@ app.get('/api/bookings/:referenceCode', (req, res) => {
 
     try {
       options.clientId = "patientServer" + Math.random().toString(36).substring(2, 10);
-      const client = mqtt.connect(CREDENTIAL.broker_url, options);
+      const client = mqtt.connect(CREDENTIAL.brokerUrl, options);
 
       client.on('connect', () => {
           console.log('Subscriber connected to broker');
@@ -323,21 +289,13 @@ app.get('/api/bookings/:referenceCode', (req, res) => {
         return res.status(200).json(response);
       });
 
-      // Add 5 second timeout
-      setTimeout(() => {
-        client.end();
-        if (!res.headersSent) {
-          return res.status(504).json({ message: "Request timeout" });
-        }
-      }, 5000);
-
     } catch(err){
       console.log("Error in getting booking from reference code:", err);
     }
 });
 
 // Cancel booking by reference code
-app.delete('/api/bookings/:referenceCode', (req, res) => {
+app.delete('/api/patients/bookings/:referenceCode', (req, res) => {
   const { referenceCode } = req.params;
 
   if(!referenceCode){
@@ -346,7 +304,7 @@ app.delete('/api/bookings/:referenceCode', (req, res) => {
 
   try {
     options.clientId = "patientServer" + Math.random().toString(36).substring(2, 10);
-    const client = mqtt.connect(CREDENTIAL.broker_url, options);
+    const client = mqtt.connect(CREDENTIAL.brokerUrl, options);
 
     client.on('connect', () => {
         console.log('Subscriber connected to broker');
@@ -369,14 +327,6 @@ app.delete('/api/bookings/:referenceCode', (req, res) => {
 
       return res.status(200);
     });
-
-    // Add 5 second timeout
-    setTimeout(() => {
-      client.end();
-      if (!res.headersSent) {
-        return res.status(504).json({ message: "Request timeout" });
-      }
-    }, 5000);
 
   } catch(err){
     console.log("Error deleting:", err);

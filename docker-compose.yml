@@ -23,9 +23,9 @@ services:
       - "1883:1883"
       - "9001:9001"
     volumes:
-      - ./mosquitto/config:/mosquitto/config
-      - ./mosquitto/data:/mosquitto/data
-      - ./mosquitto/log:/mosquitto/log
+      - ./mosquitto/public/config:/mosquitto/config
+      - ./mosquitto/public/data:/mosquitto/data
+      - ./mosquitto/public/log:/mosquitto/log
     networks:
       - backend
 
@@ -44,8 +44,8 @@ services:
     build:
       context:
         ./middleware/patientserver
-    ports:
-      - "3001:3001"
+    deploy:
+      replicas: 3
     restart:
       always
     networks:
@@ -66,8 +66,8 @@ services:
     build:
       context: 
         ./middleware/dentistapiserver
-    ports:
-      - "3000:3000"
+    deploy:
+      replicas: 3
     networks:
       - backend
 
@@ -83,6 +83,28 @@ services:
     build:
       context:
         ./middleware/scheduleservice
+    networks:
+      - backend
+
+  mosquittopatient:
+    image: eclipse-mosquitto:latest
+    ports:
+      - "1884:1884"
+    volumes:
+      - ./mosquitto/patient/config:/mosquitto/config
+      - ./mosquitto/patient/data:/mosquitto/data
+      - ./mosquitto/patient/log:/mosquitto/log
+    networks:
+      - backend
+
+  mosquittodentist:
+    image: eclipse-mosquitto:latest
+    ports:
+      - "1885:1885"
+    volumes:
+      - ./mosquitto/dentist/config:/mosquitto/config
+      - ./mosquitto/dentist/data:/mosquitto/data
+      - ./mosquitto/dentist/log:/mosquitto/log
     networks:
       - backend
 

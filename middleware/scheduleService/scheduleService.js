@@ -6,8 +6,6 @@ const CREDENTIAL = require('./credentials');
 // MQTT connection options
 const options = {
     clientId: 'database_' + Math.random().toString(36).substring(2, 10),
-    username: CREDENTIAL.username,
-    password: CREDENTIAL.password,
     connectTimeout: 30000,
     reconnectPeriod: 1000
 };
@@ -19,7 +17,7 @@ let scheduleCache = {
 
 var currentDentist = "";
 // Create MQTT client and connect
-const client = mqtt.connect(CREDENTIAL.broker_url, options);
+const client = mqtt.connect(CREDENTIAL.brokerUrl, options);
 
 
 // client.on connect
