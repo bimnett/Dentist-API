@@ -110,6 +110,13 @@ services:
     networks:
       - backend
 
+  notificationservice:
+    build:
+      context:
+        ./middleware/notificationService
+    networks:
+      - backend
+
 volumes:
   mongodb_data:
 

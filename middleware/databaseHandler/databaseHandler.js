@@ -28,7 +28,7 @@ mongoose.connect(dbURI, {
     .then(() => console.log('Connected to MongoDB'))
     .catch((err) => console.error('Error connecting to MongoDB:', err));
 
-    // Function for publishing 
+    // Function for publishing
     const recurringPublish = async () => {
 
         try {
@@ -123,10 +123,20 @@ dentistClient.on('message', async (topic, message) => {
                 console.log(updatedSlot);
                 break;
 
+            case TOPIC.dentist_delete_slot:
             case TOPIC.deletion_of_slot:
                 console.log("try to delete\n");
                 const deletedSlot = await Timeslot.findByIdAndDelete(jsonMessage.id);
                 console.log(deletedSlot);
+
+                let publish_topic = TOPIC.notification_cancel;
+                let payload = JSON.stringify(deletedSlot);
+
+                client.publish(TOPIC.notification_cancel, JSON.stringify({
+                    data: deletedSlot,
+                    error: null
+                }));
+
                 break;
 
             case TOPIC.dentist_id:
@@ -158,7 +168,7 @@ dentistClient.on('message', async (topic, message) => {
                         error: error.message
                     }));
                 }
-                break;  
+                break;
 
             // Update a time slot document in the database ???
             case TOPIC.database_request_update:
@@ -192,7 +202,7 @@ dentistClient.on('message', async (topic, message) => {
 
             default:
                 console.log("Default case hit. Received topic:", topic);
-                break;                
+                break;
         }
 
     } catch (err) {
@@ -228,10 +238,10 @@ patientClient.on('message', async (topic, message) => {
                 try {
                     const { date, time, clinic } = jsonMessage;
                     console.log('Looking for dentists with:', { date, time, clinic });
-                    
+
                     // Find clinic
                     const clinicDoc = await Clinic.findOne({ name: clinic });
-            
+
                     if (!clinicDoc) {
                         console.log('No clinic found with name:', clinic);
                         patientClient.publish(TOPIC.database_response_dentists, JSON.stringify({
@@ -240,13 +250,13 @@ patientClient.on('message', async (topic, message) => {
                         }));
                         return;
                     }
-                    
+
                     // Find dentists - using clinic reference
-                    const dentists = await Dentist.find({ 
+                    const dentists = await Dentist.find({
                         clinic: clinicDoc._id  // This should work now based on your seed data
                     });
                     console.log('Found dentists:', JSON.stringify(dentists, null, 2));
-            
+
                     if (!dentists || dentists.length === 0) {
                         console.log('No dentists found for clinic:', clinic);
                         patientClient.publish(TOPIC.database_response_dentists, JSON.stringify({
@@ -255,7 +265,7 @@ patientClient.on('message', async (topic, message) => {
                         }));
                         return;
                     }
-            
+
                     // Find available timeslots
                     const availableDentists = [];
                     for (const dentist of dentists) {
@@ -266,9 +276,9 @@ patientClient.on('message', async (topic, message) => {
                             dentist: dentist._id,
                             status: 'Available'
                         });
-                        
+
                         console.log('Found slot:', slot);
-            
+
                         if (slot) {
                             availableDentists.push({
                                 id: dentist._id,
@@ -279,13 +289,13 @@ patientClient.on('message', async (topic, message) => {
                             });
                         }
                     }
-            
+
                     // Publish all available dentists
                     patientClient.publish(TOPIC.database_response_dentists, JSON.stringify({
                         data: availableDentists,
                         error: null
                     }));
-            
+
                 } catch (error) {
                     console.error('Error finding dentists:', error);
 
@@ -304,18 +314,18 @@ patientClient.on('message', async (topic, message) => {
                 try {
                     const { date, time, clinic } = jsonMessage;
                     console.log('Looking for dentists with:', { date, time, clinic });
-                    
+
                     // First find the clinic
                     const clinicDoc = await Clinic.findOne({ name: clinic });
                     if (!clinicDoc) {
                         throw new Error('Clinic not found');
                     }
-                    
+
                     // Find all dentists for this clinic
-                    const dentists = await Dentist.find({ 
+                    const dentists = await Dentist.find({
                         clinic: clinicDoc._id
                     });
-                    
+
                     // Now find available timeslots for these dentists
                     const availableDentists = [];
                     for (const dentist of dentists) {
@@ -326,7 +336,7 @@ patientClient.on('message', async (topic, message) => {
                             dentist: dentist._id,
                             status: 'Available'
                         });
-                        
+
                         if (slot) {
                             availableDentists.push({
                                 id: dentist._id,
@@ -366,21 +376,21 @@ patientClient.on('message', async (topic, message) => {
                     if (!clinicDoc) {
                         throw new Error('Clinic not found');
                     }
-                
+
                     // Use the clinic's ObjectId in the timeslot query
                     const slots = await Timeslot.find({
                         date: date,
                         clinic: clinicDoc._id,
                         status: 'Available'
                     }).sort('time');
-                
+
                     console.log('Found slots:', slots);
-                
+
                     patientClient.publish(TOPIC.database_response_slots, JSON.stringify({
                         data: slots,
                         error: null
                     }));
-                
+
                 } catch (error) {
                     console.error('Error processing slots request:', error);
                     // Publish error
@@ -402,12 +412,9 @@ patientClient.on('message', async (topic, message) => {
                     if (!dentistId || !date || !time) {
                         throw new Error('Invalid reservation request. Required fields are missing.');
                     }
-                
                     console.log(`Attempting to reserve slot.`);
-                
                     // Find the timeslot and ensure it is available
                     const timeslot = await Timeslot.findOne({ dentist: dentistIdObjectId, status: 'Available', date: date, time: time });
-                
                     if (!timeslot) {
                         console.error(`Timeslot is not available`);
                         patientClient.publish(TOPIC.database_response_reserve, JSON.stringify({
@@ -416,14 +423,11 @@ patientClient.on('message', async (topic, message) => {
                         }));
                         return;
                     }
-                
                     // Update the timeslot to 'Reserved' and assign the patient details
                     timeslot.status = 'Reserved';
                     timeslot.timeOfBooking = Date.now();
                     await timeslot.save();
-                
                     console.log(`Timeslot reserved successfully.`);
-                
                     // Respond with the updated timeslot
                     patientClient.publish(TOPIC.database_response_reserve, JSON.stringify({
                         data: timeslot,
@@ -495,13 +499,13 @@ patientClient.on('message', async (topic, message) => {
                     }));
                 }
                 break;
-            
+
             // Query database for time slot with a specific reference code
             case TOPIC.database_request_reference_code:
                 console.log("Processing booking reference code request");
 
                 try {
-                    
+
                     const booking = await Timeslot.findOne({ referenceCode: jsonMessage })
                                                           .populate('dentist', 'name') // Populate dentist with the name field
                                                           .populate('clinic', 'name'); // Populate clinic with the name field
@@ -537,7 +541,7 @@ patientClient.on('message', async (topic, message) => {
                 console.log("Processing booking deletion request");
 
                 try {
-                    
+
                     const booking = await Timeslot.findOneAndDelete({ referenceCode: jsonMessage });
 
                     if(!booking){
@@ -579,14 +583,14 @@ patientClient.on('message', async (topic, message) => {
                     // Get all expired reservations
                     // Used for notifying clients of available time slots
                     const expiredSlots = await Timeslot.find({
-                        status: 'Reserved', 
+                        status: 'Reserved',
                         timeOfBooking: { $lt: new Date(cutOffTime) }
                     }).populate('clinic');
 
                     // Update all expired reservations to available.
                     const result = await Timeslot.updateMany(
                         { // query criteria for expired bookings
-                            status: 'Reserved', 
+                            status: 'Reserved',
                             timeOfBooking: { $lt: new Date(cutOffTime) }
                         },
                         { // Update time slots to available
@@ -601,17 +605,21 @@ patientClient.on('message', async (topic, message) => {
                     console.log(`Updated ${result.modifiedCount} expired reservations`);
 
                     // Respond with number of updated reservations
-                    patientClient.publish(TOPIC.database_response_check_expired_reservations, JSON.stringify(expiredSlots));
+                    client.publish(TOPIC.database_response_check_expired_reservations, JSON.stringify(expiredSlots));
 
                 } catch(error){
                     console.log("Error checking expired reservations:", error);
 
                     // Publish error
-                    patientClient.publish(TOPIC.database_response_check_expired_reservations, JSON.stringify({
+                    client.publish(TOPIC.database_response_check_expired_reservations, JSON.stringify({
                         error: error.message
                     }));
                 }
                 break;
+
+            default:
+                console.log("Default case hit. Received topic:", topic);
+                break;                
         }
 
     } catch (err) {
@@ -619,18 +627,10 @@ patientClient.on('message', async (topic, message) => {
     }
 });
 
-dentistClient.on('error', (error) => {
+client.on('error', (error) => {
     console.error('DatabaseHandler mqtt connection error:', error);
 });
 
-dentistClient.on('close', () => {
-    console.log('DatabaseHandler connection closed');
-});
-
-patientClient.on('error', (error) => {
-    console.error('DatabaseHandler mqtt connection error:', error);
-});
-
-patientClient.on('close', () => {
+client.on('close', () => {
     console.log('DatabaseHandler connection closed');
 });
