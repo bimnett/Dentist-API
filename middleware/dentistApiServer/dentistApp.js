@@ -32,10 +32,10 @@ app.get('/api', function(req, res) {
 */
 
 const scheduleRoutes = require('./src/controllerDentist/scheduleApi');
-app.use('/api/schedules/',scheduleRoutes);
+app.use('/api/dentist/schedules/',scheduleRoutes);
 
 const slotRoutes = require('./src/controllerDentist/slotManagementApi');
-app.use('/api/slots', slotRoutes);
+app.use('/api/dentist/slots', slotRoutes);
 
 /*
  <<<<<<<<<<<<<<<<<<<<<<<<<<< Insert all of the routes - end >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
