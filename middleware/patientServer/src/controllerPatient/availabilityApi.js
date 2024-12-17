@@ -19,7 +19,7 @@ router.get('/bookSlots/clinics', async function(req,res,next){
        
         options.clientId = "sub_patientServer"+Math.random().toString(36).substring(2,10);
          // subscribe to the topic that will give us all the clinics 
-        const client = mqtt.connect(CREDENTIAL.broker_url, options);
+        const client = mqtt.connect(CREDENTIAL.brokerUrl, options);
           
         client.on('connect', () => {
             console.log('Subscriber connected to broker');

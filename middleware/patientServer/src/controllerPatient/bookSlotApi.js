@@ -1,7 +1,7 @@
 var express = require('express');
 var router= express.Router();
 const mqtt = require('mqtt');
-const CREDENTIAL = require('../../credentials');
+const CREDENTIAL = require('./credentials');
 const TOPIC = require('../../topics');
 
 
@@ -18,7 +18,7 @@ const options = {
 router.get('/bookSlots/:appointmentId', async function(req,res,next){
     try {
         options.clientId ='sub_patientService'+Math.random().toString(36).substring(2,10);
-        const client = mqtt.connect(CREDENTIAL.broker_url, options);
+        const client = mqtt.connect(CREDENTIAL.brokerUrl, options);
     
         client.on('connect', () => {
             console.log('Subscriber connected to broker');

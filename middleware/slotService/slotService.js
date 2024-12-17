@@ -22,7 +22,7 @@ const options = {
 options.clientId ='slotService_'+Math.random().toString(36).substring(2,10);
 
 // connect to broker 
-const client = mqtt.connect(CREDENTIAL.broker_url, options);
+const client = mqtt.connect(CREDENTIAL.brokerUrl, options);
 
 client.on('connect', () => {
     console.log('Subscriber connected to broker');

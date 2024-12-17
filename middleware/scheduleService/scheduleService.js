@@ -19,7 +19,7 @@ let scheduleCache = {
 
 var currentDentist = "";
 // Create MQTT client and connect
-const client = mqtt.connect(CREDENTIAL.broker_url, options);
+const client = mqtt.connect(CREDENTIAL.brokerUrl, options);
 
 
 // client.on connect
