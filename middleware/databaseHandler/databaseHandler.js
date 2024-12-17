@@ -12,8 +12,6 @@ const dentistSchedule = require('./dentistSchedule');
 // MQTT connection options
 const options = {
     clientId: 'database_' + Math.random().toString(36).substring(2, 10),
-    username: CREDENTIAL.username,
-    password: CREDENTIAL.password,
     connectTimeout: 30000,
     reconnectPeriod: 1000
 };
@@ -453,7 +451,7 @@ patientClient.on('message', async (topic, message) => {
                 console.log("Processing slot booking request");
 
                 try {
-                    const { dentistId, date, time, clinic, name, email, phone, treatment } = jsonMessage; // Extract slot ID and patient information
+                    const { dentistId, date, time, name, email, phone, treatment } = jsonMessage; // Extract slot ID and patient information
                     const dentistIdObjectId = new mongoose.Types.ObjectId(dentistId);
                     console.log(jsonMessage);
 
@@ -488,6 +486,7 @@ patientClient.on('message', async (topic, message) => {
                     await timeslot.save();
 
                     console.log(`Booking successful.`);
+                    console.log(timeslot);
 
                     // Respond with the updated timeslot
                     patientClient.publish(TOPIC.database_response_book_slot, JSON.stringify({

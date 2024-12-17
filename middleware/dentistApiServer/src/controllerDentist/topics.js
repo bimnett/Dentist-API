@@ -43,17 +43,5 @@ module.exports = {
 
     // all topics
     everything: '#'
-
-
-    /*QUESTIONS 
-        - acces the db directly here or througth the db-handler?
-        - ok to update the db-hnadler? so it maches to what happens here?
-        - ok to update the topics?
-        - referance code - shall I create it or shall we use mongoDb:s one
-    */
-
-
-
-
 };
 

@@ -1,13 +1,11 @@
 var express = require('express');
 var router= express.Router();
 const mqtt = require('mqtt');
-const CREDENTIAL = require('./credentials');
+const CREDENTIAL = require('../../credentials');
 const TOPIC = require('./topics');
 
 const options = {
     clientId: "", // You can set a unique client ID here
-    username: CREDENTIAL.username, // Use the username defined in env.js
-    password: CREDENTIAL.password, // Use the password defined in env.js
     connectTimeout: 30000, // Set the connection timeout to 30 seconds
     reconnectPeriod: 1000,  // Reconnect every 1 second if disconnected
 };
