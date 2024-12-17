@@ -6,8 +6,8 @@ services:
       - mongodb
     networks:
       - backend
-    deploy:
-      replicas: 3  # Scale to 3 instances
+    # deploy:
+      # replicas: 3  # Scale to 3 instances
 
   mongodb:
     image: mongo:6
@@ -63,8 +63,8 @@ services:
       always
     networks:
       - backend
-    deploy:
-      replicas: 3  # Scale to 2 instances
+    #deploy:
+    #  replicas: 3  # Scale to 2 instances
 
   dentistapiserver:
     build:
@@ -72,8 +72,8 @@ services:
         ./middleware/dentistapiserver
     networks:
       - backend
-    deploy:
-      replicas: 3  # Scale to 2 instances
+    #deploy:
+    #  replicas: 3  # Scale to 2 instances
 
   slotservice:
     build:
