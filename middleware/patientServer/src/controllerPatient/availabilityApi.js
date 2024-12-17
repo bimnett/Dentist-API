@@ -3,6 +3,8 @@ var router= express.Router();
 const mqtt = require('mqtt');
 const CREDENTIAL = require('../credentials');
 const TOPIC = require('../topics');
+const LOG_USER = 'patient';
+const ORIGIN_SERVER = 'patientServer';
 
 const options = {
     clientId: "", // You can set a unique client ID here
@@ -25,8 +27,52 @@ router.get('/bookSlots/clinics', async function(req,res,next){
             
             client.subscribe(topic, { qos: 2 }, (err) => {
                 if (err) {
+                    // -------- Log -------------
+                    // Format the date into YYYY-MM-DD
+                    const formattedDate = formatTimestamp();
+
+                    const payloadLogs = {
+                        timeStamp: formattedDate,
+                        user: LOG_USER,
+                        origin: ORIGIN_SERVER,
+                        failure: 'error',
+                        reason: "Could not subscribe"
+                    }
+                    const jsonLogs = JSON.parse(payloadLogs);
+                    
+                    // publish to db-handler to insert db, logs
+                    client.publish(TOPIC.logs, jsonLogs, { qos: 2 }, (err) => {
+                        if (err) {
+                            console.error('Publishing error:', err);
+                        } else {
+                            console.log('Message published successfully!');
+                        }
+                    });
+                    // ----------- Log end --------
                     console.log('Subscription error:', err);
                 } else {
+                    // -------- Log -------------
+                    // Format the date into YYYY-MM-DD
+                    const formattedDate = formatTimestamp();
+
+                    const payloadLogs = {
+                        timeStamp: formattedDate,
+                        user: LOG_USER,
+                        origin: ORIGIN_SERVER,
+                        failure: '-',
+                        reason: "Subscribed sucessfully"
+                    }
+                    const jsonLogs = JSON.parse(payloadLogs);
+                    
+                    // publish to db-handler to insert db, logs
+                    client.publish(TOPIC.logs, jsonLogs, { qos: 2 }, (err) => {
+                        if (err) {
+                            console.error('Publishing error:', err);
+                        } else {
+                            console.log('Message published successfully!');
+                        }
+                    });
+                    // ----------- Log end --------
                     console.log(`Subscribed to topic: ${topic}`);
                 }
             });
@@ -34,12 +80,62 @@ router.get('/bookSlots/clinics', async function(req,res,next){
           
         client.on('message', (topic, message) => {
             console.log(`Received message in json format: + ${message} + on topic: + ${topic}`);
+            // Unsubscribe from the topic and close the connection
+            
+
+            // -------- Log -------------
+            // Format the date into YYYY-MM-DD
+            const formattedDate = formatTimestamp();
+
+            const payloadLogs = {
+                timeStamp: formattedDate,
+                user: LOG_USER,
+                origin: ORIGIN_SERVER,
+                failure: '-',
+                reason: "Published message to slotService"
+            }
+            const jsonLogs = JSON.parse(payloadLogs);
+            
+            // publish to db-handler to insert db, logs
+            client.publish(TOPIC.logs, jsonLogs, { qos: 2 }, (err) => {
+                if (err) {
+                    console.error('Publishing error:', err);
+                } else {
+                    console.log('Message published successfully!');
+                }
+            });
+            // ----------- Log end --------
             // response to end user
-            return res.status(200).json(message);
+            res.status(200).json(message);
+            return client.unsubscribe(topic, () => {
+                console.log(`Unsubscribed from topic: ${topic}`);
+            });
         });
         
         client.on('error', (error) => {
             console.log('Subscriber connection error:', error);
+            // -------- Log -------------
+            // Format the date into YYYY-MM-DD
+            const formattedDate = formatTimestamp();
+
+            const payloadLogs = {
+                timeStamp: formattedDate,
+                user: LOG_USER,
+                origin: ORIGIN_SERVER,
+                failure: 'error',
+                reason: "Connection error"
+            }
+            const jsonLogs = JSON.parse(payloadLogs);
+            
+            // publish to db-handler to insert db, logs
+            client.publish(TOPIC.logs, jsonLogs, { qos: 2 }, (err) => {
+                if (err) {
+                    console.error('Publishing error:', err);
+                } else {
+                    console.log('Message published successfully!');
+                }
+            });
+            // ----------- Log end --------
             return res.status(500).json({ message : "Unable to connect to the server"})
         });
         
@@ -74,11 +170,58 @@ router.get('/bookSlots/clinics/:clinicId/dentists', async function(req, res, nex
 
         client.on('message', (topic, message) => {
             console.log(`Received message: + ${message} + on topic: + ${topic}`);
-            return res.status(200).json(message);
+            // -------- Log -------------
+            // Format the date into YYYY-MM-DD
+            const formattedDate = formatTimestamp();
+
+            const payloadLogs = {
+                timeStamp: formattedDate,
+                user: LOG_USER,
+                origin: ORIGIN_SERVER,
+                failure: '-',
+                reason: "Recived message sucessfully"
+            }
+            const jsonLogs = JSON.parse(payloadLogs);
+            
+            // publish to db-handler to insert db, logs
+            client.publish(TOPIC.logs, jsonLogs, { qos: 2 }, (err) => {
+                if (err) {
+                    console.error('Publishing error:', err);
+                } else {
+                    console.log('Message published successfully!');
+                }
+            });
+            // ----------- Log end --------
+            res.status(200).json(message);
+            return client.unsubscribe(topic, () => {
+                console.log(`Unsubscribed from topic: ${topic}`);
+            });
         });
 
         client.on('error', (error) => {
             console.log('Subscriber connection error:', error);
+            // -------- Log -------------
+            // Format the date into YYYY-MM-DD
+            const formattedDate = formatTimestamp();
+
+            const payloadLogs = {
+                timeStamp: formattedDate,
+                user: LOG_USER,
+                origin: ORIGIN_SERVER,
+                failure: 'error',
+                reason: "Connection error"
+            }
+            const jsonLogs = JSON.parse(payloadLogs);
+            
+            // publish to db-handler to insert db, logs
+            client.publish(TOPIC.logs, jsonLogs, { qos: 2 }, (err) => {
+                if (err) {
+                    console.error('Publishing error:', err);
+                } else {
+                    console.log('Message published successfully!');
+                }
+            });
+            // ----------- Log end --------
             return res.status(500).json({message: "Could not connect to server"});
         });
 
@@ -113,7 +256,32 @@ router.get('/bookSlots/clinics/:clinicId/:dentistId/timeschedual', async functio
 
         client.on('message', (topic, message) => {
             console.log(`Received message: + ${message} + on topic: + ${topic}`);
-            return res.status(200).json(message);
+            // -------- Log -------------
+            // Format the date into YYYY-MM-DD
+            const formattedDate = formatTimestamp();
+
+            const payloadLogs = {
+                timeStamp: formattedDate,
+                user: LOG_USER,
+                origin: ORIGIN_SERVER,
+                failure: '-',
+                reason: "Recived message sucessfully"
+            }
+            const jsonLogs = JSON.parse(payloadLogs);
+            
+            // publish to db-handler to insert db, logs
+            client.publish(TOPIC.logs, jsonLogs, { qos: 2 }, (err) => {
+                if (err) {
+                    console.error('Publishing error:', err);
+                } else {
+                    console.log('Message published successfully!');
+                }
+            });
+            // ----------- Log end --------
+            res.status(200).json(message);
+            return client.unsubscribe(topic, () => {
+                console.log(`Unsubscribed from topic: ${topic}`);
+            });
         });
 
         client.on('error', (error) => {
@@ -158,7 +326,32 @@ router.get('/bookSlots', async function(req,res,next){
 
         client.on('message', (topic, message) => {
             console.log(`Received message: + ${message} + on topic: + ${topic}`);
-            return res.status(200).json(message);
+            // -------- Log -------------
+            // Format the date into YYYY-MM-DD
+            const formattedDate = formatTimestamp();
+
+            const payloadLogs = {
+                timeStamp: formattedDate,
+                user: LOG_USER,
+                origin: ORIGIN_SERVER,
+                failure: '-',
+                reason: "Recived message sucessfully"
+            }
+            const jsonLogs = JSON.parse(payloadLogs);
+            
+            // publish to db-handler to insert db, logs
+            client.publish(TOPIC.logs, jsonLogs, { qos: 2 }, (err) => {
+                if (err) {
+                    console.error('Publishing error:', err);
+                } else {
+                    console.log('Message published successfully!');
+                }
+            });
+            // ----------- Log end --------
+            res.status(200).json(message);
+            return client.unsubscribe(topic, () => {
+                console.log(`Unsubscribed from topic: ${topic}`);
+            }); 
         });
 
         client.on('error', (error) => {
@@ -175,3 +368,5 @@ router.get('/bookSlots', async function(req,res,next){
         return next(e);
     }
 });
+
+module.exports = router;

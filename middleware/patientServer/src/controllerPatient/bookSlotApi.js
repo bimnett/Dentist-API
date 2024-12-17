@@ -33,7 +33,32 @@ router.get('/bookSlots/:appointmentId', async function(req,res,next){
 
         client.on('message', (topic, message) => {
             console.log(`Received message: + ${message} + on topic: + ${topic}`);
-            return res.status(200).json(message);
+            // -------- Log -------------
+            // Format the date into YYYY-MM-DD
+            const formattedDate = formatTimestamp();
+
+            const payloadLogs = {
+                timeStamp: formattedDate,
+                user: LOG_USER,
+                origin: ORIGIN_SERVER,
+                failure: '-',
+                reason: "Recived message sucessfully"
+            }
+            const jsonLogs = JSON.parse(payloadLogs);
+            
+            // publish to db-handler to insert db, logs
+            client.publish(TOPIC.logs, jsonLogs, { qos: 2 }, (err) => {
+                if (err) {
+                    console.error('Publishing error:', err);
+                } else {
+                    console.log('Message published successfully!');
+                }
+            });
+            // ----------- Log end --------
+            res.status(200).json(message);
+            return client.unsubscribe(topic, () => {
+                console.log(`Unsubscribed from topic: ${topic}`);
+            }); 
         });
 
         client.on('error', (error) => {
