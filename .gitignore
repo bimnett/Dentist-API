@@ -2,6 +2,7 @@
 .idea
 .env
 node_modules
+__pycache__
 
 # Mosquitto MQTT
 
