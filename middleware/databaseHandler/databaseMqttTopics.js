@@ -11,6 +11,7 @@ module.exports = {
 
     // for logs (logs sub)
     logs: 'servers/database/insert/logs',
+    log_data: 'database/monitoring/log/data',
 
     // slot publish topics
     new_slot_data: 'slot/database/insert/new/slot',

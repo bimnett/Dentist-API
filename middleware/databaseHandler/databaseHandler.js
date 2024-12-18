@@ -29,34 +29,45 @@ mongoose.connect(dbURI, {
     .then(() => console.log('Connected to MongoDB'))
     .catch((err) => console.error('Error connecting to MongoDB:', err));
 
-    // Function for publishing 
-    const recurringPublish = async () => {
+// Function for publishing 
+const recurringPublish = async () => {
 
-        try {
-            // Fetch all schedules from the Timeslot collection
-            const schedules = await Timeslot.find({});
-            console.log('Fetched schedules:', schedules);
+    try {
+        // Fetch all schedules from the Timeslot collection
+        const schedules = await Timeslot.find({});
+        console.log('Fetched schedules:', schedules);
 
-            // Ensure schedules are in JSON format
-            // Define the topic for publishing cached schedules
-            const payload = JSON.stringify(schedules);
-            const pubTopic = TOPIC.cached_schedule;
+        // Ensure schedules are in JSON format
+        // Define the topic for publishing cached schedules
+        const payload = JSON.stringify(schedules);
+        const pubTopic = TOPIC.cached_schedule;
 
-            // Publish the fetched schedules to the MQTT broker
-            dentistClient.publish(pubTopic, payload, { qos: 2 }, (err) => {
-                if (err) {
-                    console.error('Publish error:', err);
-                } else {
-                    console.log('Cached schedule published successfully at:', Date.now());
-                }
-            });
-        } catch (err) {
-            console.error('Error fetching schedules:', err);
-        }
+        // Publish the fetched schedules to the MQTT broker
+        dentistClient.publish(pubTopic, payload, { qos: 2 }, (err) => {
+            if (err) {
+                console.error('Publish error:', err);
+            } else {
+                console.log('Cached schedule published successfully at:', Date.now());
+            }
+        });
 
-        // Schedule the next execution of the task
-        setTimeout(recurringPublish, 1000 * 60 * 60 * 6); // Call it every 6th hour for caching in scheduleService.js
-    };
+        // Publish the fetched schedules to the MQTT broker
+        dentistClient.publish(TOPIC.log_data, payload, { qos: 2 }, (err) => {
+            if (err) {
+                console.error('Publish error:', err);
+            } else {
+                console.log('Cached schedule published successfully at:', Date.now());
+            }
+        });
+
+        
+    } catch (err) {
+        console.error('Error fetching schedules:', err);
+    }
+
+    // Schedule the next execution of the task
+    setTimeout(recurringPublish, 1000 * 60 * 60 * 6); // Call it every 6th hour for caching in scheduleService.js
+};
 
 
 

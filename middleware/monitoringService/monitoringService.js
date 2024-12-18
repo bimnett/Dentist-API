@@ -1,3 +1,46 @@
+const mqtt = require('mqtt');
+const CREDENTIAL = require('./credentials');
+const TOPIC = require('./databaseMqttTopics');
+
+// Create dentist and patient MQTT clients for and connect
+const patientClient = mqtt.connect(CREDENTIAL.patientUrl);
+const dentistClient = mqtt.connect(CREDENTIAL.dentistUrl);
+console.log("Monitoring: ");
+
+// Connect to dentist broker
+dentistClient.on('connect', async () => {
+    console.log('databaseHandler connected to the dentist broker');
+
+    dentistClient.subscribe(TOPIC.log_data, { qos: 2 }, (err) => {
+        if (err) {
+            console.error('Subscription error:', err);
+        } else {
+            console.log(`Subscribed to topic: ${'#'}`);
+        }
+    });
+
+    // Fetch all dentist schedules and send to scheduleService for caching
+    recurringPublish();
+});
+
+// Connect to patient broker
+patientClient.on('connect', async () => {
+    console.log('databaseHandler connected to the patient broker');
+
+    patientClient.subscribe(TOPIC.log_data, { qos: 2 }, (err) => {
+        if (err) {
+            console.error('Subscription error:', err);
+        } else {
+            console.log(`Subscribed to topic: ${TOPIC.log_data}`);
+        }
+    });
+});
+
+
+
+
+
+
 
 
 
