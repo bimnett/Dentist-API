@@ -16,7 +16,7 @@ module.exports = {
 
     // Timeslot availability topics
     database_request_find: 'database/request/timeslot/find',
-    database_request_update: 'database/request/timeslot/update',
+   // database_request_update: 'database/request/timeslot/update',
     database_response_timeslot: 'database/response/timeslot',
 
     // Dentist availability
@@ -59,7 +59,7 @@ module.exports = {
     // dentist server publish
     dentist_create_new_slot: 'dentist/slot/create/new/slot',
     dentist_update_slot: 'dentist/slot/update/slot',
-    dentist_delete_slot: 'dentist/slot/delete/slot',
+  //  dentist_delete_slot: 'dentist/slot/delete/slot',
     dentist_id: 'dentist/database/send/dentist/id',
     cached_dentist_id: 'dentist/schedule/send/dentist/id/cached',
 
@@ -67,7 +67,10 @@ module.exports = {
     cached_dentist_schedule: 'schedule/dentist/send/dentist/schedule/cached',
 
     // notification topics
-    notification_cancel: 'database/send/notification/cancel'
+    notification_cancel: 'database/send/notification/cancel',
+
+
+    everything: '#'
 
 
 
