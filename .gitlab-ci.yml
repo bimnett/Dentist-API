@@ -69,7 +69,7 @@ test:
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "brokerUrl :\"$BROKER_URL\"," >> credentials.js
-    - echo "testMongodbUrl :\"$TEST_MONGODB_URL\"," >> credentials.js
+    - echo "testMongodbUrl :\"$MONGODB_URL\"," >> credentials.js
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
     - npm install
@@ -86,7 +86,7 @@ test:
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "brokerUrl :\"$BROKER_URL\"," >> credentials.js
-    - echo "testMongodbUrl :\"$TEST_MONGODB_URL\"," >> credentials.js
+    - echo "testMongodbUrl :\"$MONGODB_URL\"," >> credentials.js
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
 
@@ -95,7 +95,7 @@ test:
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "brokerUrl :\"$BROKER_URL\"," >> credentials.js
-    - echo "testMongodbUrl :\"$TEST_MONGODB_URL\"," >> credentials.js
+    - echo "testMongodbUrl :\"$MONGODB_URL\"," >> credentials.js
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
     - npm run ci-test
@@ -105,6 +105,6 @@ test:
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "broker_url :\"$BROKER_URL\"," >> credentials.js
-    - echo "testMongodbUrl :\"$TEST_MONGODB_URL\"," >> credentials.js
+    - echo "testMongodbUrl :\"$MONGODB_URL\"," >> credentials.js
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
