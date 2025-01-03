@@ -1,7 +1,7 @@
 const mqtt = require('mqtt');
+const mongoose = require("mongoose");
 const CREDENTIAL = require('../resources/credentials');
 const TOPIC = require('../resources/databaseMqttTopics');
-const mongoose = require("mongoose");
 const Timeslot = require('../models/timeslot');
 const Clinic = require('../models/clinic');
 const Dentist = require('../models/dentist');
@@ -15,7 +15,7 @@ const options = {
     reconnectPeriod: 1000
 };
 
-const dbURI = CREDENTIAL.mongodb_url;
+const dbURI = CREDENTIAL.mongodbUrl;
 // Create dentist and patient MQTT clients for and connect
 const patientClient = mqtt.connect(CREDENTIAL.patientUrl);
 const dentistClient = mqtt.connect(CREDENTIAL.dentistUrl);
