@@ -1,8 +1,8 @@
 var mongoose = require('mongoose');
-const credentials = require('../src/controllerDentist/credentials')
+const credentials = require('../credentials')
 
 // Variables
-var mongoURI = credentials.test_mongodb_url;
+var mongoURI = credentials.testMongodbUrl;
 
 // Drop database
 mongoose.connect(mongoURI).catch(function (err) {

@@ -132,7 +132,7 @@ dentistClient.on('message', async (topic, message) => {
                 let publish_topic = TOPIC.notification_cancel;
                 let payload = JSON.stringify(deletedSlot);
 
-                client.publish(TOPIC.notification_cancel, JSON.stringify({
+                dentistClient.publish(TOPIC.notification_cancel, JSON.stringify({
                     data: deletedSlot,
                     error: null
                 }));
@@ -605,13 +605,13 @@ patientClient.on('message', async (topic, message) => {
                     console.log(`Updated ${result.modifiedCount} expired reservations`);
 
                     // Respond with number of updated reservations
-                    client.publish(TOPIC.database_response_check_expired_reservations, JSON.stringify(expiredSlots));
+                    patientClient.publish(TOPIC.database_response_check_expired_reservations, JSON.stringify(expiredSlots));
 
                 } catch(error){
                     console.log("Error checking expired reservations:", error);
 
                     // Publish error
-                    client.publish(TOPIC.database_response_check_expired_reservations, JSON.stringify({
+                    patientClient.publish(TOPIC.database_response_check_expired_reservations, JSON.stringify({
                         error: error.message
                     }));
                 }
@@ -625,12 +625,4 @@ patientClient.on('message', async (topic, message) => {
     } catch (err) {
         console.error('Error processing message:', err);
     }
-});
-
-client.on('error', (error) => {
-    console.error('DatabaseHandler mqtt connection error:', error);
-});
-
-client.on('close', () => {
-    console.log('DatabaseHandler connection closed');
 });

@@ -3,15 +3,15 @@ const TOPICS = require('./mqttTopics');
 
 // Create class to connect to hold 2 mqtt clients
 class SlotAvailabilityService {
-    constructor(publicBrokerUrl, internalBrokerUrl, internalBrokerCredentials){
+    constructor(publicBrokerUrl, internalBrokerUrl){
         this.publicClient = null;
         this.internalClient = null;
         this.cleanupInterval = null;
-        this.initialize(publicBrokerUrl, internalBrokerUrl, internalBrokerCredentials);
+        this.initialize(publicBrokerUrl, internalBrokerUrl);
     }
 
     // Set up connection to internal and public mqtt broker
-    async initialize(publicBrokerUrl, internalBrokerUrl, internalBrokerCredentials){
+    async initialize(publicBrokerUrl, internalBrokerUrl){
         this.publicClient = mqtt.connect(publicBrokerUrl);
 
         this.publicClient.on('connect', () => {
@@ -31,10 +31,7 @@ class SlotAvailabilityService {
             }
         });
 
-        this.internalClient = mqtt.connect(internalBrokerUrl, {
-          username: internalBrokerCredentials.username,
-          password: internalBrokerCredentials.password,
-        });
+        this.internalClient = mqtt.connect(internalBrokerUrl);
 
         this.internalClient.on('connect', () => {
             console.log('Connected to internal broker');
