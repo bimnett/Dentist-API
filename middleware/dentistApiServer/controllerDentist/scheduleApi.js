@@ -8,7 +8,7 @@ const mqtt = require('mqtt');
 const express = require('express');
 const router = express.Router();
 const CREDENTIAL = require('../../credentials');
-const TOPIC = require('./topics');
+const TOPIC = require('../resources/topics');
 
 
 const options = {
