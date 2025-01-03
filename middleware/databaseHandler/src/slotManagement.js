@@ -1,4 +1,4 @@
-const Timeslot = require('./models/timeslot');
+const Timeslot = require('../models/timeslot');
 
 async function update_slot_in_db(jsonMessage){
     try{

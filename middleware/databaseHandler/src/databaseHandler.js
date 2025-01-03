@@ -2,9 +2,9 @@ const mqtt = require('mqtt');
 const CREDENTIAL = require('./credentials');
 const TOPIC = require('./databaseMqttTopics');
 const mongoose = require("mongoose");
-const Timeslot = require('./models/timeslot');
-const Clinic = require('./models/clinic');
-const Dentist = require('./models/dentist');
+const Timeslot = require('../models/timeslot');
+const Clinic = require('../models/clinic');
+const Dentist = require('../models/dentist');
 const slotManagement = require('./slotManagement');
 const dentistSchedule = require('./dentistSchedule');
 
