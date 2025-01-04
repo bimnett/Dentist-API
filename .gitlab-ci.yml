@@ -82,6 +82,7 @@ test:
 
     - cd ..
     - cd databaseHandler
+    - cd resources
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "brokerUrl :\"$BROKER_URL\"," >> credentials.js
