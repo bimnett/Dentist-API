@@ -1,7 +1,7 @@
 // imports
 const mqtt = require('mqtt');
-const TOPIC = require('./topics');
-const CREDENTIAL = require('./credentials');
+const TOPIC = require('./resources/topics');
+const CREDENTIAL = require('./resources/credentials');
 
 // MQTT connection options
 const options = {

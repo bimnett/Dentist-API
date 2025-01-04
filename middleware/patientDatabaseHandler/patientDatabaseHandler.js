@@ -1,10 +1,10 @@
 const mqtt = require('mqtt');
 const mongoose = require("mongoose");
-const CREDENTIAL = require('../resources/credentials');
-const TOPIC = require('../resources/databaseMqttTopics');
-const Timeslot = require('../models/timeslot');
-const Clinic = require('../models/clinic');
-const Dentist = require('../models/dentist');
+const CREDENTIAL = require('./resources/credentials');
+const TOPIC = require('./resources/databaseMqttTopics');
+const Timeslot = require('./models/timeslot');
+const Clinic = require('./models/clinic');
+const Dentist = require('./models/dentist');
 
 // MQTT connection options
 const options = {

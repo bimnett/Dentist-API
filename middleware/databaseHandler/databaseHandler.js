@@ -1,10 +1,10 @@
 const mqtt = require('mqtt');
 const mongoose = require("mongoose");
-const CREDENTIAL = require('../resources/credentials');
-const TOPIC = require('../resources/databaseMqttTopics');
-const Timeslot = require('../models/timeslot');
-const slotManagement = require('./slotManagement');
-const dentistSchedule = require('./dentistSchedule');
+const CREDENTIAL = require('./resources/credentials');
+const TOPIC = require('./resources/databaseMqttTopics');
+const Timeslot = require('./models/timeslot');
+const slotManagement = require('./src/slotManagement');
+const dentistSchedule = require('./src/dentistSchedule');
 
 // MQTT connection options
 const options = {
@@ -78,7 +78,7 @@ dentistClient.on('message', async (topic, message) => {
             // update an existing slot in db
             case TOPIC.updated_slot_data:
                 console.log("try to update\n");
-                var updatedSlot = await slotManagement.update_slot_in_db(jsonMessage);
+                var updatedSlot = await slotManagement.updateSlotInDb(jsonMessage);
                 console.log(updatedSlot);
                 break;
 

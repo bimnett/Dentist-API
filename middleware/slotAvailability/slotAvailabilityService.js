@@ -1,5 +1,5 @@
 const mqtt = require('mqtt');
-const TOPICS = require('./mqttTopics');
+const TOPICS = require('./resources/mqttTopics');
 
 // Create class to connect to hold 2 mqtt clients
 class SlotAvailabilityService {

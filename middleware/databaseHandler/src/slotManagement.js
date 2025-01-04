@@ -1,6 +1,6 @@
 const Timeslot = require('../models/timeslot');
 
-async function update_slot_in_db(jsonMessage){
+async function updateSlotInDb(jsonMessage){
     try{
         const updatedSlot = await Timeslot.findByIdAndUpdate(
             jsonMessage._id, // the _id of the timeslot to update
@@ -22,5 +22,5 @@ async function update_slot_in_db(jsonMessage){
 
 
 module.exports = {
-    update_slot_in_db
+    updateSlotInDb
 }
