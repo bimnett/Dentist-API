@@ -81,7 +81,7 @@ router.get('/:dentistId', async function(req,res,next){
 });
 
 
-// get all schedule for a dentist from scheduleService
+// get all cached schedules for a dentist from scheduleService
 router.get('/cached/:dentistId', async function(req,res,next){
     try {
         options.clientId ='pub_dentistServer'+Math.random().toString(36).substring(2,10);
@@ -132,8 +132,8 @@ router.get('/cached/:dentistId', async function(req,res,next){
                 });
                 client.end(); // Close connection
                 return res.status(200).json(parsedMessage);
-            }catch(err){
-                console.log(err);
+            } catch (err) {
+                console.error('Message handling error:', err);
             }
             
         });
