@@ -11,169 +11,91 @@ const options = {
     reconnectPeriod: 1000,  // Reconnect every 1 second if disconnected
 }
 
+// Helper function to publish to MQTT broker
+function publishToBroker(clientIdPrefix, topic, payload, res, successMessage) {
+    const clientId = clientIdPrefix + Math.random().toString(36).substring(2, 10);
+    const client = mqtt.connect(CREDENTIAL.brokerUrl, { ...options, clientId });
+
+    client.on('connect', () => {
+        console.log(`Publisher connected to broker with clientId: ${clientId}`);
+        const jsonPayload = JSON.stringify(payload);
+
+        client.publish(topic, jsonPayload, { qos: 2 }, (err) => {
+            if (err) {
+                console.error(`Publishing error on topic ${topic}:`, err);
+                res.status(500).json({ message: `Publishing error: ${err.message}` });
+            } else {
+                console.log(`Message published successfully to topic ${topic}:`, jsonPayload);
+                res.status(200).json({ message: successMessage });
+            }
+            client.end();
+        });
+    });
+
+    client.on('error', (error) => {
+        console.error(`MQTT connection error for clientId ${clientId}:`, error);
+        res.status(500).json({ message: 'Failed to connect to MQTT broker' });
+    });
+
+    client.on('close', () => {
+        console.log(`MQTT connection closed for clientId: ${clientId}`);
+    });
+}
 
 // create new avaliable time slot
 router.post('/newSlots', async function(req,res,next){
     try {
-        
-        options.clientId = 'pub_dentistServer'+Math.random().toString(36).substring(2,10); 
-
-        // connect to broker 
-        const client = mqtt.connect(CREDENTIAL.brokerUrl, options);
-        
-        client.on('connect', () => {
-            console.log('Publisher connected to broker');
-        
-            const topic = TOPIC.create_new_slot;
-            
-            const payload = { 
-                // ?? null - set the value to null if the user does not provide any input 
-                // malformed input + error handling will be in the slot managment service
-                // or in the UI itself 
-                date : req.body.date ?? null,
-                time : req.body.time ?? null,
-                status: req.body.status ?? null,
-                patient: null,
-                dentist : req.body.dentist ?? null,
-                clinic : req.body.clinic ?? null, 
-                treatment: req.body.treatment ?? null
-            }
-
-            const json_payload = JSON.stringify(payload);
-        
-            client.publish(topic, json_payload, { qos: 2 }, (err) => {
-                if (err) {
-                    console.log('Publish error:', err);
-                    res.status(500).json('Problems with publishing: '+json_payload);
-                } else {
-                    console.log('Message published successfully!');
-                    console.log(json_payload);
-                    // just sends a response back for now to close the api endpoint
-                    res.status(200).json({message : "Message published to broker"});
-                };
-                
-            });
-        });
-        
-        client.on('error', (error) => {
-            console.log('Publisher connection error:', error);
-            return res.status(500).json({message : "Could not connect to server"});
-            
-        });
-
-        client.on('close', () => {
-            console.log('Publisher connection closed');
-            return res.status(200).json({message : "Close connection"});
-        });
-        
-    }catch(e){
-        next(e);
-    }  
+        const payload = {
+            // ?? null - set the value to null if the user does not provide any input 
+            // malformed input + error handling will be in the slot managment service
+            // or in the UI itself 
+            date: req.body.date ?? null,
+            time: req.body.time ?? null,
+            status: req.body.status ?? null,
+            patient: null,
+            dentist: req.body.dentist ?? null,
+            clinic: req.body.clinic ?? null,
+            treatment: req.body.treatment ?? null,
+        };
+        publishToBroker('pub_dentistServer', TOPIC.create_new_slot, payload, res, 'New time slot created successfully');
+    } catch (err) {
+        next(err);
+    }
 });
 
 // delete an exisiting slot --> dentit will remove slot from avaliable slots too
 router.patch('/updateSlots/:slotId', async function(req,res,next){
     try {
-        
-        options.clientId = 'pub_dentistServer'+Math.random().toString(36).substring(2,10); 
+        const payload = {
+            // ?? null - set the value to null if the user does not provide any input 
+            // malformed input + error handling will be in the slot managment service
+            // + in the UI itself 
 
-        // connect to broker 
-        const client = mqtt.connect(CREDENTIAL.broker_url, options);
-        
-        client.on('connect', () => {
-            console.log('Publisher connected to broker');
-        
-            const topic = TOPIC.update_slot;
-            
-            const payload = { 
-                // ?? null - set the value to null if the user does not provide any input 
-                // malformed input + error handling will be in the slot managment service
-                // + in the UI itself 
-
-                // update slot means dentist is still avaliable/will attend if slot is booked
-                // if a patien has booked this slot and it get's chnged the patient 
-                // will still have the slot but be notified 
-                _id: req.body.id ?? null,
-                date : req.body.date ?? null,
-                time : req.body.time ?? null,
-                treatment: req.body.treatment ?? null
-            }
-
-            const json_payload = JSON.stringify(payload);
-        
-            client.publish(topic, json_payload, { qos: 2 }, (err) => {
-                if (err) {
-                    console.log('Publish error:', err);
-                    res.status(500).json('Problems with publishing');
-                } else {
-                    console.log('Message published successfully!');
-                    console.log(json_payload);
-                    // just sends a response back for now to close the api endpoint
-                    res.status(200).json({message : "Message published to slot-serivce"}); 
-                };
-            });
-        });
-        
-        client.on('error', (error) => {
-            console.log('Publisher connection error:', error);
-            return res.status(500).json({message : "Could not connect to server"})
-        });
-
-        client.on('close', () => {
-            console.log('Publisher connection closed');
-            return res.status(200).json({message : "Close connection"});
-        });
-        
-    }catch(e){
-        next(e);
+            // update slot means dentist is still avaliable/will attend if slot is booked
+            // if a patien has booked this slot and it get's chnged the patient 
+            // will still have the slot but be notified 
+            _id: req.body.id ?? null,
+            date: req.body.date ?? null,
+            time: req.body.time ?? null,
+            treatment: req.body.treatment ?? null,
+        };
+        publishToBroker('pub_dentistServer', TOPIC.update_slot, payload, res, 'Time slot updated successfully');
+    } catch (err) {
+        next(err);
     }
 });
 
 router.delete('/deleteSlots/:id', async function(req,res,next){
     try {
-        options.clientId = 'pub_dentistServer'+Math.random().toString(36).substring(2,10); 
-
-        // connect to broker 
-        const client = mqtt.connect(CREDENTIAL.broker_url, options);
-        
-        client.on('connect', () => {
-            console.log('Publisher connected to broker');
-        
-            const topic = TOPIC.delete_slot;
-            const payload = { 
-                // ?? null - set the value to null if the user does not provide any input 
-                // malformed input + error handling will be in the slot management service
-                // + in the UI itself
-
-                id: req.params.id ?? null
-            }
-
-            const json_payload = JSON.stringify(payload);
-        
-            client.publish(topic, json_payload, { qos: 2 }, (err) => {
-                if (err) {
-                    console.log('Publish error:', err);
-                    res.status(500).json('Problems with publishing: '+json_payload);
-                } else {
-                    console.log('Message published successfully!');
-                    console.log(json_payload);
-                    // just sends a response back for now to close the api endpoint
-                    res.status(200).json({message : "Message published to broker"});
-                };
-            });
-        });
-        
-        client.on('error', (error) => {
-            console.log('Publisher connection error:', error);
-            return res.status(500).json({message : "Could not connect to server"})
-        });
-
-        client.on('close', () => {
-            console.log('Publisher connection closed');
-            return res.status(200).json({message : "Close connection"});
-        });
-    }catch(err){
-        console.log(err);
+        const payload = {
+            // ?? null - set the value to null if the user does not provide any input 
+            // malformed input + error handling will be in the slot management service
+            // + in the UI itself
+            id: req.params.id ?? null,
+        };
+        publishToBroker('pub_dentistServer', TOPIC.delete_slot, payload, res, 'Time slot deleted successfully');
+    } catch (err) {
+        next(err);
     }
 });
 
