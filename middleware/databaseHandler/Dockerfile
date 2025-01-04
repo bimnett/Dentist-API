@@ -6,4 +6,4 @@ COPY . .
 
 RUN npm install
 
-CMD [ "node", "src/databaseHandler.js" ]
+CMD [ "node", "databaseHandler.js" ]

@@ -1,6 +1,6 @@
 const Timeslot = require('../models/timeslot');
 const TOPIC = require('../resources/databaseMqttTopics');
-const { dentistClient } = require('./databaseHandler');
+const { dentistClient } = require('../databaseHandler');
 
 async function retrieveDentistSchedule(jsonMessage,client){
     try {

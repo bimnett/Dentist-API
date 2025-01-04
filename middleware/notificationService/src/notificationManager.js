@@ -1,4 +1,4 @@
-const CREDENTIALS = require('../credentials');
+const CREDENTIALS = require('../resources/credentials');
 const nodemailer = require('nodemailer');
 
 const EMAIL = CREDENTIALS.email;
