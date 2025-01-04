@@ -104,6 +104,7 @@ test:
     - npm run ci-test
 
     - cd ..
+    - cd ..
     - cd slotService
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js

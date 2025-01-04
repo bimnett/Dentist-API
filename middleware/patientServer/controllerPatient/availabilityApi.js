@@ -2,7 +2,7 @@ var express = require('express');
 var router= express.Router();
 const mqtt = require('mqtt');
 const CREDENTIAL = require('../resources/credentials');
-const TOPIC = require('./topics');
+const TOPIC = require('../resources/topics');
 
 const options = {
     clientId: "", // You can set a unique client ID here
