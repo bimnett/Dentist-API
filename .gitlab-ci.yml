@@ -81,6 +81,7 @@ test:
     - npm run ci-test
 
     - cd ..
+    - cd ..
     - cd databaseHandler
     - cd resources
     - echo "Creating credentials.js..."
@@ -90,6 +91,7 @@ test:
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
 
+    - cd ..
     - cd ..
     - cd patientServer
     - cd resources
