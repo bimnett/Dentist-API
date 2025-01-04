@@ -4,7 +4,7 @@ image: node:20-alpine
 cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
-    - dentist-ui/dentist-client/node_modules
+    - dentist-ui/node_modules
     - middleware/dentistApiServer/node_modules
     - middleware/node_modules
     - middleware/patientServer/node_modules
@@ -20,11 +20,9 @@ build:
   tags:
     - docker
   script:
-    - cd dentist-ui/dentist-client
+    - cd dentist-ui
     - npm install
     - npm install --save-dev vite
-
-    - cd ..
 
     - cd ..
     - cd middleware
