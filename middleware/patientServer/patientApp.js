@@ -4,7 +4,7 @@ var path = require('path');
 var cors = require('cors');
 var history = require('connect-history-api-fallback');
 const TOPIC = require('./topics');
-const CREDENTIAL = require('./credentials')
+const CREDENTIAL = require('./resources/credentials')
 const mqtt = require('mqtt');
 
 const options = {

@@ -66,6 +66,7 @@ test:
 
     - cd middleware
     - cd dentistApiServer
+    - cd resources
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "brokerUrl :\"$BROKER_URL\"," >> credentials.js
@@ -90,6 +91,7 @@ test:
 
     - cd ..
     - cd patientServer
+    - cd resources
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "brokerUrl :\"$BROKER_URL\"," >> credentials.js
