@@ -126,17 +126,19 @@ dentistClient.on('message', async (topic, message) => {
             case TOPIC.dentist_delete_slot:
             case TOPIC.deletion_of_slot:
                 console.log("try to delete\n");
-                const deletedSlot = await Timeslot.findByIdAndDelete(jsonMessage.id);
-                console.log(deletedSlot);
 
-                let publish_topic = TOPIC.notification_cancel;
-                let payload = JSON.stringify(deletedSlot);
+                try {
+                    const deletedSlot = await Timeslot.findByIdAndDelete(jsonMessage.id);
+                    console.log(deletedSlot);
 
-                dentistClient.publish(TOPIC.notification_cancel, JSON.stringify({
-                    data: deletedSlot,
-                    error: null
-                }));
+                    let payload = JSON.stringify({data: deletedSlot, error: null});
 
+                    dentistClient.publish(TOPIC.notification_cancel, payload);
+                } catch(err){
+                    console.log("Error deleting slot:", err);
+                    dentistClient.publish(TOPIC.notification_cancel, JSON.stringify({data: null, error: err}));
+                }
+            
                 break;
 
             case TOPIC.dentist_id:
