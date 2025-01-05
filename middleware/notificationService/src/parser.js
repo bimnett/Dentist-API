@@ -3,7 +3,7 @@
 function parseStatus(message) {
     try {
         const data = JSON.parse(message);
-        const status = data.appointment?.status;
+        const status = data.data.appointment?.status;
         if (!status) {
             throw new Error("Status not found in message");
         }
@@ -16,7 +16,7 @@ function parseStatus(message) {
 function parseEmail(message) {
     try {
         const data = JSON.parse(message);
-        const email = data.appointment?.patient?.email;
+        const email = data.data.appointment?.patient?.email;
         if (!email) {
             throw new Error("Email not found in message");
         }

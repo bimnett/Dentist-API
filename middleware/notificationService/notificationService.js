@@ -18,33 +18,26 @@ const client = mqtt.connect(CREDENTIAL.brokerUrl, options);
 
 client.on('connect', () => {
     console.log('Connected to broker');
-    // subscribe to receive data about new slot
-    const topic = TOPIC.everything;
-    client.subscribe(topic, { qos: 2 }, (err) => {
+    client.subscribe(TOPIC.notification_cancel, { qos: 2 }, (err) => {
         if (err) {
             console.log('Subscription error:', err);
         } else {
-            console.log(`Subscribed to topic: ${topic}`);
+            console.log(`Subscribed to topic: ${TOPIC.notification_cancel}`);
         }
     });
 });
 
 client.on('message', (topic, message) => {
     console.log(`Received message on topic ${topic}`);
-
-    if(topic === TOPIC.cancel_appointment){
-        try{
-            let isBooked = parser.parseStatus(message) === "Booked";
-            if(isBooked){
-                let email = parser.parseEmail(message);
-                notifications.notifyCancelation(email);
-            }
-        } catch (error) {
-            console.log(error.stack);
+    try{
+        let isBooked = parser.parseStatus(message) === "Booked";
+        if(isBooked){
+            let email = parser.parseEmail(message);
+            notifications.notifyCancelation(email);
         }
-
+    } catch (error) {
+        console.log(error.stack);
     }
-
 });
 
 client.on('error', (error) => {
