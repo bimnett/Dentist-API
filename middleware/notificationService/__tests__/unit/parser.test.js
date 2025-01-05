@@ -9,36 +9,45 @@ Isolated unit tests for the parser
 describe('Parser Unit Tests', () => {
     test('parseStatus should correctly identify "Booked" status', () => {
         const message = JSON.stringify({
-            appointment: {
-                status: 'Booked',
-                patient: {
-                    email: 'test@example.com'
+            data: {
+                appointment: {
+                    status: 'Booked',
+                    patient: {
+                        email: 'test@example.com'
+                    }
                 }
-            }
+            },
+            error: null
         });
         expect(parser.parseStatus(message)).toBe('Booked');
     });
 
     test('parseStatus should correctly identify non-booked status', () => {
         const message = JSON.stringify({
-            appointment: {
-                status: 'Available',
-                patient: {
-                    email: 'test@example.com'
+            data:{
+                appointment: {
+                    status: 'Available',
+                    patient: {
+                        email: 'test@example.com'
+                    }
                 }
-            }
+            },
+            error: null
         });
         expect(parser.parseStatus(message)).toBe('Available');
     });
 
     test('parseEmail should extract email from message', () => {
         const message = JSON.stringify({
-            appointment: {
-                status: 'Booked',
-                patient: {
-                    email: 'test@example.com'
+            data: {
+                appointment: {
+                    status: 'Booked',
+                    patient: {
+                        email: 'test@example.com'
+                    }
                 }
-            }
+            },
+            error: null
         });
         expect(parser.parseEmail(message)).toBe('test@example.com');
     });
