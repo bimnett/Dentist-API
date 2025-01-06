@@ -1,8 +1,7 @@
 const mqtt = require('mqtt');
-const TOPIC = require('../../topics');
+const TOPIC = require('../../resources/topics');
 const notifications = require('../../src/notificationManager');
 const CREDENTIAL = require('../../credentials');
-const parser = require('../../src/parser');
 
 
 /*****************************************
@@ -10,6 +9,7 @@ const parser = require('../../src/parser');
 *****************************************/
 
 
+// Mock notification manager & parser
 jest.mock('../../src/notificationManager', () => ({
     notifyCancelation: jest.fn()
 }));
@@ -99,7 +99,7 @@ describe('Notification Service Integration Tests', () => {
                     expect(() => {
                         notifications.notifyCancelation(email); 
                     }).not.toThrow(); 
-                    
+
                     done();
                 } catch (error) {
                     done(error);
