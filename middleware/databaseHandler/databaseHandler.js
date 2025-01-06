@@ -4,45 +4,42 @@ const CREDENTIAL = require('./resources/credentials');
 const TOPIC = require('./resources/databaseMqttTopics');
 const Timeslot = require('./models/timeslot');
 const slotManagement = require('./src/slotManagement');
-const dentistSchedule = require('./src/dentistSchedule');
+//const dentistSchedule = require('./src/dentistSchedule');
 
-// MQTT connection options
-const options = {
-    clientId: 'database_' + Math.random().toString(36).substring(2, 10),
-    connectTimeout: 30000,
-    reconnectPeriod: 1000
-};
 
-const dbURI = CREDENTIAL.mongodbUrl;
-// Create dentist and MQTT client for and connect
+// Connect to MongoDB using Mongoose
+mongoose.connect(CREDENTIAL.mongodbUrl, { 
+    serverSelectionTimeoutMS: 5000,  // Set timeout for DB connection attempts
+})
+    .then(() => console.log('Connected to MongoDB'))
+    .catch((err) => console.error('Error connecting to MongoDB:', err));
+
+
+// Create and connect to dentist MQTT client
 const dentistClient = mqtt.connect(CREDENTIAL.dentistUrl);
-exports.dentistClient = dentistClient;
-
-const subTopic = [
-    TOPIC.new_slot_data,
-    TOPIC.updated_slot_data,
-    TOPIC.deletion_of_slot,
-    TOPIC.dentist_id,
-    TOPIC.database_request_find
-];
-
 
 // Connect to dentist broker
 dentistClient.on('connect', async () => {
     console.log('databaseHandler connected to the dentist broker');
 
-    for (var i=0; i<subTopic.length; i++){
-        dentistClient.subscribe(subTopic[i], { qos: 2 }, (err) => {
-            if (err) {
-                console.error('Subscription error:', err);
-            } else {
-                console.log(`Subscribed to topic: ${subTopic[i]}`);
-            }
-        });
-    }
+    dentistClient.subscribe('+/database/#', { qos: 2 }, (err) => {
+        if (err) {
+            console.error('Subscription error:', err);
+        } else {
+            console.log(`Subscribed to topic: ${'+/database/#'}`);
+        }
+    });
+
+    dentistClient.subscribe('/database/#', { qos: 2 }, (err) => {
+        if (err) {
+            console.error('Subscription error:', err);
+        } else {
+            console.log(`Subscribed to topic: ${'/database/#'}`);
+        }
+    });
 
     // Fetch all dentist schedules and send to scheduleService for caching
-    dentistSchedule.recurringPublish();
+    //dentistSchedule.recurringPublish();
 });
 
 // Ensure that message event listener is only registered once
@@ -103,7 +100,7 @@ dentistClient.on('message', async (topic, message) => {
 
             case TOPIC.dentist_id:
                 console.log('retrive dentist schedule and send to dentist-ui');
-                const schedule = dentistSchedule.retrieveDentistSchedule(jsonMessage,dentistClient);
+                //const schedule = dentistSchedule.retrieveDentistSchedule(jsonMessage,dentistClient);
                 console.log(schedule);
                 break;
 
