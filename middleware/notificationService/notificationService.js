@@ -1,6 +1,6 @@
 const mqtt = require('mqtt');
-const CREDENTIAL = require('./credentials');
-const TOPIC = require('./topics');
+const CREDENTIAL = require('./resources/credentials');
+const TOPIC = require('./resources/topics');
 const notifications = require('./src/notificationManager')
 const parser = require('./src/parser')
 
@@ -16,34 +16,60 @@ options.clientId ='notificationService_'+Math.random().toString(36).substring(2,
 // connect to broker
 const client = mqtt.connect(CREDENTIAL.brokerUrl, options);
 
-client.on('connect', () => {
-    console.log('Connected to broker');
-    client.subscribe(TOPIC.notification_cancel, { qos: 2 }, (err) => {
+// helper function to subscribe to topics
+function subscribeToTopic(client, topic, logMessage) {
+    client.subscribe(topic, { qos: 2 }, (err) => {
         if (err) {
-            console.log('Subscription error:', err);
+            console.error(`Subscription error for topic ${topic}:`, err);
         } else {
-            console.log(`Subscribed to topic: ${TOPIC.notification_cancel}`);
+            console.log(logMessage || `Subscribed to topic: ${topic}`);
         }
     });
-});
+}
 
-client.on('message', (topic, message) => {
-    console.log(`Received message on topic ${topic}`);
-    try{
-        let isBooked = parser.parseStatus(message) === "Booked";
-        if(isBooked){
-            let email = parser.parseEmail(message);
+// function to handle cancel appointment messages
+function handleCancelAppointment(message) {
+    try {
+        const isBooked = parser.parseStatus(message) === "Booked";
+        if (isBooked) {
+            const email = parser.parseEmail(message);
             notifications.notifyCancelation(email);
+            console.log(`Notification sent for appointment cancellation to ${email}`);
         }
     } catch (error) {
-        console.log(error.stack);
+        console.error('Error handling cancel appointment message:', error.stack);
+    }
+}
+
+// on connect
+client.on('connect', () => {
+    console.log('Connected to broker');
+    subscribeToTopic(client, TOPIC.everything, 'Subscribed to all topics for notification service.');
+});
+
+// on message
+client.on('message', (topic, message) => {
+    console.log(`Received message on topic: ${topic}`);
+    console.log(`Message content: ${message.toString()}`);
+
+    switch (topic) {
+        case TOPIC.cancel_appointment:
+            console.log('Handling appointment cancellation...');
+            handleCancelAppointment(message);
+            break;
+
+        default:
+            console.warn(`Unhandled topic: ${topic}`);
+            break;
     }
 });
 
+// on error
 client.on('error', (error) => {
-    console.log('Connection error:', error);
+    console.error('Connection error:', error);
 });
 
+// on close
 client.on('close', () => {
     console.log('Connection closed');
 });

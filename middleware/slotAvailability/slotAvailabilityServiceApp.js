@@ -1,5 +1,5 @@
 const SlotAvailabilityService = require('./slotAvailabilityService');
-const CREDENTIALS = require('./credentials');
+const CREDENTIALS = require('./resources/credentials');
 
 const slotAvailabilityService = new SlotAvailabilityService(
   CREDENTIALS.publicBroker,     // Public broker (for clients)

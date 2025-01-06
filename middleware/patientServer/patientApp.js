@@ -3,8 +3,8 @@ var morgan = require('morgan');
 var path = require('path');
 var cors = require('cors');
 var history = require('connect-history-api-fallback');
-const TOPIC = require('./topics');
-const CREDENTIAL = require('./credentials')
+const TOPIC = require('./resources/topics');
+const CREDENTIAL = require('./resources/credentials')
 const mqtt = require('mqtt');
 
 const options = {
@@ -42,8 +42,8 @@ app.get('/api', function(req, res) {
  <<<<<<<<<<<<<<<<<<<<<<<<<<< Insert all of the routes - start >>>>>>>>>>>>>>>>>>>>>>>>>>>>
 */
 
-// MQTT
-const slotRoutes = require('./src/controllerPatient/bookSlotApi');
+// MQTT    './src/controllerPatient/bookSlotApi'
+const slotRoutes = require('./controllerPatient/bookSlotApi');
 app.use('/api/patients/slots', slotRoutes);
 
 
