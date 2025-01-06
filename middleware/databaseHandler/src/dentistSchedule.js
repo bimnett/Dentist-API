@@ -1,4 +1,4 @@
-const Timeslot = require('../models/timeslot');
+/*const Timeslot = require('../models/timeslot');
 const TOPIC = require('../resources/databaseMqttTopics');
 const { dentistClient } = require('../databaseHandler');
 
@@ -37,36 +37,8 @@ async function retrieveDentistSchedule(jsonMessage,client){
     }
 };
 
-// Function for publishing
-const recurringPublish = async () => {
 
-    try {
-        // Fetch all schedules from the Timeslot collection
-        const schedules = await Timeslot.find({});
-        console.log('Fetched schedules:', schedules);
-
-        // Ensure schedules are in JSON format
-        // Define the topic for publishing cached schedules
-        const payload = JSON.stringify(schedules);
-        const pubTopic = TOPIC.cached_schedule;
-
-        // Publish the fetched schedules to the MQTT broker
-        dentistClient.publish(pubTopic, payload, { qos: 2 }, (err) => {
-            if (err) {
-                console.error('Publish error:', err);
-            } else {
-                console.log('Cached schedule published successfully at:', Date.now());
-            }
-        });
-    } catch (err) {
-        console.error('Error fetching schedules:', err);
-    }
-
-    // Schedule the next execution of the task
-    setTimeout(recurringPublish, 1000 * 60 * 60 * 6); // Call it every 6th hour for caching in scheduleService.js
-};
 
 module.exports = {
-    retrieveDentistSchedule,
-    recurringPublish
-}
+    retrieveDentistSchedule
+}*/

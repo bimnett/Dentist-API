@@ -2,6 +2,8 @@ services:
   databasehandler:
     build:
       context: ./middleware/databaseHandler
+    environment:
+      - MONGODB_URL=mongodb://mongodb:27017/dentist_app
     depends_on:
       - mongodb
     networks:
