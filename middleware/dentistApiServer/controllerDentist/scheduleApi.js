@@ -1,6 +1,5 @@
 /*
-shall send mqtt to another service --> schedual service 
-rename to schedualApi.js
+shall send mqtt to another service --> schedule service 
 */
 
 
@@ -31,7 +30,7 @@ function connectAndPublish(clientIdPrefix, pubTopic, subTopic, payload, res, suc
             if (err) {
                 console.error(`Publishing error to topic ${pubTopic}:`, err);
                 res.status(500).json({ message: `Publishing error: ${err.message}` });
-                client.end(); // Makesure client connection is closed on error
+                client.end();
             } else {
                 console.log(`Message published successfully to topic ${pubTopic}`);
             }
@@ -97,7 +96,6 @@ router.get('/cached/:dentistId', async function(req,res,next){
     try {
         const payload = {
             // publish the dentist's id in order to filter the schedules in
-            // dentistSchedule.js
             dentist: req.body.dentist ?? null,
         };
         connectAndPublish(
