@@ -15,7 +15,7 @@ const options = {
     reconnectPeriod: 1000
 };
 
-const dbURI = CREDENTIAL.mongodbUrl;
+//const dbURI = CREDENTIAL.mongodbUrl;
 // Create dentist and MQTT client for and connect
 const dentistClient = mqtt.connect(CREDENTIAL.dentistUrl);
 exports.dentistClient = dentistClient;
@@ -35,11 +35,17 @@ const recurringPublish = async () => {
         // Fetch all schedules from the Timeslot collection
         //const schedules = await Timeslot.find({});
 
-        const currentDate = new Date().toISOString().split('T')[0];  // Get the current date in 'YYYY-MM-DD' format
+        const currentDate = new Date();  // Get the current date and time
+        const futureDate = new Date(currentDate.getTime() + 96 * 60 * 60 * 1000); // Add 96 hours (96 hours * 60 minutes * 60 seconds * 1000 milliseconds)
 
+        // Format both dates to 'YYYY-MM-DDTHH:MM:SS' for accurate comparison
+        const currentDateISO = currentDate.toISOString(); 
+        const futureDateISO = futureDate.toISOString();
+
+        // Query to fetch timeslots booked within the next 96 hours
         const schedules = await Timeslot.find({
         status: 'Booked',
-        date: { $gte: currentDate }  // Compare dates, ensuring 'date' field is from today onward
+        date: { $gte: currentDateISO, $lt: futureDateISO }  // Date range from now until 96 hours later
         });
 
         console.log('Fetched schedules:', schedules);
@@ -188,7 +194,7 @@ dentistClient.on('message', async (topic, message) => {
 
 
 
-async function retrieveDentistSchedule(jsonMessage,dentistClient){
+async function retrieveDentistSchedule(jsonMessage, dentistClient){
     try {
         console.log(jsonMessage);
 

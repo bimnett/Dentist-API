@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
-const CREDENTIAL = require('../credentials');
+const CREDENTIAL = require('../resources/credentials');
 const Dentist = require('../models/dentist');
 
 // Connect to MongoDB
-mongoose.connect(CREDENTIAL.mongodb_url, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(CREDENTIAL.mongodbUrlSeeds, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('Connected to MongoDB'))
     .catch((err) => console.error('Error connecting to MongoDB:', err));
 
