@@ -100,6 +100,11 @@ app.get('/api/patients/available-slots', async (req, res) => {
     console.error('Error:', error);
     return res.status(500).json({ message: "Internal server error" });
   }
+
+  // 5 second timeout
+  setTimeout(() => {
+    return res.status(504).json({ error: "Request timed out" });
+  }, 5000);
 });
 
 // Get available dentists with given time, date, and clinic
@@ -136,7 +141,7 @@ app.get('/api/patients/dentists', async (req, res) => {
           client.end();
           return res.status(500).json({ message: response.error });
         }
-        if (!response.data || response.data.length === 0) {
+        if (!response.data) {
           client.end();
           return res.status(404).json({ message: "No dentists available" });
         }
@@ -153,6 +158,11 @@ app.get('/api/patients/dentists', async (req, res) => {
       console.error('Error:', error);
       return res.status(500).json({ message: "Internal server error" });
   }
+
+  // 5 second timeout
+  setTimeout(() => {
+    return res.status(504).json({ error: "Request timed out" });
+  }, 5000);
 });
 
 
@@ -164,7 +174,14 @@ app.post('/api/patients/reserve-slot', async (req, res) => {
       return res.status(400).json({ message: "Missing required fields" });
   }
 
-  try {
+  return new Promise((resolve, reject) => {
+    const timeout = new Promise((resolve, reject) => {
+      setTimeout(() => {
+        reject(new Error("Request timed out"));
+      }, 5000);
+    });
+
+    try {
       options.clientId = "patientServer" + Math.random().toString(36).substring(2, 10);
       const client = mqtt.connect(CREDENTIAL.brokerUrl, options);
 
@@ -185,24 +202,35 @@ app.post('/api/patients/reserve-slot', async (req, res) => {
         const response = JSON.parse(message.toString());
         console.log('Received response:', response);
         
-        // Immediately end the connection and send response
-        client.end();
-        
         if (response.error) {
-            return res.status(500).json({ message: response.error });
+            reject(new Error(response.error)); 
+        } else {
+            resolve(response); 
         }
-        return res.json(response);
-    });
+
+        // Gracefully disconnect after receiving the response
+        client.end(); 
+      });
 
       client.on('error', (error) => {
           console.log('Subscriber connection error:', error);
-          return res.status(500).json({ message: "Unable to connect to the server" });
+          reject(new Error("Unable to connect to the server"));
       });
 
-  } catch (error) {
-      console.error('Error:', error);
-      return res.status(500).json({ message: "Internal server error" });
-  }
+    } catch (error) {
+        reject(new Error("Internal server error"));
+    }
+  })
+  .then(response => {
+      res.json(response); 
+  })
+  .catch(error => {
+      if (error.message === "Request timed out") {
+          res.status(504).json({ error: "Request timed out" });
+      } else {
+          res.status(500).json({ error: error.message });
+      }
+  });
 });
 
 
@@ -253,6 +281,10 @@ app.post('/api/patients/dentists/:dentistId/bookings', (req, res) => {
     } catch(err){
       console.log("Error in booking creation endpoint:", err);
     }
+    // 5 second timeout
+    setTimeout(() => {
+      return res.status(504).json({ error: "Request timed out" });
+    }, 5000);
 });
 
 // Get booking by reference code
@@ -292,6 +324,10 @@ app.get('/api/patients/bookings/:referenceCode', (req, res) => {
     } catch(err){
       console.log("Error in getting booking from reference code:", err);
     }
+    // 5 second timeout
+    setTimeout(() => {
+      return res.status(504).json({ error: "Request timed out" });
+    }, 5000);
 });
 
 // Cancel booking by reference code
@@ -331,6 +367,10 @@ app.delete('/api/patients/bookings/:referenceCode', (req, res) => {
   } catch(err){
     console.log("Error deleting:", err);
   }
+  // 5 second timeout
+  setTimeout(() => {
+    return res.status(504).json({ error: "Request timed out" });
+  }, 5000);
 });
 
 

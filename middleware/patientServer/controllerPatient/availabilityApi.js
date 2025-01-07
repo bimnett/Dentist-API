@@ -51,6 +51,10 @@ router.get('/bookSlots/clinics', async function(req,res,next){
     } catch (err) {
         next(err);
     }
+    // 5 second timeout
+    setTimeout(() => {
+      return res.status(504).json({ error: "Request timed out" });
+    }, 5000);
 });
 
 // get all dentists in a specific clinic by clinicId
@@ -60,6 +64,10 @@ router.get('/bookSlots/clinics/:clinicId/dentists', async function(req, res, nex
     } catch (err) {
         next(err);
     }
+    // 5 second timeout
+    setTimeout(() => {
+      return res.status(504).json({ error: "Request timed out" });
+    }, 5000);
 });
 
 // get a dentist time-slots 
@@ -69,6 +77,10 @@ router.get('/bookSlots/clinics/:clinicId/:dentistId/timeschedual', async functio
     } catch (err) {
         next(err);
     }
+    // 5 second timeout
+    setTimeout(() => {
+      return res.status(504).json({ error: "Request timed out" });
+    }, 5000);
 });
 
 // get the info from a newly posted slot 
@@ -78,4 +90,8 @@ router.get('/bookSlots', async function(req,res,next){
     } catch (err) {
         next(err);
     }
+    // 5 second timeout
+    setTimeout(() => {
+      return res.status(504).json({ error: "Request timed out" });
+    }, 5000);
 });
