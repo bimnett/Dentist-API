@@ -11,44 +11,11 @@ const options = {
     reconnectPeriod: 1000,  // Reconnect every 1 second if disconnected
 }
 
-// Helper function to publish to MQTT broker
-function publishToBroker(clientIdPrefix, topic, payload, res, successMessage) {
-    const clientId = clientIdPrefix + Math.random().toString(36).substring(2, 10);
-    const client = mqtt.connect(CREDENTIAL.brokerUrl, { ...options, clientId });
-
-    client.on('connect', () => {
-        console.log(`Publisher connected to broker with clientId: ${clientId}`);
-        const jsonPayload = JSON.stringify(payload);
-
-        client.publish(topic, jsonPayload, { qos: 2 }, (err) => {
-            if (err) {
-                console.error(`Publishing error on topic ${topic}:`, err);
-                res.status(500).json({ message: `Publishing error: ${err.message}` });
-            } else {
-                console.log(`Message published successfully to topic ${topic}:`, jsonPayload);
-                res.status(200).json({ message: successMessage });
-            }
-            client.end();
-        });
-    });
-
-    client.on('error', (error) => {
-        console.error(`MQTT connection error for clientId ${clientId}:`, error);
-        res.status(500).json({ message: 'Failed to connect to MQTT broker' });
-    });
-
-    client.on('close', () => {
-        console.log(`MQTT connection closed for clientId: ${clientId}`);
-    });
-}
 
 // create new avaliable time slot
 router.post('/newSlots', async function(req,res,next){
     try {
         const payload = {
-            // ?? null - set the value to null if the user does not provide any input 
-            // malformed input + error handling will be in the slot managment service
-            // or in the UI itself 
             date: req.body.date ?? null,
             time: req.body.time ?? null,
             status: req.body.status ?? null,
@@ -57,7 +24,34 @@ router.post('/newSlots', async function(req,res,next){
             clinic: req.body.clinic ?? null,
             treatment: req.body.treatment ?? null,
         };
-        publishToBroker('pub_dentistServer', TOPIC.create_new_slot, payload, res, 'New time slot created successfully');
+
+        const clientId = 'pub_dentistServer' + Math.random().toString(36).substring(2, 10);
+        const client = mqtt.connect(CREDENTIAL.brokerUrl, { ...options, clientId });
+
+        client.on('connect', () => {
+            console.log(`Publisher connected to broker with clientId: ${clientId}`);
+            const jsonPayload = JSON.stringify(payload);
+    
+            client.publish(TOPIC.create_new_slot, jsonPayload, { qos: 2 }, (err) => {
+                if (err) {
+                    console.error(`Publishing error on topic ${TOPIC.create_new_slot}:`, err);
+                    res.status(500).json({ message: `Internal server error` });
+                } else {
+                    console.log(`Message published successfully to topic ${TOPIC.create_new_slot}:`, jsonPayload);
+                    return res.status(201).json({ message: "Slot successfully created" });
+                }
+                client.end();
+            });
+        });
+    
+        client.on('error', (error) => {
+            console.error(`MQTT connection error for clientId ${clientId}:`, error);
+            res.status(500).json({ message: 'MQTT error' });
+        });
+    
+        client.on('close', () => {
+            console.log(`MQTT connection closed for clientId: ${clientId}`);
+        });
     } catch (err) {
         next(err);
     }
@@ -67,19 +61,38 @@ router.post('/newSlots', async function(req,res,next){
 router.patch('/updateSlots/:slotId', async function(req,res,next){
     try {
         const payload = {
-            // ?? null - set the value to null if the user does not provide any input 
-            // malformed input + error handling will be in the slot managment service
-            // + in the UI itself 
-
-            // update slot means dentist is still avaliable/will attend if slot is booked
-            // if a patien has booked this slot and it get's chnged the patient 
-            // will still have the slot but be notified 
             _id: req.body.id ?? null,
             date: req.body.date ?? null,
             time: req.body.time ?? null,
             treatment: req.body.treatment ?? null,
         };
-        publishToBroker('pub_dentistServer', TOPIC.update_slot, payload, res, 'Time slot updated successfully');
+        const clientId = 'pub_dentistServer' + Math.random().toString(36).substring(2, 10);
+        const client = mqtt.connect(CREDENTIAL.brokerUrl, { ...options, clientId });
+
+        client.on('connect', () => {
+            console.log(`Publisher connected to broker with clientId: ${clientId}`);
+            const jsonPayload = JSON.stringify(payload);
+    
+            client.publish(TOPIC.update_slot, jsonPayload, { qos: 2 }, (err) => {
+                if (err) {
+                    console.error(`Publishing error on topic ${TOPIC.update_slot}:`, err);
+                    res.status(500).json({ message: `Internal server error` });
+                } else {
+                    console.log(`Message published successfully to topic ${TOPIC.update_slot}:`, jsonPayload);
+                    return res.status(200).json({ message: "Time slot updated successfully" });
+                }
+                client.end();
+            });
+        });
+    
+        client.on('error', (error) => {
+            console.error(`MQTT connection error for clientId ${clientId}:`, error);
+            res.status(500).json({ message: 'MQTT error' });
+        });
+    
+        client.on('close', () => {
+            console.log(`MQTT connection closed for clientId: ${clientId}`);
+        });
     } catch (err) {
         next(err);
     }
@@ -88,12 +101,35 @@ router.patch('/updateSlots/:slotId', async function(req,res,next){
 router.delete('/deleteSlots/:id', async function(req,res,next){
     try {
         const payload = {
-            // ?? null - set the value to null if the user does not provide any input 
-            // malformed input + error handling will be in the slot management service
-            // + in the UI itself
             id: req.params.id ?? null,
         };
-        publishToBroker('pub_dentistServer', TOPIC.delete_slot, payload, res, 'Time slot deleted successfully');
+        const clientId = 'pub_dentistServer' + Math.random().toString(36).substring(2, 10);
+        const client = mqtt.connect(CREDENTIAL.brokerUrl, { ...options, clientId });
+
+        client.on('connect', () => {
+            console.log(`Publisher connected to broker with clientId: ${clientId}`);
+            const jsonPayload = JSON.stringify(payload);
+    
+            client.publish(TOPIC.delete_slot, jsonPayload, { qos: 2 }, (err) => {
+                if (err) {
+                    console.error(`Publishing error on topic ${TOPIC.delete_slot}:`, err);
+                    res.status(500).json({ message: `Internal server error` });
+                } else {
+                    console.log(`Message published successfully to topic ${TOPIC.delete_slot}:`, jsonPayload);
+                    return res.status(200).json({ message: "Time slot deleted successfully" });
+                }
+                client.end();
+            });
+        });
+    
+        client.on('error', (error) => {
+            console.error(`MQTT connection error for clientId ${clientId}:`, error);
+            res.status(500).json({ message: 'MQTT error' });
+        });
+    
+        client.on('close', () => {
+            console.log(`MQTT connection closed for clientId: ${clientId}`);
+        });
     } catch (err) {
         next(err);
     }

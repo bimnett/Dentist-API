@@ -1,20 +1,116 @@
 {
 	"info": {
-		"_postman_id": "7cdc7368-f8ed-4d2f-a1dd-eae82a6710a2",
-		"name": "dentistServer",
+		"_postman_id": "55987f52-fb57-4491-9ea9-7170bb04336d",
+		"name": "DentistApp",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "38505698",
-		"_collection_link": "https://ramenfinder2.postman.co/workspace/dentist_app~f95af140-7fb9-4ed0-a2a1-5923c61a28c3/collection/38505698-7cdc7368-f8ed-4d2f-a1dd-eae82a6710a2?action=share&source=collection_link&creator=38505698"
+		"_exporter_id": "37389635"
 	},
 	"item": [
 		{
-			"name": "create new slot",
+			"name": "Get schedule",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Message is an empty list\", function () {",
+							"    pm.expect(pm.response.json()).to.be.an('array');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{dentistHost}}/api/dentists/schedules/64a69f021234567890abcded",
+					"host": [
+						"{{dentistHost}}"
+					],
+					"path": [
+						"api",
+						"dentists",
+						"schedules",
+						"64a69f021234567890abcded"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete timeslot",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Message equals 'Time slot successfully deleted'\", function () {",
+							"    pm.expect(pm.response.json().message).to.equal(\"Time slot deleted successfully\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{dentistHost}}/api/dentists/slots/deleteSlots/675dd761cb4060f79d4b447c",
+					"host": [
+						"{{dentistHost}}"
+					],
+					"path": [
+						"api",
+						"dentists",
+						"slots",
+						"deleteSlots",
+						"675dd761cb4060f79d4b447c"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create timeslot",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Message is equal to 'Slot successfully created'\", function () {",
+							"    pm.expect(pm.response.json().message).to.eql(\"Slot successfully created\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"date\" : \"2025-11-10\",\r\n    \"time\": \"11:00\",\r\n    \"status\" : \"Available\",\r\n    \"patient\" : null,\r\n    \"dentist\": \"64a69f021234567890abcdef\",\r\n    \"clinic\" : \"64a69f021234567890fedcba\",\r\n    \"treatment\": \"General\"\r\n}",
+					"raw": "{\n    \"date\": \"2025-01-16\",\n    \"time\": \"14:00\",\n    \"dentist\": \"64a69f021234567890abcded\",\n    \"clinic\": \"64a69f021234567890fedcbc\",\n    \"treatment\": \"General\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -22,105 +118,19 @@
 					}
 				},
 				"url": {
-					"raw": "{{host}}/api/slots/newSlots",
+					"raw": "{{dentistHost}}/api/dentists/slots/newSlots",
 					"host": [
-						"{{host}}"
+						"{{dentistHost}}"
 					],
 					"path": [
 						"api",
+						"dentists",
 						"slots",
 						"newSlots"
 					]
 				}
 			},
 			"response": []
-		},
-		{
-			"name": "update slot",
-			"request": {
-				"method": "PATCH",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"id\": \"64a69f021234567890f11111\",\r\n    \"date\" : \"2025-01-10\",\r\n    \"time\": \"16:00\",\r\n    \"treatment\": \"General\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{host}}/api/slots/updateSlots/64a69f021234567890f11111",
-					"host": [
-						"{{host}}"
-					],
-					"path": [
-						"api",
-						"slots",
-						"updateSlots",
-						"64a69f021234567890f11111"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "update slot Copy",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"id\": \"64a69f021234567890f22222\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{host}}/api/slots/deleteSlots/64a69f021234567890f22222",
-					"host": [
-						"{{host}}"
-					],
-					"path": [
-						"api",
-						"slots",
-						"deleteSlots",
-						"64a69f021234567890f22222"
-					]
-				}
-			},
-			"response": []
-		}
-	],
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"type": "text/javascript",
-				"packages": {},
-				"exec": [
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"type": "text/javascript",
-				"packages": {},
-				"exec": [
-					""
-				]
-			}
-		}
-	],
-	"variable": [
-		{
-			"key": "host",
-			"value": "http://localhost:3000",
-			"type": "string"
 		}
 	]
 }
