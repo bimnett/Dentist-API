@@ -101,7 +101,8 @@ dentistClient.on('message', async (topic, message) => {
             case TOPIC.dentist_id:
                 console.log('retrive dentist schedule and send to dentist-ui');
                 //const schedule = dentistSchedule.retrieveDentistSchedule(jsonMessage,dentistClient);
-                console.log(schedule);
+                //console.log(schedule);
+                dentistClient.publish(TOPIC.dentist_schedule, JSON.stringify([]));
                 break;
 
             // Queries a specific timeslot ???
