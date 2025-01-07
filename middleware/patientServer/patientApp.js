@@ -100,11 +100,6 @@ app.get('/api/patients/available-slots', async (req, res) => {
     console.error('Error:', error);
     return res.status(500).json({ message: "Internal server error" });
   }
-
-  // 5 second timeout
-  setTimeout(() => {
-    return res.status(504).json({ error: "Request timed out" });
-  }, 5000);
 });
 
 // Get available dentists with given time, date, and clinic
@@ -158,11 +153,6 @@ app.get('/api/patients/dentists', async (req, res) => {
       console.error('Error:', error);
       return res.status(500).json({ message: "Internal server error" });
   }
-
-  // 5 second timeout
-  setTimeout(() => {
-    return res.status(504).json({ error: "Request timed out" });
-  }, 5000);
 });
 
 
@@ -262,10 +252,6 @@ app.post('/api/patients/dentists/:dentistId/bookings', (req, res) => {
     } catch(err){
       console.log("Error in booking creation endpoint:", err);
     }
-    // 5 second timeout
-    setTimeout(() => {
-      return res.status(504).json({ error: "Request timed out" });
-    }, 5000);
 });
 
 // Get booking by reference code
@@ -344,10 +330,6 @@ app.delete('/api/patients/bookings/:referenceCode', (req, res) => {
   } catch(err){
     console.log("Error deleting:", err);
   }
-  // 5 second timeout
-  setTimeout(() => {
-    return res.status(504).json({ error: "Request timed out" });
-  }, 5000);
 });
 
 
