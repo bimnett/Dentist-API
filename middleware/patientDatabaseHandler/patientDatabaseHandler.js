@@ -6,14 +6,14 @@ const Timeslot = require('./models/timeslot');
 const Clinic = require('./models/clinic');
 const Dentist = require('./models/dentist');
 
-// MQTT connection options
-const options = {
-    clientId: 'patientDatabase_' + Math.random().toString(36).substring(2, 10),
-    connectTimeout: 30000,
-    reconnectPeriod: 1000
-};
+// Connect to MongoDB using Mongoose
+mongoose.connect(CREDENTIAL.mongodbUrl, { 
+    serverSelectionTimeoutMS: 5000,  // Set timeout for DB connection attempts
+})
+    .then(() => console.log('Connected to MongoDB'))
+    .catch((err) => console.error('Error connecting to MongoDB:', err));
 
-const dbURI = CREDENTIAL.mongodbUrl;
+    
 // Create dentist and patient MQTT clients for and connect
 const patientClient = mqtt.connect(CREDENTIAL.patientUrl);
 
