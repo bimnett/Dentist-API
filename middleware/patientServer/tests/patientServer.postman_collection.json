@@ -1,17 +1,227 @@
 {
 	"info": {
-		"_postman_id": "cd4201fd-a2cf-4c60-bd19-340897c9b3c4",
-		"name": "patientServer",
+		"_postman_id": "da6d8002-48b2-4014-a692-8dda3fa62526",
+		"name": "PatientServer",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "38505698",
-		"_collection_link": "https://ramenfinder2.postman.co/workspace/dentist_app~f95af140-7fb9-4ed0-a2a1-5923c61a28c3/collection/38505698-cd4201fd-a2cf-4c60-bd19-340897c9b3c4?action=share&source=collection_link&creator=38505698"
+		"_exporter_id": "37389635"
 	},
-	"item": [],
-	"variable": [
+	"item": [
 		{
-			"key": "host",
-			"value": "http://localhost:3000",
-			"type": "default"
+			"name": "Get available timeslots by date & clinic",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response has slots array\", function () {",
+							"    const responseData = pm.response.json();",
+							"    pm.expect(responseData).to.have.property('slots');",
+							"    pm.expect(responseData.slots).to.be.an('array');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{patientHost}}/api/patients/available-slots?date=2025-01-15&clinic=Folktandvården Sannegården",
+					"host": [
+						"{{patientHost}}"
+					],
+					"path": [
+						"api",
+						"patients",
+						"available-slots"
+					],
+					"query": [
+						{
+							"key": "date",
+							"value": "2025-01-15"
+						},
+						{
+							"key": "clinic",
+							"value": "Folktandvården Sannegården"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get available dentists",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response structure is correct\", function () {",
+							"    const responseData = pm.response.json();",
+							"    pm.expect(responseData).to.have.property('dentists');",
+							"    pm.expect(responseData.dentists).to.be.an('array');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{patientHost}}/api/patients/dentists/?date=2025-01-15&time=14:00&clinic=Folktandvården Sannegården",
+					"host": [
+						"{{patientHost}}"
+					],
+					"path": [
+						"api",
+						"patients",
+						"dentists",
+						""
+					],
+					"query": [
+						{
+							"key": "date",
+							"value": "2025-01-15"
+						},
+						{
+							"key": "time",
+							"value": "14:00"
+						},
+						{
+							"key": "clinic",
+							"value": "Folktandvården Sannegården"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Reserve timeslot",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"Response is in JSON\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Response message equals 'hi'\", function () {",
+							"    pm.expect(pm.response.json().message).to.equal(\"Timeslot is unavailable.\");",
+							"});",
+							"",
+							"pm.test(\"Reservation was successful\", function () {",
+							"    const responseData = pm.response.json();",
+							"    pm.expect(responseData).to.not.have.property('error');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"dentistId\": \"64a69f021234567890abcded\",\n    \"date\": \"2025-01-15\",\n    \"time\": \"14:00\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{patientHost}}/api/patients/reserve-slot",
+					"host": [
+						"{{patientHost}}"
+					],
+					"path": [
+						"api",
+						"patients",
+						"reserve-slot"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Book timeslot",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is valid\", function () {",
+							"    const status = pm.response.status;",
+							"    pm.expect(pm.response.code).to.be.oneOf([201,202,500]);",
+							"});",
+							"",
+							"pm.test(\"Response is valid JSON\", function (){",
+							"    pm.expect(pm.response.json()).to.have.property(\"message\");",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"jd@gmail.com\",\n    \"phone\": \"0734879833\",\n    \"treatment\": \"General\",\n    \"date\": \"2025-01-16\",\n    \"time\": \"14:00\",\n    \"clinic\": \"Folktandvården Sannegården\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{patientHost}}/api/patients/dentists/64a69f021234567890abcded/bookings",
+					"host": [
+						"{{patientHost}}"
+					],
+					"path": [
+						"api",
+						"patients",
+						"dentists",
+						"64a69f021234567890abcded",
+						"bookings"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }

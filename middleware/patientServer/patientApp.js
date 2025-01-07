@@ -174,63 +174,44 @@ app.post('/api/patients/reserve-slot', async (req, res) => {
       return res.status(400).json({ message: "Missing required fields" });
   }
 
-  return new Promise((resolve, reject) => {
-    const timeout = new Promise((resolve, reject) => {
-      setTimeout(() => {
-        reject(new Error("Request timed out"));
-      }, 5000);
+  try {
+    options.clientId = "patientServer" + Math.random().toString(36).substring(2, 10);
+    const client = mqtt.connect(CREDENTIAL.brokerUrl, options);
+
+    client.on('connect', () => {
+        console.log('Subscriber connected to broker');
+        client.subscribe(TOPIC.database_response_reserve, { qos: 2 });
+
+        // Publish reservation request
+        client.publish(TOPIC.database_request_reserve, JSON.stringify({
+            dentistId,
+            date,
+            time,
+        }));
     });
 
-    try {
-      options.clientId = "patientServer" + Math.random().toString(36).substring(2, 10);
-      const client = mqtt.connect(CREDENTIAL.brokerUrl, options);
-
-      client.on('connect', () => {
-          console.log('Subscriber connected to broker');
-          client.subscribe(TOPIC.database_response_reserve, { qos: 2 });
-
-          // Publish reservation request
-          client.publish(TOPIC.database_request_reserve, JSON.stringify({
-              dentistId,
-              date,
-              time,
-          }));
-      });
-
-      client.on('message', (topic, message) => {
-        console.log(`Received reservation data on topic: ${topic}`);
-        const response = JSON.parse(message.toString());
-        console.log('Received response:', response);
-        
-        if (response.error) {
-            reject(new Error(response.error)); 
-        } else {
-            resolve(response); 
-        }
-
-        // Gracefully disconnect after receiving the response
-        client.end(); 
-      });
-
-      client.on('error', (error) => {
-          console.log('Subscriber connection error:', error);
-          reject(new Error("Unable to connect to the server"));
-      });
-
-    } catch (error) {
-        reject(new Error("Internal server error"));
-    }
-  })
-  .then(response => {
-      res.json(response); 
-  })
-  .catch(error => {
-      if (error.message === "Request timed out") {
-          res.status(504).json({ error: "Request timed out" });
-      } else {
-          res.status(500).json({ error: error.message });
+    client.on('message', (topic, message) => {
+      console.log(`Received reservation data on topic: ${topic}`);
+      const response = JSON.parse(message.toString());
+      console.log('Received response:', response);
+      
+      if (response.error) {
+          if(response.error == 'Timeslot is not available'){
+            return res.status(404).json({ message: "Timeslot is unavailable." });
+          }
+          return res.status(500).json({ error: "Internal server error" });
       }
-  });
+      return res.status(201).json({ message: "Slot reserved successfully" });
+    });
+
+    client.on('error', (error) => {
+        console.log('Subscriber connection error:', error);
+    });
+
+  } catch (error) {
+      console.log("Error:", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
 });
 
 
@@ -324,10 +305,6 @@ app.get('/api/patients/bookings/:referenceCode', (req, res) => {
     } catch(err){
       console.log("Error in getting booking from reference code:", err);
     }
-    // 5 second timeout
-    setTimeout(() => {
-      return res.status(504).json({ error: "Request timed out" });
-    }, 5000);
 });
 
 // Cancel booking by reference code
