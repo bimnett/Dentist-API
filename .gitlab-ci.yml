@@ -60,6 +60,7 @@ test:
       alias: mongo
   variables:
     MONGODB_URL: "mongodb://mongo:27017/serverTestDB"
+    dentisthost: "localhost:80"
   script:
 
     - cd middleware
@@ -71,14 +72,10 @@ test:
     - echo "testMongodbUrl :\"$MONGODB_URL\"," >> credentials.js
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
+    - cd ..
     - npm install
-    - npm install npm-run-all --save-dev
-    - npm install --include=dev
-    - npm install cross-env --save-dev
-    - npm install mongoose
     - npm run ci-test
 
-    - cd ..
     - cd ..
     - cd databaseHandler
     - cd resources
@@ -104,6 +101,7 @@ test:
     - cd ..
     - cd ..
     - cd slotService
+    - cd resources
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "broker_url :\"$BROKER_URL\"," >> credentials.js

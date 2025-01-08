@@ -239,9 +239,6 @@ app.post('/api/patients/dentists/:dentistId/bookings', (req, res) => {
         const response = JSON.parse(message.toString());
         console.log('Received response:', response);
         
-        // Immediately end the connection and send response
-        client.end();
-        
         if (response.error) {
             return res.status(500).json({ message: response.error });
         }
@@ -251,6 +248,7 @@ app.post('/api/patients/dentists/:dentistId/bookings', (req, res) => {
 
     } catch(err){
       console.log("Error in booking creation endpoint:", err);
+      return res.status(500).json({ error: "Internal server error" });
     }
 });
 

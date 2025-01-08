@@ -8,9 +8,9 @@
     "dev": "nodemon ./patientApp.js",
     "test": "cross-env-shell MONGODB_URI=mongodb://localhost:27017/serverTestDB \"npm run newman-server\"",
     "ci-test": "npm run newman-server",
-    "newman-server": "cross-env-shell PORT=3003 \"npm run dropdb && run-p --race start newman-wait\"",
-    "newman-wait": "wait-on http://localhost:3003/api && npm run newman",
-    "newman": "newman run ./tests/patientServer.postman_collection.json --env-var host=http://localhost:3003",
+    "newman-server": "cross-env-shell PORT=3001 \"npm run dropdb && run-p --race start newman-wait\"",
+    "newman-wait": "wait-on http://localhost:3001/api && npm run newman",
+    "newman": "newman run ./tests/patientServer.postman_collection.json --env-var patientHost=localhost",
     "dropdb": "node ./tests/dropdb.js",
     "servePatient": "node patientApp.js"
   },
