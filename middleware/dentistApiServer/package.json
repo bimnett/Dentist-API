@@ -11,9 +11,9 @@
     "dev": "nodemon ./dentistApp.js",
     "test": "cross-env-shell MONGODB_URI=mongodb://localhost:27017/serverTestDB \"npm run newman-server\"",
     "ci-test": "npm run newman-server",
-    "newman-server": "cross-env-shell PORT=3002 \"npm run dropdb && run-p --race start newman-wait\"",
-    "newman-wait": "wait-on http://localhost:3001/api && npm run newman",
-    "newman": "newman run ./tests/dentistServer.postman_collection.json --env-var dentistHost=localhost:3001",
+    "newman-server": "cross-env-shell PORT=3000 \"npm run dropdb && run-p --race start newman-wait\"",
+    "newman-wait": "wait-on http://localhost:3000/api && npm run newman",
+    "newman": "newman run ./tests/dentistServer.postman_collection.json --env-var dentistHost=localhost:3000",
     "dropdb": "node ./tests/dropdb.js"
   },
   "keywords": [],
