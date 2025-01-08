@@ -60,7 +60,6 @@ test:
       alias: mongo
   variables:
     MONGODB_URL: "mongodb://mongo:27017/serverTestDB"
-    dentisthost: "localhost:80"
   script:
 
     - cd middleware
