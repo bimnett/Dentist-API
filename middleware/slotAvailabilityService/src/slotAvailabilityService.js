@@ -1,5 +1,5 @@
 const mqtt = require('mqtt');
-const TOPICS = require('./resources/mqttTopics');
+const TOPICS = require('../resources/mqttTopics');
 
 class SlotAvailabilityService {
     constructor(internalBrokerUrl, publicBrokerUrl) {

@@ -4,6 +4,6 @@ WORKDIR /usr/src/app
 
 COPY . .
 
-RUN npm install  && npm list
+RUN npm install && npm list
 
 CMD [ "node", "scheduleService.js" ]

@@ -2,7 +2,7 @@ const mqtt = require('mqtt');
 const TOPICS = require('./resources/mqttTopics');
 
 // Create class to connect to hold 2 mqtt clients
-class SlotAvailabilityService {
+class SlotAvailability {
     constructor(publicBrokerUrl, internalBrokerUrl){
         this.publicClient = null;
         this.internalClient = null;
@@ -151,4 +151,4 @@ class SlotAvailabilityService {
     }
 }
 
-module.exports = SlotAvailabilityService;
+module.exports = SlotAvailability;

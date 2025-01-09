@@ -6,4 +6,4 @@ COPY . .
 
 RUN npm install && npm list
 
-CMD [ "node", "slotAvailabilityServiceApp.js" ]
+CMD [ "node", "patientDatabaseHandler.js" ]
