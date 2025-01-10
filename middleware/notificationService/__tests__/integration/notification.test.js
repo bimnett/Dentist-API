@@ -21,6 +21,8 @@ jest.mock('../../src/parser', () => ({
 
 
 describe('Notification Service Integration Tests', () => {
+    // testClient will be publishing mock data
+    // mainClient will subscribe and listen to mock data
     let mainClient;
     let testClient;
 
