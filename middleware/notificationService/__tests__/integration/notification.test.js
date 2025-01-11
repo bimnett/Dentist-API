@@ -49,7 +49,7 @@ describe('Notification Service Integration Tests', () => {
                     done(err);
                     return;
                 }
-                console.log('Main client subscribed');
+                console.log('Subscribed to listen for notification cancellations');
                 checkBothConnected();
             });
         });
