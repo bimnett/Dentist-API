@@ -6,6 +6,14 @@ services:
       - mongodb
     networks:
       - backend
+  
+  patientdatabasehandler:
+    build:
+      context: ./middleware/patientDatabaseHandler
+    depends_on:
+      - mongodb
+    networks:
+      - backend
 
   mongodb:
     image: mongo:6
@@ -23,9 +31,9 @@ services:
       - "1883:1883"
       - "9001:9001"
     volumes:
-      - ./mosquitto/public/config:/mosquitto/config
-      - ./mosquitto/public/data:/mosquitto/data
-      - ./mosquitto/public/log:/mosquitto/log
+      - ./middleware/mosquitto/public/config:/mosquitto/config
+      - ./middleware/mosquitto/public/data:/mosquitto/data
+      - ./middleware/mosquitto/public/log:/mosquitto/log
     networks:
       - backend
 
@@ -57,6 +65,7 @@ services:
        ./middleware/slotAvailability
     depends_on:
       - mosquitto
+      - mosquittopatient
     restart:
       always
     networks:
@@ -80,6 +89,8 @@ services:
     networks:
       - backend
     restart: always
+    depends_on:
+      - mosquittodentist
 
   scheduleservice:
     build:
@@ -87,15 +98,17 @@ services:
         ./middleware/scheduleservice
     networks:
       - backend
+    depends_on:
+      - mosquittodentist
 
   mosquittopatient:
     image: eclipse-mosquitto:latest
     ports:
       - "1884:1884"
     volumes:
-      - ./mosquitto/patient/config:/mosquitto/config
-      - ./mosquitto/patient/data:/mosquitto/data
-      - ./mosquitto/patient/log:/mosquitto/log
+      - ./middleware/mosquitto/patient/config:/mosquitto/config
+      - ./middleware/mosquitto/patient/data:/mosquitto/data
+      - ./middleware/mosquitto/patient/log:/mosquitto/log
     networks:
       - backend
 
@@ -104,9 +117,9 @@ services:
     ports:
       - "1885:1885"
     volumes:
-      - ./mosquitto/dentist/config:/mosquitto/config
-      - ./mosquitto/dentist/data:/mosquitto/data
-      - ./mosquitto/dentist/log:/mosquitto/log
+      - ./middleware/mosquitto/dentist/config:/mosquitto/config
+      - ./middleware/mosquitto/dentist/data:/mosquitto/data
+      - ./middleware/mosquitto/dentist/log:/mosquitto/log
     networks:
       - backend
 
@@ -116,6 +129,8 @@ services:
         ./middleware/notificationService
     networks:
       - backend
+    depends_on:
+      - mosquittopatient
 
 volumes:
   mongodb_data:

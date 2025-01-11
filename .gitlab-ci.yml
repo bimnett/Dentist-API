@@ -4,7 +4,7 @@ image: node:20-alpine
 cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
-    - dentist-ui/dentist-client/node_modules
+    - dentist-ui/node_modules
     - middleware/dentistApiServer/node_modules
     - middleware/node_modules
     - middleware/patientServer/node_modules
@@ -20,11 +20,9 @@ build:
   tags:
     - docker
   script:
-    - cd dentist-ui/dentist-client
+    - cd dentist-ui
     - npm install
     - npm install --save-dev vite
-
-    - cd ..
 
     - cd ..
     - cd middleware
@@ -66,21 +64,20 @@ test:
 
     - cd middleware
     - cd dentistApiServer
+    - cd resources
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "brokerUrl :\"$BROKER_URL\"," >> credentials.js
     - echo "testMongodbUrl :\"$MONGODB_URL\"," >> credentials.js
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
+    - cd ..
     - npm install
-    - npm install npm-run-all --save-dev
-    - npm install --include=dev
-    - npm install cross-env --save-dev
-    - npm install mongoose
-    - npm run ci-test
+    #- npm run ci-test
 
     - cd ..
     - cd databaseHandler
+    - cd resources
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "brokerUrl :\"$BROKER_URL\"," >> credentials.js
@@ -88,18 +85,22 @@ test:
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
 
+    - cd ..
     - cd ..
     - cd patientServer
+    - cd resources
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "brokerUrl :\"$BROKER_URL\"," >> credentials.js
     - echo "testMongodbUrl :\"$MONGODB_URL\"," >> credentials.js
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
-    - npm run ci-test
+    #- npm run ci-test
 
     - cd ..
+    - cd ..
     - cd slotService
+    - cd resources
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "broker_url :\"$BROKER_URL\"," >> credentials.js

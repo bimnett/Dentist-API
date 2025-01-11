@@ -1,5 +1,5 @@
 const validation = require('./validation');
-const TOPIC = require('../topics');
+const TOPIC = require('../resources/topics');
 
 // dentist creats new avaliable time slot
 async function create_new_slot(message,client){

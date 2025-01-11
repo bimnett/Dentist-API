@@ -1,8 +1,8 @@
 var express = require('express');
 var router= express.Router();
 const mqtt = require('mqtt');
-const CREDENTIAL = require('../../credentials');
-const TOPIC = require('../../topics');
+const CREDENTIAL = require('../resources/credentials');
+const TOPIC = require('../resources/topics');
 
 
 const options = {
@@ -49,6 +49,10 @@ router.get('/bookSlots/:appointmentId', async function(req,res,next){
     } catch(e) {
         return next(e);
     }
+    // 5 second timeout
+    setTimeout(() => {
+      return res.status(504).json({ error: "Request timed out" });
+    }, 5000);
 });
 
 module.exports = router;

@@ -1,4 +1,4 @@
-const CREDENTIALS = require('../credentials');
+const CREDENTIALS = require('../resources/credentials');
 const nodemailer = require('nodemailer');
 
 const EMAIL = CREDENTIALS.email;
@@ -27,8 +27,6 @@ async function notifyCancelation(recipientEmail) {
             console.log('Email sent:' + info.response);
         }
     })
-
-
 }
 
 

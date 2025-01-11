@@ -1,7 +1,7 @@
 // imports
 const mqtt = require('mqtt');
-const TOPIC = require('./topics');
-const CREDENTIAL = require('./credentials');
+const TOPIC = require('./resources/topics');
+const CREDENTIAL = require('./resources/credentials');
 
 // MQTT connection options
 const options = {
@@ -15,36 +15,45 @@ let scheduleCache = {
     timestamp: null
 };
 
+// Current dentist ID
 var currentDentist = "";
+
 // Create MQTT client and connect
 const client = mqtt.connect(CREDENTIAL.brokerUrl, options);
 
+// helper function to subscribe to topics
+function subscribeToTopic(topic, logMessage) {
+    client.subscribe(topic, { qos: 2 }, (err) => {
+        if (err) {
+            console.error(`Subscription error for topic ${topic}:`, err);
+        } else {
+            console.log(`${logMessage} Subscribed to topic: ${topic}`);
+        }
+    });
+}
 
-// client.on connect
+// helper function to publish to topics
+function publishToBroker(topic, payload, logMessage) {
+    client.publish(topic, payload, { qos: 2 }, (err) => {
+        if (err) {
+            console.error(`Publish error for topic ${topic}:`, err);
+        } else {
+            const timestamp = Date.now();
+            console.log(`${logMessage} Published payload to topic ${topic}: ${payload}`);
+            console.log(`Cached schedule published successfully: ${timestamp}`);
+        }
+    });
+}
+
+// client on connect
 client.on('connect', () => {
-
-    // endpoint topic
-    var topic_ep = TOPIC.cached_dentist_id;
-    // database topic
-    var topic_db = TOPIC.cached_schedule;
-    client.subscribe(topic_ep, { qos: 2 }, (err) => {
-        if (err) {
-            console.error('Subscription error:', err);
-        } else {
-            console.log(`Subscribed to topic: ${topic_ep}`);
-        }
-    });
-    client.subscribe(topic_db, { qos: 2 }, (err) => {
-        if (err) {
-            console.error('Subscription error:', err);
-        } else {
-            console.log(`Subscribed to topic: ${topic_db}`);
-        }
-    });
-
+    console.log('DatabaseHandler connected to MQTT broker.');
+    // subscribe to schedule related topics
+    subscribeToTopic(TOPIC.cached_dentist_id, 'Fetching cached dentist ID.');
+    subscribeToTopic(TOPIC.cached_schedule, 'Fetching cached schedule.');
 });
 
-// client.on message
+// client on message
 client.on('message', (topic, message) => {
 
     // To ensure 96 hours retrival of timeslots for dentists
@@ -76,16 +85,8 @@ client.on('message', (topic, message) => {
         // prepare the cachedSchedule to send via broker 
         const string_payload = JSON.stringify(filteredSchedule);
 
-        // send chachedSchedule
-        const pubTopic = TOPIC.cached_dentist_schedule;
-        client.publish(pubTopic, string_payload, { qos: 2 }, (err) => {
-            if (err) {
-                console.error('Publish error:', err);
-            } else {
-                console.log(string_payload);
-                console.log('Cached schedule published successfully: ' + Date.now());
-            }
-        });
+        // send cached schedule
+        publishToBroker(TOPIC.cached_dentist_schedule, payload, 'Cached schedule sent successfully.');
 
     // For cashing the timeslot collection 
     } else if (topic === TOPIC.cached_schedule) {
