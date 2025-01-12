@@ -118,9 +118,11 @@ test:
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
 
+    - cd ../.. # Change back to middleware
+
     # NotificationService tests
     - echo "Running tests for notificationService..."
-    - cd middleware/notificationService
+    - cd notificationService
     - npm install
     - npm run test:unit
     - npm run test:integration
