@@ -92,7 +92,7 @@ test:
     - echo "credentials.js created successfully."
 
     - cd ..
-    - cd ../slotService
+    - cd ../slotService/resources
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "broker_url :\"$BROKER_URL\"," >> credentials.js
@@ -101,7 +101,7 @@ test:
     - echo "credentials.js created successfully."
 
     - cd ..
-    - cd ../slotAvailability
+    - cd ../slotAvailability/resources
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "broker_url :\"$BROKER_URL\"," >> credentials.js
@@ -110,7 +110,7 @@ test:
     - echo "credentials.js created successfully."
 
     - cd ..
-    - cd ../notificationService
+    - cd ../notificationService/resources
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "broker_url :\"$BROKER_URL\"," >> credentials.js
