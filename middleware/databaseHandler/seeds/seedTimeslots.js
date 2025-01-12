@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
-const CREDENTIAL = require('../credentials');
+const CREDENTIAL = require('../resources/credentials');
 const Timeslot = require('../models/timeslot');
 
 // Connect to MongoDB
-mongoose.connect(CREDENTIAL.mongodb_url, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(CREDENTIAL.mongodbUrlSeeds, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('Connected to MongoDB'))
     .catch((err) => console.error('Error connecting to MongoDB:', err));
 
@@ -91,7 +91,7 @@ async function seedTimeslots() {
         },
         //notification testing booking
         {
-            _id: ObjectId('675dd761cb4060f79d4b447c'),
+            _id: new mongoose.Types.ObjectId("675dd761cb4060f79d4b447c"),
             status: "Booked",
             date: "2024-12-03",
             time: "5:00 PM",

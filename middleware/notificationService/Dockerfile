@@ -4,6 +4,6 @@ WORKDIR /usr/src/app
 
 COPY . .
 
-RUN npm install
+RUN npm install  && npm list
 
 CMD [ "node", "notificationService.js" ]

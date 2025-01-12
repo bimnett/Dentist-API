@@ -2,16 +2,21 @@ services:
   databasehandler:
     build:
       context: ./middleware/databaseHandler
+    environment:
+      - MONGODB_URL=mongodb://mongodb:27017/dentist_app
     depends_on:
       - mongodb
     networks:
       - backend
-  
-  patientdatabasehandler:
+
+  dentistapiserver:
     build:
-      context: ./middleware/patientDatabaseHandler
-    depends_on:
-      - mongodb
+      context: 
+        ./middleware/dentistapiserver
+    deploy:
+      replicas: 3
+    restart:
+      always
     networks:
       - backend
 
@@ -36,6 +41,28 @@ services:
       - ./middleware/mosquitto/public/log:/mosquitto/log
     networks:
       - backend
+  
+  mosquittodentist:
+    image: eclipse-mosquitto:latest
+    ports:
+      - "1885:1885"
+    volumes:
+      - ./middleware/mosquitto/dentist/config:/mosquitto/config
+      - ./middleware/mosquitto/dentist/data:/mosquitto/data
+      - ./middleware/mosquitto/dentist/log:/mosquitto/log
+    networks:
+      - backend
+
+  mosquittopatient:
+    image: eclipse-mosquitto:latest
+    ports:
+      - "1884:1884"
+    volumes:
+      - ./middleware/mosquitto/patient/config:/mosquitto/config
+      - ./middleware/mosquitto/patient/data:/mosquitto/data
+      - ./middleware/mosquitto/patient/log:/mosquitto/log
+    networks:
+      - backend
 
   nginx:
     image: nginx:latest
@@ -45,6 +72,26 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - patientserver
+    networks:
+      - backend
+
+  notificationservice:
+    build:
+      context:
+        ./middleware/notificationService
+    networks:
+      - backend
+    depends_on:
+      - mosquittopatient
+
+  patientdatabasehandler:
+    build:
+      context:
+        ./middleware/patientDatabaseHandler
+    environment: 
+      - MONGODB_URL=mongodb://mongodb:27017/dentist_app
+    depends_on: 
+      - mongodb
     networks:
       - backend
 
@@ -59,7 +106,16 @@ services:
     networks:
       - backend
 
-  slotavavailabilityservice:
+  scheduleservice:
+    build:
+      context:
+        ./middleware/scheduleservice
+    networks:
+      - backend
+    depends_on:
+      - mosquittodentist
+
+  slotavailability:
     build:
       context:
        ./middleware/slotAvailability
@@ -71,66 +127,37 @@ services:
     networks:
       - backend
 
-  dentistapiserver:
+  slotavailabilityservice:
     build:
-      context: 
-        ./middleware/dentistapiserver
-    deploy:
-      replicas: 3
+      context:
+       ./middleware/slotAvailabilityService
+    depends_on:
+      - mosquitto
     restart:
       always
     networks:
       - backend
 
+  slotbookingservice:
+    build:
+      context:
+       ./middleware/slotBookingService
+    depends_on:
+      - mosquitto
+    restart:
+      always
+    networks:
+      - backend  
+
   slotservice:
     build:
       context:
         ./middleware/slotservice
+    depends_on:
+      - mosquittodentist
     networks:
       - backend
     restart: always
-    depends_on:
-      - mosquittodentist
-
-  scheduleservice:
-    build:
-      context:
-        ./middleware/scheduleservice
-    networks:
-      - backend
-    depends_on:
-      - mosquittodentist
-
-  mosquittopatient:
-    image: eclipse-mosquitto:latest
-    ports:
-      - "1884:1884"
-    volumes:
-      - ./middleware/mosquitto/patient/config:/mosquitto/config
-      - ./middleware/mosquitto/patient/data:/mosquitto/data
-      - ./middleware/mosquitto/patient/log:/mosquitto/log
-    networks:
-      - backend
-
-  mosquittodentist:
-    image: eclipse-mosquitto:latest
-    ports:
-      - "1885:1885"
-    volumes:
-      - ./middleware/mosquitto/dentist/config:/mosquitto/config
-      - ./middleware/mosquitto/dentist/data:/mosquitto/data
-      - ./middleware/mosquitto/dentist/log:/mosquitto/log
-    networks:
-      - backend
-
-  notificationservice:
-    build:
-      context:
-        ./middleware/notificationService
-    networks:
-      - backend
-    depends_on:
-      - mosquittopatient
 
 volumes:
   mongodb_data:

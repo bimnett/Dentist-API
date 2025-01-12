@@ -5,6 +5,20 @@ const TOPIC = require('./resources/databaseMqttTopics');
 const Timeslot = require('./models/timeslot');
 const slotManagement = require('./src/slotManagement');
 //const dentistSchedule = require('./src/dentistSchedule');
+//const date = reqiure('date');
+
+
+// MQTT connection options
+const options = {
+    clientId: 'database_' + Math.random().toString(36).substring(2, 10),
+    connectTimeout: 30000,
+    reconnectPeriod: 1000
+};
+
+//const dbURI = CREDENTIAL.mongodbUrl;
+// Create dentist and MQTT client for and connect
+const dentistClient = mqtt.connect(CREDENTIAL.dentistUrl);
+exports.dentistClient = dentistClient;
 
 
 // Connect to MongoDB using Mongoose
@@ -14,9 +28,50 @@ mongoose.connect(CREDENTIAL.mongodbUrl, {
     .then(() => console.log('Connected to MongoDB'))
     .catch((err) => console.error('Error connecting to MongoDB:', err));
 
+// For sending cahsed dentistSchedule to the scheduleService
+const recurringPublish = async () => {
 
-// Create and connect to dentist MQTT client
-const dentistClient = mqtt.connect(CREDENTIAL.dentistUrl);
+    try {
+        // Fetch all schedules from the Timeslot collection
+        //const schedules = await Timeslot.find({});
+
+        const currentDate = new Date();  // Get the current date and time
+        const futureDate = new Date(currentDate.getTime() + 96 * 60 * 60 * 1000); // Add 96 hours (96 hours * 60 minutes * 60 seconds * 1000 milliseconds)
+
+        // Format both dates to 'YYYY-MM-DDTHH:MM:SS' for accurate comparison
+        const currentDateISO = currentDate.toISOString(); 
+        const futureDateISO = futureDate.toISOString();
+
+        // Query to fetch timeslots booked within the next 96 hours
+        const schedules = await Timeslot.find({
+        status: 'Booked',
+        date: { $gte: currentDateISO, $lt: futureDateISO }  // Date range from now until 96 hours later
+        });
+
+        console.log('Fetched schedules:', schedules);
+
+        // Ensure schedules are in JSON format
+        // Define the topic for publishing cached schedules
+        const payload = JSON.stringify(schedules);
+        const pubTopic = TOPIC.cached_schedule;
+
+        // Publish the fetched schedules to the MQTT broker
+        dentistClient.publish(pubTopic, payload, { qos: 2 }, (err) => {
+            if (err) {
+                console.error('Publish error:', err);
+            } else {
+                console.log('Cached schedule published successfully at:', Date.now());
+            }
+        });
+    } catch (err) {
+        console.error('Error fetching schedules:', err);
+    }
+
+    // Schedule the next execution of the task
+    setTimeout(recurringPublish, 1000 * 60 * 60 * 6); // Call it every 6th hour for caching in scheduleService.js
+};
+
+
 
 // Connect to dentist broker
 dentistClient.on('connect', async () => {
@@ -37,9 +92,24 @@ dentistClient.on('connect', async () => {
             console.log(`Subscribed to topic: ${'/database/#'}`);
         }
     });
+    dentistClient.subscribe('+/database/#', { qos: 2 }, (err) => {
+        if (err) {
+            console.error('Subscription error:', err);
+        } else {
+            console.log(`Subscribed to topic: ${'+/database/#'}`);
+        }
+    });
+
+    dentistClient.subscribe('/database/#', { qos: 2 }, (err) => {
+        if (err) {
+            console.error('Subscription error:', err);
+        } else {
+            console.log(`Subscribed to topic: ${'/database/#'}`);
+        }
+    });
 
     // Fetch all dentist schedules and send to scheduleService for caching
-    //dentistSchedule.recurringPublish();
+    recurringPublish();
 });
 
 // Ensure that message event listener is only registered once
@@ -100,8 +170,8 @@ dentistClient.on('message', async (topic, message) => {
 
             case TOPIC.dentist_id:
                 console.log('retrive dentist schedule and send to dentist-ui');
-                //const schedule = dentistSchedule.retrieveDentistSchedule(jsonMessage,dentistClient);
-                //console.log(schedule);
+                const schedule = retrieveDentistSchedule(jsonMessage,dentistClient);
+                console.log(schedule);
                 dentistClient.publish(TOPIC.dentist_schedule, JSON.stringify([]));
                 break;
 
@@ -139,3 +209,40 @@ dentistClient.on('message', async (topic, message) => {
         console.error('Error processing message:', err);
     }
 });
+
+
+
+async function retrieveDentistSchedule(jsonMessage, dentistClient){
+    try {
+        console.log(jsonMessage);
+
+
+        const dentistSchedule = await Timeslot.find({
+            dentist: jsonMessage.dentist,
+        });
+
+
+        payload = dentistSchedule;
+
+        // MQTT client has to send strings, so transform json --> string 
+        const string_payload = JSON.stringify(payload);
+
+        const topic = TOPIC.dentist_schedule;
+
+        dentistClient.publish(topic, string_payload, { qos: 2 }, (err) => {
+            if (err) {
+                console.log('Publish error:', err);
+            } else {
+                // only need to forward the info with pub to db-handler on the rigth topic 
+                // db-handler will insert the new slot in db   
+                console.log('Message published successfully!\n');
+                console.log("the new topic the payload got sent to: "+topic+"\n");
+                console.log(string_payload);
+            }
+        });
+        
+        return dentistSchedule;
+    }catch(err){
+        console.log(err);
+    }
+};
