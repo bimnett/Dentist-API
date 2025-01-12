@@ -1,11 +1,7 @@
 const mqtt = require('mqtt');
 const TOPIC = require('../../resources/topics');
 const notifications = require('../../src/notificationManager');
-<<<<<<< Updated upstream
-const CREDENTIAL = require('../../resources/credentials');
-=======
 const TEST_CREDENTIALS = require('../../resources/testCredentials');
->>>>>>> Stashed changes
 
 
 /*****************************************

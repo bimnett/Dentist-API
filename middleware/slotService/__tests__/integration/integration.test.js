@@ -1,11 +1,7 @@
 const mqtt = require('mqtt');
 const TOPIC = require('../../resources/topics');
 const slotManagement = require('../../src/slotManagement');
-<<<<<<< Updated upstream
-const CREDENTIAL = require('../../resources/credentials');
-=======
 const CREDENTIAL = require('../../resources/testCredentials');
->>>>>>> Stashed changes
 
 /*****************************************
  * Integration tests for slot management.
