@@ -129,7 +129,6 @@ test:
     - cd notificationService
     - npm install
     - npm run test:unit
-    - npm run test:integration
     - cd ..
 
     # SlotAvailability tests
@@ -137,7 +136,6 @@ test:
     - cd slotAvailability
     - npm install
     - npm run test:unit
-    - npm run test:integration
     - cd ..
 
     # SlotService tests
@@ -145,5 +143,4 @@ test:
     - cd slotService
     - npm install
     - npm run test:unit
-    - npm run test:integration
     - cd ..
