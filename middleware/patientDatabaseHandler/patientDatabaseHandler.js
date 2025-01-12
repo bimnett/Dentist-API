@@ -14,9 +14,15 @@ const options = {
 };
 
 const dbURI = CREDENTIAL.mongodbUrl;
-// Create dentist and patient MQTT clients for and connect
+// Create a patient MQTT client and connect
 const patientClient = mqtt.connect(CREDENTIAL.patientUrl);
 
+// Connect to MongoDB using Mongoose
+mongoose.connect(CREDENTIAL.mongodbUrl, { 
+    serverSelectionTimeoutMS: 5000,  // Set timeout for DB connection attempts
+})
+    .then(() => console.log('Connected to MongoDB'))
+    .catch((err) => console.error('Error connecting to MongoDB:', err));
 
 // Connect to patient broker
 patientClient.on('connect', async () => {
