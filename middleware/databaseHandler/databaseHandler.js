@@ -92,6 +92,21 @@ dentistClient.on('connect', async () => {
             console.log(`Subscribed to topic: ${'/database/#'}`);
         }
     });
+    dentistClient.subscribe('+/database/#', { qos: 2 }, (err) => {
+        if (err) {
+            console.error('Subscription error:', err);
+        } else {
+            console.log(`Subscribed to topic: ${'+/database/#'}`);
+        }
+    });
+
+    dentistClient.subscribe('/database/#', { qos: 2 }, (err) => {
+        if (err) {
+            console.error('Subscription error:', err);
+        } else {
+            console.log(`Subscribed to topic: ${'/database/#'}`);
+        }
+    });
 
     // Fetch all dentist schedules and send to scheduleService for caching
     recurringPublish();
@@ -138,23 +153,26 @@ dentistClient.on('message', async (topic, message) => {
             //case TOPIC.dentist_delete_slot:
             case TOPIC.deletion_of_slot:
                 console.log("try to delete\n");
-                const deletedSlot = await Timeslot.findByIdAndDelete(jsonMessage.id);
-                console.log(deletedSlot);
 
-                let publish_topic = TOPIC.notification_cancel;
-                let payload = JSON.stringify(deletedSlot);
+                try {
+                    const deletedSlot = await Timeslot.findByIdAndDelete(jsonMessage.id);
+                    console.log(deletedSlot);
 
-                dentistClient.publish(TOPIC.notification_cancel, JSON.stringify({
-                    data: deletedSlot,
-                    error: null
-                }));
+                    let payload = JSON.stringify({data: deletedSlot, error: null});
 
+                    dentistClient.publish(TOPIC.notification_cancel, payload);
+                } catch(err){
+                    console.log("Error deleting slot:", err);
+                    dentistClient.publish(TOPIC.notification_cancel, JSON.stringify({data: null, error: err}));
+                }
+            
                 break;
 
             case TOPIC.dentist_id:
                 console.log('retrive dentist schedule and send to dentist-ui');
                 const schedule = retrieveDentistSchedule(jsonMessage,dentistClient);
                 console.log(schedule);
+                dentistClient.publish(TOPIC.dentist_schedule, JSON.stringify([]));
                 break;
 
             // Queries a specific timeslot ???

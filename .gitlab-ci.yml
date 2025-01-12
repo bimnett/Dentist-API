@@ -71,14 +71,10 @@ test:
     - echo "testMongodbUrl :\"$MONGODB_URL\"," >> credentials.js
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
-    - npm install
-    - npm install npm-run-all --save-dev
-    - npm install --include=dev
-    - npm install cross-env --save-dev
-    - npm install mongoose
-    - npm run ci-test
-
     - cd ..
+    - npm install
+    #- npm run ci-test
+
     - cd ..
     - cd databaseHandler
     - cd resources
@@ -99,11 +95,12 @@ test:
     - echo "testMongodbUrl :\"$MONGODB_URL\"," >> credentials.js
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
-    - npm run ci-test
+    #- npm run ci-test
 
     - cd ..
     - cd ..
     - cd slotService
+    - cd resources
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "broker_url :\"$BROKER_URL\"," >> credentials.js

@@ -49,6 +49,10 @@ router.get('/bookSlots/:appointmentId', async function(req,res,next){
     } catch(e) {
         return next(e);
     }
+    // 5 second timeout
+    setTimeout(() => {
+      return res.status(504).json({ error: "Request timed out" });
+    }, 5000);
 });
 
 module.exports = router;

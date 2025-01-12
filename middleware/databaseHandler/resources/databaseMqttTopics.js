@@ -54,7 +54,7 @@ module.exports = {
     //used?
     specific_clinic: 'slot/database/find/special/clinic',
     specific_dentist: 'slot/database/find/special/dentist',
-    specific_reference_code: 'lot/database/find/special/reference/code',
+    specific_reference_code: 'slot/database/find/special/reference/code',
 
     // dentist server publish
     dentist_create_new_slot: 'dentist/slot/create/new/slot',
@@ -65,6 +65,7 @@ module.exports = {
 
     // schedule service
     cached_dentist_schedule: 'schedule/dentist/send/dentist/schedule/cached',
+    dentist_schedule: 'database/schedule/all/slots/for/special/dentist',
 
     // notification topics
     notification_cancel: 'database/send/notification/cancel',

@@ -81,6 +81,8 @@ services:
         ./middleware/notificationService
     networks:
       - backend
+    depends_on:
+      - mosquittopatient
 
   patientdatabasehandler:
     build:
@@ -110,6 +112,8 @@ services:
         ./middleware/scheduleservice
     networks:
       - backend
+    depends_on:
+      - mosquittodentist
 
   slotavailability:
     build:
@@ -117,6 +121,7 @@ services:
        ./middleware/slotAvailability
     depends_on:
       - mosquitto
+      - mosquittopatient
     restart:
       always
     networks:
@@ -152,7 +157,7 @@ services:
       - mosquittodentist
     networks:
       - backend
-    restart: always  
+    restart: always
 
 volumes:
   mongodb_data:

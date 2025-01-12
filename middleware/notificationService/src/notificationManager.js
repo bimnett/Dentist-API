@@ -27,8 +27,6 @@ async function notifyCancelation(recipientEmail) {
             console.log('Email sent:' + info.response);
         }
     })
-
-
 }
 
 

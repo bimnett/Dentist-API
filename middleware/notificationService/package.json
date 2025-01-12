@@ -1,18 +1,23 @@
 {
-  "name": "notificaitonservice",
+  "name": "notification-service",
   "version": "1.0.0",
   "main": "notificationService.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
+    "test:unit": "jest __tests__/unit",
+    "test:integration": "jest __tests__/integration",
+    "start": "node notificationService.js",
     "dev": "nodemon notificationService.js"
   },
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "MQTT-based notification service",
   "dependencies": {
     "mqtt": "^5.10.3",
     "nodemailer": "^6.9.16",
-    "nodemon": "^3.1.7",
-    "notificaitonservice": "file:"
+    "nodemon": "^3.1.7"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
 }

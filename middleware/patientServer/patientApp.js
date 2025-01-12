@@ -136,7 +136,7 @@ app.get('/api/patients/dentists', async (req, res) => {
           client.end();
           return res.status(500).json({ message: response.error });
         }
-        if (!response.data || response.data.length === 0) {
+        if (!response.data) {
           client.end();
           return res.status(404).json({ message: "No dentists available" });
         }
@@ -165,44 +165,43 @@ app.post('/api/patients/reserve-slot', async (req, res) => {
   }
 
   try {
-      options.clientId = "patientServer" + Math.random().toString(36).substring(2, 10);
-      const client = mqtt.connect(CREDENTIAL.brokerUrl, options);
+    options.clientId = "patientServer" + Math.random().toString(36).substring(2, 10);
+    const client = mqtt.connect(CREDENTIAL.brokerUrl, options);
 
-      client.on('connect', () => {
-          console.log('Subscriber connected to broker');
-          client.subscribe(TOPIC.database_response_reserve, { qos: 2 });
+    client.on('connect', () => {
+        console.log('Subscriber connected to broker');
+        client.subscribe(TOPIC.database_response_reserve, { qos: 2 });
 
-          // Publish reservation request
-          client.publish(TOPIC.database_request_reserve, JSON.stringify({
-              dentistId,
-              date,
-              time,
-          }));
-      });
-
-      client.on('message', (topic, message) => {
-        console.log(`Received reservation data on topic: ${topic}`);
-        const response = JSON.parse(message.toString());
-        console.log('Received response:', response);
-        
-        // Immediately end the connection and send response
-        client.end();
-        
-        if (response.error) {
-            return res.status(500).json({ message: response.error });
-        }
-        return res.json(response);
+        // Publish reservation request
+        client.publish(TOPIC.database_request_reserve, JSON.stringify({
+            dentistId,
+            date,
+            time,
+        }));
     });
 
-      client.on('error', (error) => {
-          console.log('Subscriber connection error:', error);
-          return res.status(500).json({ message: "Unable to connect to the server" });
-      });
+    client.on('message', (topic, message) => {
+      console.log(`Received reservation data on topic: ${topic}`);
+      const response = JSON.parse(message.toString());
+      console.log('Received response:', response);
+      
+      if (response.error) {
+          if(response.error == 'Timeslot is not available'){
+            return res.status(404).json({ message: "Timeslot is unavailable." });
+          }
+          return res.status(500).json({ error: "Internal server error" });
+      }
+      return res.status(201).json({ message: "Slot reserved successfully" });
+    });
+
+    client.on('error', (error) => {
+        console.log('Subscriber connection error:', error);
+    });
 
   } catch (error) {
-      console.error('Error:', error);
-      return res.status(500).json({ message: "Internal server error" });
-  }
+      console.log("Error:", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
 });
 
 
@@ -240,9 +239,6 @@ app.post('/api/patients/dentists/:dentistId/bookings', (req, res) => {
         const response = JSON.parse(message.toString());
         console.log('Received response:', response);
         
-        // Immediately end the connection and send response
-        client.end();
-        
         if (response.error) {
             return res.status(500).json({ message: response.error });
         }
@@ -252,6 +248,7 @@ app.post('/api/patients/dentists/:dentistId/bookings', (req, res) => {
 
     } catch(err){
       console.log("Error in booking creation endpoint:", err);
+      return res.status(500).json({ error: "Internal server error" });
     }
 });
 
