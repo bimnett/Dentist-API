@@ -127,16 +127,7 @@ services:
     networks:
       - backend
 
-  slotavailabilityservice:
-    build:
-      context:
-       ./middleware/slotAvailabilityService
-    depends_on:
-      - mosquitto
-    restart:
-      always
-    networks:
-      - backend
+
 
   slotbookingservice:
     build:
@@ -158,6 +149,20 @@ services:
     networks:
       - backend
     restart: always
+
+  monitoringservice:
+    build:
+      context:
+        ./middleware/monitoringService
+    depends_on:
+      - mosquitto
+    restart:
+      always
+    networks:
+      - backend
+    stdin_open: true
+    tty: true
+
 
 volumes:
   mongodb_data:

@@ -30,11 +30,11 @@ const ClinicSchema = new Schema({
         type: String,
         required: true,
         default: "18:00" // can change later
-    }, 
+    },
     dentists: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Dentist'
-    }]    
+    }]
 })
 
 module.exports = mongoose.model('Clinic', ClinicSchema);
