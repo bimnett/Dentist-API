@@ -62,6 +62,76 @@ test:
     MONGODB_URL: "mongodb://mongo:27017/serverTestDB"
   script:
 
+    - cd middleware
+    - cd dentistApiServer
+    - cd resources
+    - echo "Creating credentials.js..."
+    - echo "module.exports = {" > credentials.js
+    - echo "brokerUrl :\"$BROKER_URL\"," >> credentials.js
+    - echo "testMongodbUrl :\"$MONGODB_URL\"," >> credentials.js
+    - echo "};" >> credentials.js
+    - echo "credentials.js created successfully."
+    - npm install
+    - npm install npm-run-all --save-dev
+    - npm install --include=dev
+    - npm install cross-env --save-dev
+    - npm install mongoose
+    #- npm run ci-test
+
+    - cd ..
+    - cd ..
+    - cd databaseHandler
+    - cd resources
+    - echo "Creating credentials.js..."
+    - echo "module.exports = {" > credentials.js
+    - echo "brokerUrl :\"$BROKER_URL\"," >> credentials.js
+    - echo "testMongodbUrl :\"$MONGODB_URL\"," >> credentials.js
+    - echo "};" >> credentials.js
+    - echo "credentials.js created successfully."
+
+    - cd ..
+    - cd ..
+    - cd patientServer
+    - cd resources
+    - echo "Creating credentials.js..."
+    - echo "module.exports = {" > credentials.js
+    - echo "brokerUrl :\"$BROKER_URL\"," >> credentials.js
+    - echo "testMongodbUrl :\"$MONGODB_URL\"," >> credentials.js
+    - echo "};" >> credentials.js
+    - echo "credentials.js created successfully."
+   #- npm run ci-test
+
+    - cd ..
+    - cd ..
+    - cd slotService
+    - echo "Creating credentials.js..."
+    - echo "module.exports = {" > credentials.js
+    - echo "broker_url :\"$BROKER_URL\"," >> credentials.js
+    - echo "testMongodbUrl :\"$MONGODB_URL\"," >> credentials.js
+    - echo "};" >> credentials.js
+    - echo "credentials.js created successfully."
+
+    - cd ..
+    - cd ..
+    - cd slotAvailability
+    - echo "Creating credentials.js..."
+    - echo "module.exports = {" > credentials.js
+    - echo "broker_url :\"$BROKER_URL\"," >> credentials.js
+    - echo "testMongodbUrl :\"$MONGODB_URL\"," >> credentials.js
+    - echo "};" >> credentials.js
+    - echo "credentials.js created successfully."
+
+    - cd ..
+    - cd ..
+    - cd notificationService
+    - echo "Creating credentials.js..."
+    - echo "module.exports = {" > credentials.js
+    - echo "broker_url :\"$BROKER_URL\"," >> credentials.js
+    - echo "testMongodbUrl :\"$MONGODB_URL\"," >> credentials.js
+    - echo "};" >> credentials.js
+    - echo "credentials.js created successfully."
+
+
     # NotificationService tests
     
   - echo "Running tests for notificationService..."
