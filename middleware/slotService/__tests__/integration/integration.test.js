@@ -1,7 +1,7 @@
 const mqtt = require('mqtt');
 const TOPIC = require('../../resources/topics');
 const slotManagement = require('../../src/slotManagement');
-const CREDENTIAL = require('../../credentials');
+const CREDENTIAL = require('../../resources/credentials');
 
 /*****************************************
  * Integration tests for slot management.
