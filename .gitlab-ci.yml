@@ -95,7 +95,7 @@ test:
     - cd ../slotService/resources
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
-    - echo "broker_url :\"$BROKER_URL\"," >> credentials.js
+    - echo "brokerUrl :\"$BROKER_URL_DENTIST\"," >> credentials.js
     - echo "testMongodbUrl :\"$MONGODB_URL\"," >> credentials.js
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
@@ -104,7 +104,8 @@ test:
     - cd ../slotAvailability/resources
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
-    - echo "broker_url :\"$BROKER_URL\"," >> credentials.js
+    - echo "publicBroker :\"$BROKER_URL_PUBLIC\"," >> credentials.js
+    - echo "internalBroker :\"$BROKER_URL_PATIENT\"," >> credentials.js
     - echo "testMongodbUrl :\"$MONGODB_URL\"," >> credentials.js
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
@@ -113,8 +114,11 @@ test:
     - cd ../notificationService/resources
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
-    - echo "broker_url :\"$BROKER_URL\"," >> credentials.js
-    - echo "testMongodbUrl :\"$MONGODB_URL\"," >> credentials.js
+    - echo "brokerUrl :\"$BROKER_URL_PATIENT\"," >> credentials.js
+    - echo "email_app_password :\"$EMAIL_PASSWORD\"," >> credentials.js
+    - echo "email :\"$EMAIL\"," >> credentials.js
+    - echo "notificationCancel :\"$NOTIFICATION_CANCEL\"," >> credentials.js
+
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
 
