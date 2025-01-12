@@ -27,7 +27,7 @@ build:
     - cd ..
     - cd middleware
     - cd patientServer
-    - npm install 
+    - npm install
 
     - cd ..
     - cd slotService
@@ -38,12 +38,11 @@ build:
     - npm install
     - npm install mongoose
 
-    - cd .. 
+    - cd ..
     - cd dentistApiServer
     - npm install
     - npm install cross-env --save-dev
     - npm install mongoose
-
 
     - cd ..
     - cd ..
@@ -61,10 +60,7 @@ test:
   variables:
     MONGODB_URL: "mongodb://mongo:27017/serverTestDB"
   script:
-
-    - cd middleware
-    - cd dentistApiServer
-    - cd resources
+    - cd middleware/dentistApiServer/resources
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "brokerUrl :\"$BROKER_URL\"," >> credentials.js
@@ -76,12 +72,9 @@ test:
     - npm install --include=dev
     - npm install cross-env --save-dev
     - npm install mongoose
-    #- npm run ci-test
 
     - cd ..
-    - cd ..
-    - cd databaseHandler
-    - cd resources
+    - cd ../databaseHandler/resources
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "brokerUrl :\"$BROKER_URL\"," >> credentials.js
@@ -90,20 +83,16 @@ test:
     - echo "credentials.js created successfully."
 
     - cd ..
-    - cd ..
-    - cd patientServer
-    - cd resources
+    - cd ../patientServer/resources
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "brokerUrl :\"$BROKER_URL\"," >> credentials.js
     - echo "testMongodbUrl :\"$MONGODB_URL\"," >> credentials.js
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
-   #- npm run ci-test
 
     - cd ..
-    - cd ..
-    - cd slotService
+    - cd ../slotService
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "broker_url :\"$BROKER_URL\"," >> credentials.js
@@ -112,8 +101,7 @@ test:
     - echo "credentials.js created successfully."
 
     - cd ..
-    - cd ..
-    - cd slotAvailability
+    - cd ../slotAvailability
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "broker_url :\"$BROKER_URL\"," >> credentials.js
@@ -122,39 +110,34 @@ test:
     - echo "credentials.js created successfully."
 
     - cd ..
-    - cd ..
-    - cd notificationService
+    - cd ../notificationService
     - echo "Creating credentials.js..."
     - echo "module.exports = {" > credentials.js
     - echo "broker_url :\"$BROKER_URL\"," >> credentials.js
     - echo "testMongodbUrl :\"$MONGODB_URL\"," >> credentials.js
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
-
 
     # NotificationService tests
-    
-  - echo "Running tests for notificationService..."
-  - cd middleware/notificationService
-  - npm install
-  - npm run test:unit
-  - npm run test:integration
-  - cd ..
+    - echo "Running tests for notificationService..."
+    - cd middleware/notificationService
+    - npm install
+    - npm run test:unit
+    - npm run test:integration
+    - cd ..
 
-   # SlotAvailability tests
-    
-  - echo "Running tests for slotAvailability..."
-  - cd slotAvailability
-  - npm install
-  - npm run test:unit
-  - npm run test:integration
-  - cd ..
+    # SlotAvailability tests
+    - echo "Running tests for slotAvailability..."
+    - cd slotAvailability
+    - npm install
+    - npm run test:unit
+    - npm run test:integration
+    - cd ..
 
-  # SlotService tests
-    
-  - echo "Running tests for slotService.."
-  - cd slotService
-  - npm install
-  - npm run test:unit
-  - npm run test:integration
-  - cd .. # Go back to middleware
+    # SlotService tests
+    - echo "Running tests for slotService..."
+    - cd slotService
+    - npm install
+    - npm run test:unit
+    - npm run test:integration
+    - cd ..
