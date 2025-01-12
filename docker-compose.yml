@@ -100,7 +100,7 @@ services:
       context:
         ./middleware/patientserver
     deploy:
-      replicas: 3
+      replicas: 1
     restart:
       always
     networks:
