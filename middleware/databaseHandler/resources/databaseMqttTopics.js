@@ -70,6 +70,11 @@ module.exports = {
     // notification topics
     notification_cancel: 'database/send/notification/cancel',
 
+    // logs topics
+    log_data: 'monitoring/send/logs/data',
+    log_save: 'database/log/save',
+    log_request: 'database/log/request',
+
 
     everything: '#'
 

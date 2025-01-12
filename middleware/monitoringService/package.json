@@ -1,0 +1,19 @@
+{
+  "name": "monitoring-service",
+  "version": "1.0.0",
+  "main": "monitoringService.js",
+  "scripts": {
+    "start": "node monitoringService.js",
+    "dev": "nodemon monitoringService.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "MQTT-based monitoring service",
+  "dependencies": {
+    "mqtt": "^5.10.3",
+    "nodemon": "^3.1.7"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}

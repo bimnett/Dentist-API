@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const CREDENTIAL = require('./resources/credentials');
 const TOPIC = require('./resources/databaseMqttTopics');
 const Timeslot = require('./models/timeslot');
+const Log = require('./models/logs')
 const slotManagement = require('./src/slotManagement');
 //const dentistSchedule = require('./src/dentistSchedule');
 //const date = reqiure('date');
@@ -199,7 +200,28 @@ dentistClient.on('message', async (topic, message) => {
                     }));
                 }
                 break;
-               
+
+            case TOPIC.log_save:
+                const newLog = new Log(jsonMessage);
+                await newLog.save();
+                console.log("New log saved successfully.");
+                break;
+            case TOPIC.log_request:
+                try {
+                    const log = await Log.find({});
+                    // Publish response
+                    dentistClient.publish(`${TOPIC.log_data}`, JSON.stringify(log));
+
+                } catch (error) {
+
+                    // Publish error
+                    dentistClient.publish(`${TOPIC.log_data}`, JSON.stringify({
+                        requestId: jsonMessage.requestId,
+                        data: null,
+                        error: error.message
+                    }));
+                }
+                break;
             default:
                 console.log("Default case hit. Received topic:", topic);
                 break;
