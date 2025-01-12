@@ -1,7 +1,7 @@
 const mqtt = require('mqtt');
 const TOPIC = require('../../resources/topics');
 const notifications = require('../../src/notificationManager');
-const CREDENTIAL = require('../../credentials');
+const TEST_CREDENTIALS = require('../../resources/testCredentials');
 
 
 /*****************************************
@@ -37,10 +37,12 @@ describe('Notification Service Integration Tests', () => {
             }
         };
 
-        mainClient = mqtt.connect(CREDENTIAL.brokerUrl, {
+        mainClient = mqtt.connect(TEST_CREDENTIALS.testBrokerUrl, {
             clientId: 'notificationService_test_' + Math.random().toString(36).substring(2, 10),
-            connectTimeout: 10000,
-            reconnectPeriod: 1000,
+        });
+        
+        testClient = mqtt.connect(TEST_CREDENTIALS.testBrokerUrl, {
+            clientId: 'test_publisher_' + Math.random().toString(36).substring(2, 10)
         });
 
         mainClient.on('connect', () => {
@@ -56,8 +58,8 @@ describe('Notification Service Integration Tests', () => {
             });
         });
 
-        testClient = mqtt.connect(CREDENTIAL.brokerUrl, {
-            clientId: 'test_publisher_' + Math.random().toString(36).substring(2, 10)
+        mainClient.on('error', (err) => {
+            console.error('Main client connection error:', err);
         });
 
         testClient.on('connect', () => {

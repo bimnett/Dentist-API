@@ -1,7 +1,7 @@
 const mqtt = require('mqtt');
 const TOPIC = require('../../resources/topics');
 const slotManagement = require('../../src/slotManagement');
-const CREDENTIAL = require('../../credentials');
+const CREDENTIAL = require('../../resources/testCredentials');
 
 /*****************************************
  * Integration tests for slot management.
@@ -11,7 +11,7 @@ describe('Slot Management Service Integration Tests', () => {
     let mainClient;
 
     beforeEach((done) => {
-        mainClient = mqtt.connect(CREDENTIAL.brokerUrl, {
+        mainClient = mqtt.connect(CREDENTIAL.testBrokerUrl, {
             clientId: 'slotService_test_' + Math.random().toString(36).substring(2, 10)
         });
 
