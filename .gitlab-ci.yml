@@ -73,7 +73,7 @@ test:
     - echo "credentials.js created successfully."
     - cd ..
     - npm install
-    #- npm run ci-test
+    - npm run ci-test
 
     - cd ..
     - cd databaseHandler
@@ -95,7 +95,7 @@ test:
     - echo "testMongodbUrl :\"$MONGODB_URL\"," >> credentials.js
     - echo "};" >> credentials.js
     - echo "credentials.js created successfully."
-    #- npm run ci-test
+    - npm run ci-test
 
     - cd ..
     - cd ..
