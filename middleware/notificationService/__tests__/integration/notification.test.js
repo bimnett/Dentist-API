@@ -1,7 +1,7 @@
 const mqtt = require('mqtt');
 const TOPIC = require('../../resources/topics');
 const notifications = require('../../src/notificationManager');
-const CREDENTIAL = require('../../credentials');
+const CREDENTIAL = require('../../resources/credentials');
 
 
 /*****************************************
